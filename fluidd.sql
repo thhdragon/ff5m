@@ -417,3 +417,333 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         }
     ]
 }');
+DELETE FROM "main"."namespace_store"  WHERE namespace="mainsail" AND key="macros";
+INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
+    "macrogroups": {
+        "1517f6e7-1f5a-49da-8f35-8b68eab60038": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "Auto_Full_Bed_Level",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "Bed_Level_Screws_Tune",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PID_Tune_BED",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PID_Tune_EXTRUDER",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_CELL_TARE",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "1. Калибровки",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "58151d61-dccd-4951-9836-e18f4d59ed65": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "LOAD_FILAMENT",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_MATERIAL",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PURGE_FILAMENT",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "UNLOAD_FILAMENT",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "3. Филамент",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "731852b2-3bf0-422a-a1fb-56d2f1f972a5": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "REBOOT",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LED",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LED_ON",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LED_OFF",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PLAY_MIDI",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "0. Основное",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "9c23dcdb-a9bf-49fe-9473-12b149deb188": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "DATE_GET",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "DATE_SET",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "DISPLAY_OFF",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "DISPLAY_ON",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "WEB",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "MEM",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "REBOOT",
+                    "pos": 7,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SHUTDOWN",
+                    "pos": 8,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SKIP_ZMOD",
+                    "pos": 9,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SOFT_REMOVE",
+                    "pos": 10,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "REMOVE_ZMOD",
+                    "pos": 11,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CAMERA_ON",
+                    "pos": 12,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CAMERA_OFF",
+                    "pos": 13,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "2. Система",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "af5e2632-c4e2-4d53-aed9-f9127b1e5a38": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "AIR_CIRCULATION_EXTERNAL",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "AIR_CIRCULATION_INTERNAL",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "AIR_CIRCULATION_STOP",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "4. Pro",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "e8166e46-ce4b-4f63-9546-297a54b54c57": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "LOAD_CELL_TARE",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SET_PAUSE_AT_LAYER",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SET_PAUSE_NEXT_LAYER",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "5. Без экрана",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        }
+    },
+    "mode": "expert"
+}');
