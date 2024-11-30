@@ -112,6 +112,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Отключить моторы",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "stop",
+            "visible": true
+        },
+        {
             "alias": "Выключить принтер",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
@@ -221,6 +229,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": true,
             "name": "auto_full_bed_level",
+            "visible": true
+        },
+        {
+            "alias": "Калибровка шейперов",
+            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
+            "color": "",
+            "disabledWhilePrinting": true,
+            "name": "zshaper",
             "visible": true
         },
         {
