@@ -56,6 +56,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Установить временную зону",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "set_timezone",
+            "visible": true
+        },
+        {
             "alias": "Текущее время",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
