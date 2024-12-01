@@ -144,11 +144,19 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "Отключить моторы",
+            "alias": "",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
             "disabledWhilePrinting": false,
-            "name": "stop",
+            "name": "reboot",
+            "visible": true
+        },
+        {
+            "alias": "Очистить сопло",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "clear_noize",
             "visible": true
         },
         {
