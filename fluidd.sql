@@ -120,6 +120,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": false
         },
         {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "kamp",
+            "visible": false
+        },
+        {
             "alias": "Расход памяти",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
