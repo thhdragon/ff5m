@@ -2,24 +2,24 @@ DELETE FROM "main"."namespace_store"  WHERE namespace="fluidd" AND key="macros";
 INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('fluidd', 'macros', '{
     "categories": [
         {
-            "id": "e004b7a8-256d-4070-8d81-90a2ccef470b",
-            "name": "4. Pro"
-        },
-        {
-            "id": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "name": "2. Система"
+            "id": "944c031b-feef-4b75-badf-21c30508fb24",
+            "name": "0. Основное"
         },
         {
             "id": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "name": "1. Калибровки"
         },
         {
-            "id": "944c031b-feef-4b75-badf-21c30508fb24",
-            "name": "0. Основное"
+            "id": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "name": "2. Система"
         },
         {
             "id": "89ac157d-a16a-43f1-900a-498d683bf557",
             "name": "3. Филамент"
+        },
+        {
+            "id": "e004b7a8-256d-4070-8d81-90a2ccef470b",
+            "name": "4. Pro"
         },
         {
             "id": "5ceaef9c-2e66-4bbf-998b-94fcab116597",
