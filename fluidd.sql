@@ -336,22 +336,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "",
-            "categoryId": "0",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "bed_temperature_wait",
-            "visible": false
-        },
-        {
-            "alias": "",
-            "categoryId": "0",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "set_bed_temperature",
-            "visible": false
-        },
-        {
             "alias": "Отменить печать",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
