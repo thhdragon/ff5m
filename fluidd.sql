@@ -477,7 +477,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "end_print",
-            "visible": true
+            "visible": false
         },
         {
             "alias": "",
@@ -509,14 +509,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "start_print",
-            "visible": false
-        },
-        {
-            "alias": "",
-            "categoryId": "5ceaef9c-2e66-4bbf-998b-94fcab116597",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "end_print",
             "visible": false
         }
     ]
