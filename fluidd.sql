@@ -64,22 +64,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "Изменить параметры ZMOD",
-            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "save_zmod_data",
-            "visible": true
-        },
-        {
-            "alias": "Просмотреть параметры ZMOD",
-            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "get_zmod_data",
-            "visible": true
-        },
-        {
             "alias": "Включить ZSSH",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
@@ -213,22 +197,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "reboot",
-            "visible": true
-        },
-        {
-            "alias": "",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "new_save_config",
-            "visible": true
-        },
-        {
-            "alias": "Закрыть диалоги",
-            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "close_dialogs",
             "visible": true
         },
         {
@@ -550,6 +518,38 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "disabledWhilePrinting": false,
             "name": "start_print",
             "visible": false
+        },
+        {
+            "alias": "Закрыть диалоги",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "close_dialogs",
+            "visible": true
+        },
+        {
+            "alias": "Получить параметры ZMOD",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "get_zmod_data",
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "new_save_config",
+            "visible": true
+        },
+        {
+            "alias": "Сохранить параметры ZMOD",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "save_zmod_data",
+            "visible": true
         }
     ]
 }');
