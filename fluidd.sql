@@ -204,7 +204,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
             "disabledWhilePrinting": false,
-            "name": "clear_noize",
+            "name": "clear_nozzle",
             "visible": true
         },
         {
