@@ -404,6 +404,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "coldpull",
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "load_filament",
             "visible": true
         },
