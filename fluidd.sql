@@ -520,6 +520,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Печать файла + leveling",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "leveling_print_file",
+            "visible": true
+        },
+        {
             "alias": "Быстро закрыть диалоги",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
