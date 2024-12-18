@@ -408,11 +408,11 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "",
+            "alias": "Загрузить нить",
             "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
-            "name": "load_filament",
+            "name": "load_material",
             "visible": true
         },
         {
@@ -420,7 +420,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
-            "name": "load_material",
+            "name": "load_filament",
             "visible": true
         },
         {
