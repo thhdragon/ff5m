@@ -453,7 +453,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "m600",
-            "visible": false
+            "visible": true
         },
         {
             "alias": "",
