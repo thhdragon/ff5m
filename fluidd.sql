@@ -448,8 +448,8 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
-            "alias": "",
-            "categoryId": "0",
+            "alias": "Пауза + смена филамента",
+            "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "m600",
