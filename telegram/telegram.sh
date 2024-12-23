@@ -13,10 +13,10 @@ cd ~tbot
 cat >> install.sh <<EOF
 mkdir bot1
 cd ~tbot/bot1
-curl -q -o docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
 mkdir -p config log timelapse_finished timelapse 
-tbot curl -q -o config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
-tbot chmod 777 config log timelapse_finished timelapse
+wget -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
+wget -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
+chmod 777 config log timelapse_finished timelapse
 
 echo "1. Идете к https://t.me/BotFather
 2. /newbot
