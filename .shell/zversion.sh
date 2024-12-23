@@ -4,8 +4,8 @@ VER_FF=$(cat /opt/config/mod/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
 VER_MOD="0.0.0"
 
 if [ -f "/root/printer_data/version.txt" ]
-    then 
-        VER_MOD=$(cat /root/printer_data/scripts/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
+    then
+        VER_MOD=$(cat /root/printer_data/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
     else if [ -f "/root/printer_data/scripts/version.txt" ]
         then
             VER_MOD=$(cat /root/printer_data/scripts/version.txt 2>/dev/null| cut  -d "." -f 1,2,3)
