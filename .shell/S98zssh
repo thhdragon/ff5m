@@ -1,0 +1,54 @@
+#!/bin/sh
+#
+# Start TelegramBot
+#
+
+if ! [ -f /opt/config/mod_data/ssh.key ]
+    then
+        dropbearkey -t ed25519 -f /opt/config/mod_data/ssh.key
+        dropbearkey -y -t ed25519 -f /opt/config/mod_data/ssh.key |grep root@kunos >/opt/config/mod_data/ssh.pub.txt
+fi
+
+if ! [ -f /opt/config/mod_data/ssh.conf ]
+    then
+        /root/printer_data/scripts/zssh.sh STOP 127.0.0.1 22 user 8080 7125 NOTRESTART
+fi
+
+source /opt/config/mod_data/ssh.conf
+
+start() {
+    if [ $START = "on" ]
+        then
+#            echo "/bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y"
+            /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y &> /data/logFiles/ssh.log
+            cat /data/logFiles/ssh.log
+        else
+            echo "SSH отключен"
+    fi
+}
+
+stop() {
+    kill $( ps |grep -v grep |grep dropbearmulti| awk '{print $1}' ) 2>/dev/null >/dev/null
+}
+restart() {
+    stop
+    sleep 2
+    start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|reload)
+        restart
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
