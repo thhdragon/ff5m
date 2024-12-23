@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run
-# bash <(wget -C -q -O - https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.sh)
+# bash <(wget --cache=off -q -O - https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.sh)
 
 apt update 
 apt upgrade -y
@@ -17,8 +17,8 @@ cat > install.sh <<EOF
 mkdir bot1
 cd ~tbot/bot1
 mkdir -p config log timelapse_finished timelapse 
-wget -C -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
-wget -C -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
+wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
+wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse
 
 echo "1. Идете к https://t.me/BotFather
