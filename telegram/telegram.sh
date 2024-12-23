@@ -1,16 +1,16 @@
 #!/bin/bash
 
-apt update 
-apt upgrade -y
-apt install docker.io docker-compose docker sudo -y
+#apt update 
+#apt upgrade -y
+#apt install docker.io docker-compose docker sudo -y
 
-useradd -m -G docker tbot
+#useradd -m -G docker tbot
 
-systemctl enable docker
-systemctl restart docker
+#systemctl enable docker
+#systemctl restart docker
 
-cd ~tbot
-cat >> install.sh <<EOF
+#cd ~tbot
+cat > install.sh <<EOF
 mkdir bot1
 cd ~tbot/bot1
 mkdir -p config log timelapse_finished timelapse 
@@ -38,5 +38,5 @@ docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
 EOF
-chmod +x install.sh
-su - tbot ./install.sh
+#chmod +x install.sh
+#su - tbot ./install.sh
