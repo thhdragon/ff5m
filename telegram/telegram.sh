@@ -26,7 +26,7 @@ echo "1. Идете к https://t.me/BotFather
 
 read  -p "Введите bot_token: " bot_token
 
-sed -i "s|bot_token: 1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA|bot_token: ${bot_token}|" config/telegram.conf
+sed -i "s|bot_token: 1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA|bot_token: \${bot_token}|" config/telegram.conf
 docker-compose up -d
 
 echo "Заходите в своего бота, через телеграм
@@ -35,7 +35,7 @@ echo "Заходите в своего бота, через телеграм
 
 read -p "Введите chat_id: " chat_id 
 docker-compose down
-sed -i "s|chat_id: 111111111|chat_id: ${chat_id}|" config/telegram.conf 
+sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
 EOF
 chmod +x install.sh
