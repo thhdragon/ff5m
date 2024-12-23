@@ -1,21 +1,24 @@
 #!/bin/bash
 
-#apt update 
-#apt upgrade -y
-#apt install docker.io docker-compose docker sudo -y
+# Run
+# bash <(wget -C -q -O - https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.sh)
 
-#useradd -m -G docker tbot
+apt update 
+apt upgrade -y
+apt install docker.io docker-compose docker sudo -y
 
-#systemctl enable docker
-#systemctl restart docker
+useradd -m -G docker tbot
 
-#cd ~tbot
+systemctl enable docker
+systemctl restart docker
+
+cd ~tbot
 cat > install.sh <<EOF
 mkdir bot1
 cd ~tbot/bot1
 mkdir -p config log timelapse_finished timelapse 
-wget -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
-wget -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
+wget -C -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
+wget -C -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse
 
 echo "1. Идете к https://t.me/BotFather
@@ -38,5 +41,5 @@ docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
 EOF
-#chmod +x install.sh
-#su - tbot ./install.sh
+chmod +x install.sh
+su - tbot ./install.sh
