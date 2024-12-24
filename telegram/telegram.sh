@@ -14,8 +14,11 @@ systemctl restart docker
 
 cd ~tbot
 cat > install.sh <<EOF
-mkdir bot1
-cd ~tbot/bot1
+cd
+read -p "Введите название каталога где будет хранится бот [bot1]: " bot_name
+if [ "\${bot_name}" == "" ]; then bot_name="bot1"; fi
+mkdir -p \${bot_name}
+cd \${bot_name}
 mkdir -p config log timelapse_finished timelapse 
 wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
 wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
@@ -40,6 +43,8 @@ read -p "Введите chat_id: " chat_id
 docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
+read -p "Нужно создать еще одного бота? [y/N]: " vopros
+if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then ./$0; fi
 EOF
 chmod +x install.sh
 su - tbot ./install.sh
