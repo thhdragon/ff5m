@@ -148,6 +148,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "0",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "line_purge",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "0",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "g17",
             "visible": false
         },
