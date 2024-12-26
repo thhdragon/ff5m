@@ -18,7 +18,7 @@ ORIG_MD5="$(/usr/bin/awk -F: '/; MD5/{printf("%s", $2)}' "${FILE_NAME}"|/usr/bin
 if [ -z "${ORIG_MD5}" ]
     then
         SCRIPT='
-{"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=echo MSG=\"Notice: В файле \\\"'${FILE_NAME##*/}'\\\" нет MD5 суммы\""}}
+{"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"В файле \\\"'${FILE_NAME##*/}'\\\" нет MD5 суммы\""}}
 {"id": -8888}
 '
     /bin/echo "${SCRIPT}"|${APP} /tmp/uds -- -8888 &>/dev/null
