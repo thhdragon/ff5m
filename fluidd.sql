@@ -344,6 +344,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Восстановить Z-offset",
+            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "load_gcode_offset",
+            "visible": true
+        },
+        {
+            "alias": "",
+            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "save_gcode_offset",
+            "visible": false
+        },
+        {
             "alias": "Отменить печать",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
