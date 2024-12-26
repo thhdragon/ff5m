@@ -46,7 +46,7 @@ docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
 read -p "Нужно создать еще одного бота? [y/N]: " vopros
-if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then ./$0; fi
+if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then ./install.sh; fi
 EOF
 chmod +x install.sh
 su - tbot ./install.sh
