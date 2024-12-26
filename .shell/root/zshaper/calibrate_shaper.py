@@ -82,16 +82,16 @@ def plot_freq_response(lognames, calibration_data, shapers,
     fontP.set_size('x-small')
 
     fig, ax = matplotlib.pyplot.subplots()
-    ax.set_xlabel('Frequency, Hz')
+    ax.set_xlabel('Частота, Hz')
     ax.set_xlim([0, max_freq])
-    ax.set_ylabel('Power spectral density')
+    ax.set_ylabel('Спектральная плотность мощности')
 
     ax.plot(freqs, psd, label='X+Y+Z', color='purple')
     ax.plot(freqs, px, label='X', color='red')
     ax.plot(freqs, py, label='Y', color='green')
     ax.plot(freqs, pz, label='Z', color='blue')
 
-    title = "Frequency response and shapers (%s)" % (', '.join(lognames))
+    title = "Частотная характеристика и шейперы (%s) (%s)" % (', '.join(lognames))
     ax.set_title("\n".join(wrap(title, MAX_TITLE_LENGTH)))
     ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
@@ -100,10 +100,10 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.grid(which='minor', color='lightgrey')
 
     ax2 = ax.twinx()
-    ax2.set_ylabel('Shaper vibration reduction (ratio)')
+    ax2.set_ylabel('Снижение вибрации шейпером (коэффициент)')
     best_shaper_vals = None
     for shaper in shapers:
-        label = "%s (%.1f Hz, vibr=%.1f%%, sm~=%.2f, accel<=%.f)" % (
+        label = "%s (%.1f Hz, вибрации=%.1f%%, сглаживание~=%.2f, ускорение<=%.f)" % (
             shaper.name.upper(), shaper.freq,
             shaper.vibrs * 100., shaper.smoothing,
             round(shaper.max_accel / 100.) * 100.)
@@ -113,10 +113,10 @@ def plot_freq_response(lognames, calibration_data, shapers,
             best_shaper_vals = shaper.vals
         ax2.plot(freqs, shaper.vals, label=label, linestyle=linestyle)
     ax.plot(freqs, psd * best_shaper_vals,
-            label='After\nshaper', color='cyan')
+            label='После\nшейпера', color='cyan')
     # A hack to add a human-readable shaper recommendation to legend
     ax2.plot([], [], ' ',
-             label="Recommended shaper: %s" % (selected_shaper.upper()))
+             label="Рекомендуемый шейпер: %s" % (selected_shaper.upper()))
 
     ax.legend(loc='upper left', prop=fontP)
     ax2.legend(loc='upper right', prop=fontP)
