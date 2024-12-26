@@ -91,7 +91,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.plot(freqs, py, label='Y', color='green')
     ax.plot(freqs, pz, label='Z', color='blue')
 
-    title = "Частотная характеристика и шейперы (%s) (%s)" % (', '.join(lognames))
+    title = "Частотная характеристика и шейперы (%s)" % (', '.join(lognames))
     ax.set_title("\n".join(wrap(title, MAX_TITLE_LENGTH)))
     ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
