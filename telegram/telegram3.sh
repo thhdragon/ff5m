@@ -14,6 +14,7 @@ systemctl restart docker
 
 cd ~tbot
 cat > install.sh <<EOF
+#!/bin/bash
 cd
 read -p "Введите название каталога где будет хранится бот [bot1]: " bot_name
 if [ "\${bot_name}" == "" ]; then bot_name="bot1"; fi
@@ -44,7 +45,7 @@ docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
 read -p "Нужно создать еще одного бота? [y/N]: " vopros
-if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then bash ./$0; fi
+if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then ./$0; fi
 EOF
 chmod +x install.sh
-su - tbot bash ./install.sh
+su - tbot ./install.sh
