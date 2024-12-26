@@ -8,7 +8,7 @@ apt upgrade -y
 apt install docker.io docker-compose docker sudo -y
 
 useradd -m -G docker tbot
-chsh tbot /bin/bash
+chsh tbot -s /bin/bash
 
 systemctl enable docker
 systemctl restart docker
