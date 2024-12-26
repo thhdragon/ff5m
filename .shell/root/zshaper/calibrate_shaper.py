@@ -18,7 +18,7 @@ MAX_TITLE_LENGTH = 65
 
 
 def parse_log(logname):
-    print(f"Parsing log: {logname}")
+    print(f"Разбираю лог: {logname}")
     with open(logname) as f:
         for header in f:
             if not header.startswith('#'):
@@ -58,7 +58,7 @@ def calibrate_shaper(datas, csv_output, max_smoothing):
         calibration_data.normalize_to_frequencies()
     shaper, all_shapers = helper.find_best_shaper(
         calibration_data, max_smoothing, print)
-    print("Recommended shaper is %s @ %.1f Hz" % (shaper.name, shaper.freq))
+    print("Рекомендуемый шейпер %s @ %.1f Hz" % (shaper.name, shaper.freq))
     if csv_output is not None:
         helper.save_calibration_data(
             csv_output, calibration_data, all_shapers)
@@ -91,7 +91,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.plot(freqs, py, label='Y', color='green')
     ax.plot(freqs, pz, label='Z', color='blue')
 
-    title = "Частотная характеристика и шейперы (%s)" % (', '.join(lognames))
+    title = "Частотная характеристика и шейперы %s (zmod)" % (', '.join(lognames))
     ax.set_title("\n".join(wrap(title, MAX_TITLE_LENGTH)))
     ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
@@ -103,7 +103,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax2.set_ylabel('Снижение вибрации шейпером (коэффициент)')
     best_shaper_vals = None
     for shaper in shapers:
-        label = "%s (%.1f Hz, вибрации=%.1f%%, сглаживание~=%.2f, ускорение<=%.f)" % (
+        label = "%s (%.1f Hz, вибр=%.1f%%, сглаж~=%.2f, уск<=%.f)" % (
             shaper.name.upper(), shaper.freq,
             shaper.vibrs * 100., shaper.smoothing,
             round(shaper.max_accel / 100.) * 100.)
