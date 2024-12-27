@@ -17,7 +17,11 @@ CLIENT=${CLIENT}" > /opt/config/mod_data/web.conf
 
 source /opt/config/mod_data/web.conf
 
-WEBROOT=/root/$CLIENT
+mkdir -p /root/web/
+ln -s /root/fluidd /root/web/
+ln -s /root/mainsail /root/web/
+
+WEBROOT=/root/web/$CLIENT
 cp -f /opt/config/mod/.shell/root/config.json /root/mainsail/
 
 start() {
