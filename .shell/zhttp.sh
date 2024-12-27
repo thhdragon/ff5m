@@ -3,6 +3,10 @@
 # Web config
 #
 
+unset LD_PRELOAD
+
+MOD=/data/.mod/.zmod
+
 WEB="fluidd"
 grep -q "CLIENT=$WEB" /opt/config/mod_data/web.conf && WEB="mainsail"
 
@@ -16,4 +20,6 @@ CLIENT=$WEB
 " >/opt/config/mod_data/web.conf
 
 sync
-reboot
+umount /data/.mod/
+chroot $MOD /opt/config/mod/.shell/root/S70httpd
+mount --bind /data/lost+found /data/.mod

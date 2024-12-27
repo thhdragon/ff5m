@@ -11,6 +11,7 @@ import pathlib
 import shutil
 import re
 import logging
+import subprocess
 from .app_deploy import AppDeploy
 from .common import Channel
 from ...utils.versions import GitVersion
@@ -102,6 +103,7 @@ class GitDeploy(AppDeploy):
         # Refresh local repo state
         await self._update_repo_state(need_fetch=False)
         await self.restart_service()
+        subprocess.run(["/bin/sudo", "systemctl", "reboot"])
         self.notify_status("Update Finished...", is_complete=True)
         return True
 
@@ -134,6 +136,7 @@ class GitDeploy(AppDeploy):
                 "Recovery attempt failed, repo state not pristine", 500)
         await self._update_dependencies(dep_info, force=force_dep_update)
         await self.restart_service()
+        subprocess.run(["/bin/sudo", "systemctl", "reboot"])
         self.notify_status("Reinstall Complete", is_complete=True)
 
     async def rollback(self) -> bool:
@@ -143,6 +146,7 @@ class GitDeploy(AppDeploy):
             await self._update_dependencies(dep_info)
             await self._update_repo_state(need_fetch=False)
             await self.restart_service()
+            subprocess.run(["/bin/sudo", "systemctl", "reboot"])
             msg = "Rollback Complete"
         else:
             msg = "Rollback not performed"

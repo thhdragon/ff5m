@@ -9,6 +9,7 @@ import pathlib
 import shutil
 import zipfile
 import logging
+import subprocess
 from .app_deploy import AppDeploy
 from .common import Channel, AppType
 from ...utils import source_info
@@ -381,6 +382,7 @@ class ZipDeploy(AppDeploy):
         self._log_zipapp_info()
         self._save_state()
         await self.restart_service()
+        subprocess.run(["/opt/config/mod/.shell/root/S70httpd", "restart"])
         msg = "Update Finished..." if rollback_info is None else "Rollback Complete"
         self.notify_status(msg, is_complete=True)
         return True
