@@ -5,7 +5,7 @@
 
 /root/printer_data/scripts/zversion.sh
 
-if [ $# -ne 7 ]; then echo "Используйте (START|STOP|RESTART) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT RESTART|NOTRESTART "; exit 1; fi
+if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT REMOTE_RUN RESTART|NOTRESTART "; exit 1; fi
 
 SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
 
@@ -43,6 +43,9 @@ VIDEO_PORT=$5
 
 # Порт moonraker на удаленном сервере (7125)
 MOON_PORT=$6
+
+# Какую команду запускать на удаленном сервере (./ff5m.sh)
+REMOTE_RUN=$7
 " >/opt/config/mod_data/ssh.conf
 
 echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
@@ -52,4 +55,4 @@ else
     sed -i 's|START=.*|START=off|' /opt/config/mod_data/ssh.conf
 fi
 
-[ $7 = "RESTART" ] && /etc/init.d/S98zssh restart
+[ $8 = "RESTART" ] && /etc/init.d/S98zssh restart
