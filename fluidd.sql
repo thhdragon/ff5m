@@ -356,6 +356,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": false,
+            "name": "set_gcode_offset",
+            "visible": false
+        },
+        {
+            "alias": "",
+            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
+            "color": "",
+            "disabledWhilePrinting": false,
             "name": "save_gcode_offset",
             "visible": false
         },
