@@ -17,13 +17,18 @@ fi
 REMOTE_RUN="NONE"
 source /opt/config/mod_data/ssh.conf
 
+PID_FILE=/run/zssh.pid
+
 start() {
     if [ $START = "on" ]
         then
-#            echo "/bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y"
-            /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y &> /data/logFiles/ssh.log
-            cat /data/logFiles/ssh.log
-            [ "${REMOTE_RUN}" != "NONE" ] && /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> /data/logFiles/ssh.log 2>&1 &
+            if ! test_running
+                then
+                    /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y &> /data/logFiles/ssh.log
+                    echo $! >${PID_FILE}
+                    cat /data/logFiles/ssh.log
+                    [ "${REMOTE_RUN}" != "NONE" ] && /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> /data/logFiles/ssh.log 2>&1 &
+            fi
         else
             echo "SSH отключен"
     fi
@@ -31,6 +36,7 @@ start() {
 
 stop() {
     kill $( ps |grep -v grep |grep dropbearmulti| awk '{print $1}' ) 2>/dev/null >/dev/null
+    rm -f $PID_FILE
 }
 
 restart() {
@@ -39,14 +45,18 @@ restart() {
     start
 }
 
+test_running() {
+    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null
+        then
+            return 0
+        else
+            return 1
+    fi
+}
+
 reload() {
     if [ $START = "on" ]
-        then
-            NUM=$(ps |grep -v grep |grep dropbearmulti| awk '{print $1}'| wc -l)
-            if [ "$NUM" -eq 0 ]
-                then
-                    restart
-            fi
+        if ! test_running; then restart; fi
     fi
 }
 
