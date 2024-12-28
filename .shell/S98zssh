@@ -56,7 +56,8 @@ test_running() {
 
 reload() {
     if [ $START = "on" ]
-        if ! test_running; then restart; fi
+        then
+            if ! test_running; then restart; fi
     fi
 }
 
