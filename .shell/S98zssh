@@ -22,8 +22,8 @@ start() {
         then
 #            echo "/bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y"
             /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -N -T -f -y &> /data/logFiles/ssh.log
-            [ "${REMOTE_RUN}" != "NONE" ] && /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} &>> /data/logFiles/ssh.log
             cat /data/logFiles/ssh.log
+            [ "${REMOTE_RUN}" != "NONE" ] && /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> /data/logFiles/ssh.log 2>&1 &
         else
             echo "SSH отключен"
     fi
@@ -32,10 +32,22 @@ start() {
 stop() {
     kill $( ps |grep -v grep |grep dropbearmulti| awk '{print $1}' ) 2>/dev/null >/dev/null
 }
+
 restart() {
     stop
     sleep 2
     start
+}
+
+reload() {
+    if [ $START = "on" ]
+        then
+            NUM=$(ps |grep -v grep |grep dropbearmulti| awk '{print $1}'| wc -l)
+            if [ "$NUM" -eq 0 ]
+                then
+                    restart
+            fi
+    fi
 }
 
 case "$1" in
@@ -45,11 +57,14 @@ case "$1" in
   stop)
         stop
         ;;
-  restart|reload)
+  restart)
         restart
         ;;
+  reload)
+        reload
+        ;;
   *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Usage: $0 {start|stop|restart|reload}"
         exit 1
 esac
 

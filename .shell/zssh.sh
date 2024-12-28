@@ -5,13 +5,14 @@
 
 /root/printer_data/scripts/zversion.sh
 
-if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT REMOTE_RUN RESTART|NOTRESTART "; exit 1; fi
+if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART|RELOAD) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT REMOTE_RUN RESTART|NOTRESTART"; exit 1; fi
 
 SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
 
 START='off'
 if [ $1 = "START" ]; then START='on'; fi;
 if [ $1 = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
+if [ $1 = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
 
 if ! [ -f "/opt/config/mod_data/ssh.conf" ] || [ ${START} = 'on' ]
  then
