@@ -15,9 +15,14 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-# Раскоментируйте эти 2 строки, если вы хотите хранить таймлапсы
-#      - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
-#      - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
+      - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
+      - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
       - ./log:/opt/printer_data/logs
       - ./config:/opt/printer_data/config
 
+  cron:
+    image: alpine:latest
+    command: /bin/sh -c "while sleep 60; do find /home/moonraker-telegram-bot/ -type f -mtime +10 -delete; done"
+    volumes:
+      - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
+      - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
