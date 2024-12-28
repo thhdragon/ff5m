@@ -44,8 +44,8 @@ VIDEO_PORT=$5
 # Порт moonraker на удаленном сервере (7125)
 MOON_PORT=$6
 
-# Какую команду запускать на удаленном сервере (./ff5m.sh)
-REMOTE_RUN=$7
+# Какую команду запускать на удаленном сервере (./ff5m.sh bot1)
+REMOTE_RUN='$7'
 " >/opt/config/mod_data/ssh.conf
 
 echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
