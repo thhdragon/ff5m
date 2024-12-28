@@ -24,6 +24,7 @@ cd \${bot_name}
 echo "Бот установлен в каталог $(pwd)"
 mkdir -p config log timelapse_finished timelapse 
 wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/ff5m.sh
+chmod +x ../ff5m.sh
 wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
 wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse
