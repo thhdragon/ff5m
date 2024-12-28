@@ -123,7 +123,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "alias": "Сменить веб интерфейс",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
-            "disabledWhilePrinting": true,
+            "disabledWhilePrinting": false,
             "name": "web",
             "visible": true
         },
