@@ -80,6 +80,7 @@ start_prepare()
       exit
     fi
 
+    echo "System start" >/data/logFiles/ssh.log
     mount -t proc /proc $MOD/proc
     mount --rbind /sys $MOD/sys
     mount --rbind /dev $MOD/dev

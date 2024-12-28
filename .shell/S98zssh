@@ -18,16 +18,20 @@ REMOTE_RUN="NONE"
 source /opt/config/mod_data/ssh.conf
 
 PID_FILE=/run/zssh.pid
+LOG_FILE=/data/logFiles/ssh.log
 
 start() {
     if [ $START = "on" ]
         then
             if ! test_running
                 then
-                    /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -o ExitOnForwardFailure=yes -N -T -f -y &> /data/logFiles/ssh.log
+                    date >> ${LOG_FILE}
+                    /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -o ExitOnForwardFailure=yes -N -T -f -y >> ${LOG_FILE} 2>&1
                     ps axf|grep '\-N \-T \-f \-y'| head -1| awk '{print $1}' >${PID_FILE}
-                    cat /data/logFiles/ssh.log
-                    [ "${REMOTE_RUN}" != "NONE" ] && /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> /data/logFiles/ssh.log 2>&1 &
+                    cat ${LOG_FILE}
+                    [ "${REMOTE_RUN}" != "NONE" ] && \
+                        test_running && \
+                        /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> ${LOG_FILE} 2>&1
             fi
         else
             echo "SSH отключен"
@@ -62,8 +66,11 @@ reload() {
 }
 
 case "$1" in
-  start)
+  zstart)
         start
+        ;;
+  start)
+        echo "Start ignore/ Use zstart"
         ;;
   stop)
         stop
@@ -75,7 +82,7 @@ case "$1" in
         reload
         ;;
   *)
-        echo "Usage: $0 {start|stop|restart|reload}"
+        echo "Usage: $0 {zstart|start|stop|restart|reload}"
         exit 1
 esac
 
