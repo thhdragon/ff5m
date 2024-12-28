@@ -3,4 +3,5 @@
 cd "$1"
 
 docker-compose pull
-docker-compose restart || docker-compose up -d
+docker-compose down
+docker-compose up -d

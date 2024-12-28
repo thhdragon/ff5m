@@ -15,8 +15,9 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
-      - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
+# Раскоментируйте эти 2 строки, если вы хотите хранить таймлапсы
+#      - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
+#      - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
       - ./log:/opt/printer_data/logs
       - ./config:/opt/printer_data/config
 
