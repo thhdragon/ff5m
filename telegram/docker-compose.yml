@@ -22,7 +22,7 @@ services:
 
   cron:
     image: alpine:latest
-    command: /bin/sh -c "while sleep 60; do find /home/moonraker-telegram-bot/ -type f -mtime +10 -delete; done"
+    command: /bin/sh -c "while sleep 600; do find /home/moonraker-telegram-bot/ -type f -mtime +10 -delete; done"
     volumes:
       - ./timelapse:/home/moonraker-telegram-bot/moonraker-telegram-bot-timelapse
       - ./timelapse_finished:/home/moonraker-telegram-bot/timelapse_finished
