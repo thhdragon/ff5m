@@ -25,6 +25,7 @@ ntpd -dd -n -q -p ntp.kam.vniiftri.net
 
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
+echo "ZSSH_RELOAD" >/tmp/printer
 
 # 10 минут пробуем получить время
 for i in `seq 0 50`
