@@ -34,7 +34,7 @@ else
                             echo "$M190" >/tmp/printer
                             echo "$M109" >/tmp/printer
                             echo "_START_PRECLEAR" >/tmp/printer
-                            echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '{$2}'\"">/tmp/printer
+                            echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '$2'\"">/tmp/printer
                         else
                             echo "RESPOND TYPE=error MSG=\"В файле $2 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109).\"" >/tmp/printer
                     fi
