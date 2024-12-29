@@ -2,7 +2,7 @@
 
 # Author: Alexander
 
-if [ $# -ne 1]; then echo "Usage: ./$0 your_file.gcode"; exit 1; fi
+if [ $# -ne 1 ]; then echo "Usage: ./$0 your_file.gcode"; exit 1; fi
 if ! [ -f $1 ]; then echo "File $1 not found"; exit 1; fi
 
 # Calculate the MD5 hash of the file
