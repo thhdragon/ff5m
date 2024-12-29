@@ -655,6 +655,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSHAPER",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_GCODE_OFFSET",
+                    "pos": 7,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
                 }
             ],
             "name": "1. Калибровки",
@@ -697,6 +713,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "COLDPULL",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "M600",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
                 }
             ],
             "name": "3. Филамент",
@@ -718,7 +750,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "LED",
+                    "name": "SHUTDOWN",
                     "pos": 2,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -742,8 +774,56 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "PLAY_MIDI",
+                    "name": "LED",
                     "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PLAY_MIDI",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "NEW_SAVE_CONFIG",
+                    "pos": 11,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CLEAR_NOZZLE",
+                    "pos": 7,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LEVELING_PRINT_FILE",
+                    "pos": 8,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CLOSE_DIALOGS",
+                    "pos": 9,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "FAST_CLOSE_DIALOGS",
+                    "pos": 10,
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
@@ -760,7 +840,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
             "macros": [
                 {
                     "color": "group",
-                    "name": "DATE_GET",
+                    "name": "REBOOT",
                     "pos": 1,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -768,7 +848,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "DATE_SET",
+                    "name": "SHUTDOWN",
                     "pos": 2,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -776,7 +856,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "DISPLAY_OFF",
+                    "name": "WEB",
                     "pos": 3,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -792,7 +872,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "WEB",
+                    "name": "DISPLAY_OFF",
                     "pos": 5,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -808,7 +888,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "REBOOT",
+                    "name": "CAMERA_ON",
                     "pos": 7,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -816,7 +896,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "SHUTDOWN",
+                    "name": "CAMERA_OFF",
                     "pos": 8,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -824,7 +904,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "SKIP_ZMOD",
+                    "name": "DATE_GET",
                     "pos": 9,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -832,7 +912,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "SOFT_REMOVE",
+                    "name": "DATE_SET",
                     "pos": 10,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -840,7 +920,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "REMOVE_ZMOD",
+                    "name": "SET_TIMEZONE",
                     "pos": 11,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -848,7 +928,7 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "CAMERA_ON",
+                    "name": "TAR_CONFIG",
                     "pos": 12,
                     "showInPause": true,
                     "showInPrinting": true,
@@ -856,8 +936,88 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 },
                 {
                     "color": "group",
-                    "name": "CAMERA_OFF",
+                    "name": "GET_ZMOD_DATA",
                     "pos": 13,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SAVE_ZMOD_DATA",
+                    "pos": 14,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "START_ZMOD",
+                    "pos": 15,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "STOP_ZMOD",
+                    "pos": 16,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SKIP_ZMOD",
+                    "pos": 17,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "REMOVE_ZMOD",
+                    "pos": 18,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "SOFT_REMOVE",
+                    "pos": 19,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSSH_RESTART",
+                    "pos": 22,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSSH_ON",
+                    "pos": 20,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSSH_OFF",
+                    "pos": 21,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSSH_RELOAD",
+                    "pos": 23,
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
@@ -898,40 +1058,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 }
             ],
             "name": "4. Pro",
-            "showInPause": true,
-            "showInPrinting": true,
-            "showInStandby": true
-        },
-        "e8166e46-ce4b-4f63-9546-297a54b54c57": {
-            "color": "primary",
-            "colorCustom": "#fff",
-            "macros": [
-                {
-                    "color": "group",
-                    "name": "LOAD_CELL_TARE",
-                    "pos": 1,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "SET_PAUSE_AT_LAYER",
-                    "pos": 2,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "SET_PAUSE_NEXT_LAYER",
-                    "pos": 3,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                }
-            ],
-            "name": "5. Без экрана",
             "showInPause": true,
             "showInPrinting": true,
             "showInStandby": true
