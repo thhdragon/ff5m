@@ -612,130 +612,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
 DELETE FROM "main"."namespace_store"  WHERE namespace="mainsail" AND key="macros";
 INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
     "macrogroups": {
-        "1517f6e7-1f5a-49da-8f35-8b68eab60038": {
-            "color": "primary",
-            "colorCustom": "#fff",
-            "macros": [
-                {
-                    "color": "group",
-                    "name": "Auto_Full_Bed_Level",
-                    "pos": 1,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "Bed_Level_Screws_Tune",
-                    "pos": 2,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "PID_Tune_BED",
-                    "pos": 3,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "PID_Tune_EXTRUDER",
-                    "pos": 4,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "LOAD_CELL_TARE",
-                    "pos": 5,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "ZSHAPER",
-                    "pos": 6,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "LOAD_GCODE_OFFSET",
-                    "pos": 7,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                }
-            ],
-            "name": "1. Калибровки",
-            "showInPause": true,
-            "showInPrinting": true,
-            "showInStandby": true
-        },
-        "58151d61-dccd-4951-9836-e18f4d59ed65": {
-            "color": "primary",
-            "colorCustom": "#fff",
-            "macros": [
-                {
-                    "color": "group",
-                    "name": "LOAD_FILAMENT",
-                    "pos": 1,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "LOAD_MATERIAL",
-                    "pos": 2,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "PURGE_FILAMENT",
-                    "pos": 3,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "UNLOAD_FILAMENT",
-                    "pos": 4,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "COLDPULL",
-                    "pos": 5,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "M600",
-                    "pos": 6,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                }
-            ],
-            "name": "3. Филамент",
-            "showInPause": true,
-            "showInPrinting": true,
-            "showInStandby": true
-        },
         "731852b2-3bf0-422a-a1fb-56d2f1f972a5": {
             "color": "primary",
             "colorCustom": "#fff",
@@ -830,6 +706,72 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 }
             ],
             "name": "0. Основное",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "1517f6e7-1f5a-49da-8f35-8b68eab60038": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "Auto_Full_Bed_Level",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "Bed_Level_Screws_Tune",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PID_Tune_BED",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PID_Tune_EXTRUDER",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_CELL_TARE",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "ZSHAPER",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_GCODE_OFFSET",
+                    "pos": 7,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "1. Калибровки",
             "showInPause": true,
             "showInPrinting": true,
             "showInStandby": true
@@ -1024,6 +966,64 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                 }
             ],
             "name": "2. Система",
+            "showInPause": true,
+            "showInPrinting": true,
+            "showInStandby": true
+        },
+        "58151d61-dccd-4951-9836-e18f4d59ed65": {
+            "color": "primary",
+            "colorCustom": "#fff",
+            "macros": [
+                {
+                    "color": "group",
+                    "name": "LOAD_FILAMENT",
+                    "pos": 1,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "LOAD_MATERIAL",
+                    "pos": 2,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "PURGE_FILAMENT",
+                    "pos": 3,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "UNLOAD_FILAMENT",
+                    "pos": 4,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "COLDPULL",
+                    "pos": 5,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "M600",
+                    "pos": 6,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                }
+            ],
+            "name": "3. Филамент",
             "showInPause": true,
             "showInPrinting": true,
             "showInStandby": true
