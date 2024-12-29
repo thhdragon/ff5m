@@ -24,26 +24,30 @@ else
         then
             if [ "$3" == "PRECLEAR" ]
                 then
-                    M109=$(grep "^M109" "/data/$2" | head -1)
-                    [ "$M109" == "" ] && M109=$(grep "^M104" "/data/$2" | head -1 | sed 's|M104|M109|')
-                    M190=$(grep "^M190" "/data/$2" | head -1)
-                    [ "$M190" == "" ] && M190=$(grep "^M140" "/data/$2" | head -1 | sed 's|M140|M190|')
+                    M109=$(head -1000 "/data/$2" | grep "^M109" | head -1)
+                    [ "$M109" == "" ] && M109=$(head -1000 "/data/$2" | grep "^M104" | head -1 | sed 's|M104|M109|')
+                    M190=$(head -1000 "/data/$2" | grep "^M190" | head -1)
+                    [ "$M190" == "" ] && M190=$(head -1000 "/data/$2" | grep "^M140" | head -1 | sed 's|M140|M190|')
 
                     if [ "$M190" != "" ] && [ "$M109" != "" ]
                         then
                             echo "$M190" >/tmp/printer
                             echo "$M109" >/tmp/printer
                             echo "_START_PRECLEAR" >/tmp/printer
+                            echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '{$2}'\"">/tmp/printer
                         else
-                             echo "RESPOND TYPE=error MSG=\"В файле $2 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109).\"" >/tmp/printer
+                            echo "RESPOND TYPE=error MSG=\"В файле $2 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109).\"" >/tmp/printer
                     fi
-            fi
+                    echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '{$2}'\"">/tmp/printer
+                else
 
-            grep EXCLUDE_OBJECT_DEFINE "/data/$2" >/tmp/printer 2>/dev/null
-            $CURL -s \
-                http://$ip:8898/printGcode \
-                -H 'Content-Type: application/json' \
-                -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'"
+                    head -1000 "/data/$2" | grep ^EXCLUDE_OBJECT_DEFINE >/tmp/printer 2>/dev/null
+
+                    $CURL -s \
+                        http://$ip:8898/printGcode \
+                        -H 'Content-Type: application/json' \
+                        -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'"
+            fi
         else
             echo "Используйте $0 PRINT|CLOSE FILE [PRECLEAR]"
             exit 1
