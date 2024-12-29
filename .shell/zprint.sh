@@ -22,6 +22,7 @@ if [ "$1" == "CLOSE" ]
 else
     if [ "$1" == "PRINT" ]
         then
+            head -1000 "/data/$2" | grep ^EXCLUDE_OBJECT_DEFINE >/tmp/printer 2>/dev/null
             if [ "$3" == "PRECLEAR" ]
                 then
                     M109=$(head -1000 "/data/$2" | grep "^M109" | head -1)
@@ -39,9 +40,6 @@ else
                     fi
                     echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '$2'\"">/tmp/printer
                 else
-
-                    head -1000 "/data/$2" | grep ^EXCLUDE_OBJECT_DEFINE >/tmp/printer 2>/dev/null
-
                     $CURL -s \
                         http://$ip:8898/printGcode \
                         -H 'Content-Type: application/json' \
