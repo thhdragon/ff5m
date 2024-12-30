@@ -12,7 +12,7 @@ fix_config()
 
     grep -q 'include check_md5.cfg'   /opt/config/printer.cfg && sed -i '/include check_md5.cfg/d'    /opt/config/printer.cfg && NEED_REBOOT=1
 
-    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' /opt/config/printer.cfg && NEED_REBOOT=1
+    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' /opt/config/printer.cfg
 
     ! grep -q 'include ./mod/mod.cfg' /opt/config/printer.cfg && sed -i '2 i\[include ./mod/mod.cfg]' /opt/config/printer.cfg && NEED_REBOOT=1
 
@@ -104,7 +104,7 @@ stepper: stepper_x, stepper_y, stepper_z
 ' >>/opt/config/printer.base.cfg
     fi
 
-    if [ ${NEED_REBOOT} -eq 1]; then reboot; exit 1; fi;
+    if [ ${NEED_REBOOT} -eq 1 ]; then reboot; exit 1; fi;
 }
 
 restore_base()
