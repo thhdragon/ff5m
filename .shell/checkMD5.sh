@@ -27,6 +27,15 @@ fi
 
 LOCAL_MD5="$(/bin/cat "${FILE_NAME}"|/bin/grep -v '^; MD5:'|/usr/bin/md5sum|/usr/bin/tr -d ' -')"
 
+if grep -q 'G2 ' "${FILE_NAME}" || grep -q 'G3 ' "${FILE_NAME}"
+    then
+        SCRIPT='
+{"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=echo MSG=\"В файле \\\"'${FILE_NAME##*/}'\\\" найдено использование дуг(G2, G3). Отключите их. В Orca: Профиль процесса -> Аппроксимация дугами. Убрать галочку.\""}}
+{"id": -8888}
+'
+  /bin/echo "${SCRIPT}"|${APP} /tmp/uds -- -8888 &>/dev/null
+fi
+
 if [ "_${LOCAL_MD5}" = "_${ORIG_MD5}" ]
     then
         SCRIPT='
