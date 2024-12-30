@@ -95,7 +95,8 @@ max_temp: 130
     if ! grep -q '\[controller_fan driver_fan' /opt/config/printer.base.cfg
         then
             NEED_REBOOT=1
-            echo '[controller_fan driver_fan]
+            echo '
+[controller_fan driver_fan]
 pin:PB7
 fan_speed: 1.0
 idle_timeout: 30
@@ -130,7 +131,8 @@ restore_base()
     # Возвращаем fan_generic pcb_fan
     if ! grep -q '\[fan_generic pcb_fan' /opt/config/printer.base.cfg
         then
-            echo '[fan_generic pcb_fan]
+            echo '
+[fan_generic pcb_fan]
 pin:PB7
 ' >>/opt/config/printer.base.cfg
     fi
