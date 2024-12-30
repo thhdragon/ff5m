@@ -104,9 +104,12 @@ stepper: stepper_x, stepper_y, stepper_z
 ' >>/opt/config/printer.base.cfg
     fi
 
-    sync
-
-    if [ ${NEED_REBOOT} -eq 1 ]; then sync; reboot; exit 1; fi;
+    if [ ${NEED_REBOOT} -eq 1 ]; then sync; sleep 5; sync; reboot; exit 1; fi;
 }
 
-fix_config >>/data/logFiles/zmod.log 2>>/data/logFiles/zmod.log
+mv /data/logFiles/fix_config.log.4 /data/logFiles/fix_config.log.5
+mv /data/logFiles/fix_config.log.3 /data/logFiles/fix_config.log.4
+mv /data/logFiles/fix_config.log.2 /data/logFiles/fix_config.log.3
+mv /data/logFiles/fix_config.log.1 /data/logFiles/fix_config.log.2
+mv /data/logFiles/fix_config.log /data/logFiles/fix_config.log.1
+fix_config &>/data/logFiles/fix_config.log
