@@ -162,7 +162,6 @@ pin:PB7
 start_prepare()
 {
     MOD=/data/.mod/.zmod
-    while ! mount |grep /dev/mmcblk0p7; do sleep 10; done
 
     if [ -f /opt/config/mod/REMOVE ]
      then
@@ -229,6 +228,8 @@ start_prepare()
     sleep 10
     mount --bind /data/lost+found /data/.mod
 }
+
+while ! mount |grep /dev/mmcblk0p7; do sleep 10; done
 
 mv /data/logFiles/zmod.log /data/logFiles/zmod.log.1
 start_prepare &>/data/logFiles/zmod.log
