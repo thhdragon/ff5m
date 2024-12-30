@@ -70,6 +70,29 @@ max_temp: 130
             mv printer.base.tmp printer.base.cfg
             rm -f heater_bed.txt
     fi
+
+    # Удаляем fan_generic pcb_fan
+    if grep -q '\[fan_generic pcb_fan' /opt/config/printer.base.cfg
+        then
+            cd /opt/config/
+            sed -e '/^\[fan_generic pcb_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
+            diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+            sed -i '$d' heater_bed.txt
+            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
+            num=$(($num-1))
+            sed -e "/^\[fan_generic pcb_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
+            mv printer.base.tmp printer.base.cfg
+            rm -f heater_bed.txt
+    fi
+
+    if ! grep -q '\[controller_fan driver_fan' /opt/config/printer.base.cfg
+        then
+            echo '[controller_fan driver_fan]
+pin:PB7
+fan_speed: 1.0
+idle_timeout: 30
+stepper: stepper_x, stepper_y, stepper_z' >>/opt/config/printer.base.cfg
+    fi
 }
 
 start_prepare()
