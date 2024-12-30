@@ -230,4 +230,4 @@ start_prepare()
     mount --bind /data/lost+found /data/.mod
 }
 
-start_prepare
+start_prepare >>/data/logFiles/zmod.log 2>>/data/logFiles/zmod.log
