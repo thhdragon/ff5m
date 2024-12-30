@@ -47,3 +47,5 @@ for i in `seq 0 50`
         ntpd -dd -n -q -p ntp.kam.vniiftri.net && exit
         sleep 5
 done
+date
+echo "Start END"

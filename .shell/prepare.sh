@@ -231,5 +231,9 @@ start_prepare()
 
 while ! mount |grep /dev/mmcblk0p7; do sleep 10; done
 
+mv /data/logFiles/zmod.log.4 /data/logFiles/zmod.log.5
+mv /data/logFiles/zmod.log.3 /data/logFiles/zmod.log.4
+mv /data/logFiles/zmod.log.2 /data/logFiles/zmod.log.3
+mv /data/logFiles/zmod.log.1 /data/logFiles/zmod.log.2
 mv /data/logFiles/zmod.log /data/logFiles/zmod.log.1
 start_prepare &>/data/logFiles/zmod.log
