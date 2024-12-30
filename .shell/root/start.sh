@@ -32,19 +32,19 @@ echo "ZSSH_RELOAD" >/tmp/printer
 # 10 минут пробуем получить время
 for i in `seq 0 50`
     do 
-        ntpd -dd -n -q -p ru.pool.ntp.org && exit
-        ntpd -dd -n -q -p 1.ru.pool.ntp.org && exit
-        ntpd -dd -n -q -p 2.ru.pool.ntp.org && exit
-        ntpd -dd -n -q -p 3.ru.pool.ntp.org && exit
-        ntpd -dd -n -q -p 4.ru.pool.ntp.org && exit
-        ntpd -dd -n -q -p ntp1.vniiftri.ru && exit
-        ntpd -dd -n -q -p ntp2.vniiftri.ru && exit
-        ntpd -dd -n -q -p ntp3.vniiftri.ru && exit
-        ntpd -dd -n -q -p ntp4.vniiftri.ru && exit
-        ntpd -dd -n -q -p ntp5.vniiftri.ru && exit
-        ntpd -dd -n -q -p ntp.sstf.nsk.ru && exit
-        ntpd -dd -n -q -p timesstf.sstf.nsk.ru && exit
-        ntpd -dd -n -q -p ntp.kam.vniiftri.net && exit
+        ntpd -dd -n -q -p ru.pool.ntp.org && break
+        ntpd -dd -n -q -p 1.ru.pool.ntp.org && break
+        ntpd -dd -n -q -p 2.ru.pool.ntp.org && break
+        ntpd -dd -n -q -p 3.ru.pool.ntp.org && break
+        ntpd -dd -n -q -p 4.ru.pool.ntp.org && break
+        ntpd -dd -n -q -p ntp1.vniiftri.ru && break
+        ntpd -dd -n -q -p ntp2.vniiftri.ru && break
+        ntpd -dd -n -q -p ntp3.vniiftri.ru && break
+        ntpd -dd -n -q -p ntp4.vniiftri.ru && break
+        ntpd -dd -n -q -p ntp5.vniiftri.ru && break
+        ntpd -dd -n -q -p ntp.sstf.nsk.ru && break
+        ntpd -dd -n -q -p timesstf.sstf.nsk.ru && break
+        ntpd -dd -n -q -p ntp.kam.vniiftri.net && break
         sleep 5
 done
 date
