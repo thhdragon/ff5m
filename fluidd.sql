@@ -72,6 +72,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Тест EMMC",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "test_emmc",
+            "visible": true
+        },
+        {
             "alias": "Выключить ZSSH",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
@@ -944,6 +952,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "color": "group",
                     "name": "ZSSH_RESTART",
                     "pos": 22,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "TEST_EMMC",
+                    "pos": 24,
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
