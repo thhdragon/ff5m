@@ -6,8 +6,13 @@ fix_config()
 {
 
     NEED_REBOOT=0
-    PRINTER_BASE="/opt/config/printer.base.cfg"
-    PRINTER_CFG="/opt/config/printer.cfg"
+    PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
+    PRINTER_CFG_PRIG="/opt/config/printer.cfg"
+    PRINTER_BASE="/tmp/printer.base.cfg"
+    PRINTER_CFG="/tmp/printer.cfg"
+
+    cp ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
+    cp ${PRINTER_CFG_PRIG} ${PRINTER_CFG}
 
     # Rem стукач
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
@@ -106,7 +111,19 @@ stepper: stepper_x, stepper_y, stepper_z
 ' >>${PRINTER_BASE}
     fi
 
-    if [ ${NEED_REBOOT} -eq 1 ]; then sync; sleep 5; sync; reboot; exit 1; fi;
+    if [ ${NEED_REBOOT} -eq 1 ]
+        then
+            cat ${PRINTER_BASE} >${PRINTER_BASE_ORIG}
+            sync
+            cat ${PRINTER_CFG} >${PRINTER_CFG_ORIG}
+            sync
+
+            sleep 5
+            sync
+
+            reboot
+            exit 1
+    fi
 }
 
 mv /data/logFiles/fix_config.log.4 /data/logFiles/fix_config.log.5
