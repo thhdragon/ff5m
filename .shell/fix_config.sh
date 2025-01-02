@@ -7,12 +7,12 @@ fix_config()
 
     NEED_REBOOT=0
     PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
-    PRINTER_CFG_PRIG="/opt/config/printer.cfg"
+    PRINTER_CFG_ORIG="/opt/config/printer.cfg"
     PRINTER_BASE="/tmp/printer.base.cfg"
     PRINTER_CFG="/tmp/printer.cfg"
 
     cp ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
-    cp ${PRINTER_CFG_PRIG} ${PRINTER_CFG}
+    cp ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
 
     # Rem стукач
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
