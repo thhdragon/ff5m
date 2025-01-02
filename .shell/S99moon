@@ -4,13 +4,6 @@ MOD=/data/.mod/.zmod
 
 unset LD_PRELOAD
 
-if [ -f /opt/config/mod/SKIP_ZMOD ]
- then
-    rm -f /opt/config/mod/SKIP_ZMOD
-    mount --bind /data/lost+found /data/.mod
-    exit 0
-fi
-
 start() {
   /etc/init.d/prepare.sh &
 }

@@ -124,6 +124,13 @@ start_prepare()
     mount --bind /data/lost+found /data/.mod
 }
 
+if [ -f /opt/config/mod/SKIP_ZMOD ]
+ then
+    rm -f /opt/config/mod/SKIP_ZMOD
+    mount --bind /data/lost+found /data/.mod
+    exit 0
+fi
+
 while ! mount |grep /dev/mmcblk0p7; do sleep 10; done
 
 mv /data/logFiles/zmod.log.4 /data/logFiles/zmod.log.5
