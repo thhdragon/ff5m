@@ -6,34 +6,36 @@ fix_config()
 {
 
     NEED_REBOOT=0
+    PRINTER_BASE="/opt/config/printer.base.cfg"
+    PRINTER_CFG="/opt/config/printer.cfg"
 
     # Rem стукач
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
 
-    grep -q 'include check_md5.cfg'   /opt/config/printer.cfg && sed -i '/include check_md5.cfg/d'    /opt/config/printer.cfg && NEED_REBOOT=1
+    grep -q 'include check_md5.cfg'   ${PRINTER_CFG} && sed -i '/include check_md5.cfg/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
-    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' /opt/config/printer.cfg
+    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG}
 
-    ! grep -q 'include ./mod/mod.cfg' /opt/config/printer.cfg && sed -i '2 i\[include ./mod/mod.cfg]' /opt/config/printer.cfg && NEED_REBOOT=1
+    ! grep -q 'include ./mod/mod.cfg' ${PRINTER_CFG} && sed -i '2 i\[include ./mod/mod.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
 
-    grep -q 'include mod.user.cfg' /opt/config/printer.cfg && sed -i 's|\[include mod.user.cfg\]|\[include ./mod_data/user.cfg\]|' /opt/config/printer.cfg && NEED_REBOOT=1
+    grep -q 'include mod.user.cfg' ${PRINTER_CFG} && sed -i 's|\[include mod.user.cfg\]|\[include ./mod_data/user.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
 
-    ! grep -q 'include ./mod_data/user.cfg'  /opt/config/printer.cfg && sed -i '3 i\[include ./mod_data/user.cfg]'  /opt/config/printer.cfg && NEED_REBOOT=1
-    if ! grep -q '\[heater_bed' /opt/config/printer.cfg
+    ! grep -q 'include ./mod_data/user.cfg'  ${PRINTER_CFG} && sed -i '3 i\[include ./mod_data/user.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
+    if ! grep -q '\[heater_bed' ${PRINTER_CFG}
         then
             NEED_REBOOT=1
-            cd /opt/config/
 
             # Copy and remove from printer.base.cfg
-            if grep -q '\[heater_bed' /opt/config/printer.base.cfg
+            if grep -q '\[heater_bed' ${PRINTER_BASE}
                 then
-                    sed -e '/^\[heater_bed/,/^\[/d' printer.base.cfg >printer.base.tmp
-                    diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+                    sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+                    diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
                     sed -i '$d' heater_bed.txt
                     num=$(wc -l heater_bed.txt|cut  -d " " -f1)
                     num=$(($num-1))
-                    sed -e "/^\[heater_bed/,+${num}d;" printer.base.cfg >printer.base.tmp
-                    mv printer.base.tmp printer.base.cfg
+                    sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+                    cat printer.base.tmp >${PRINTER_BASE}
+                    rm -f printer.base.tmp
                 else
                     echo "[heater_bed]
 heater_pin: PB9
@@ -52,47 +54,47 @@ max_temp: 130
 " >heater_bed.txt
             fi
 
-            num=$(cat -n printer.cfg |grep ./mod_data/user.cfg| awk '{print $1}')
-            head -n $num printer.cfg >printer.tmp
+            num=$(cat -n ${PRINTER_CFG} |grep ./mod_data/user.cfg| awk '{print $1}')
+            head -n $num ${PRINTER_CFG} >printer.tmp
             echo "" >>printer.tmp
             cat heater_bed.txt >>printer.tmp
             num=$(($num+1))
-            tail -n +$num printer.cfg >>printer.tmp
-            mv printer.tmp printer.cfg
+            tail -n +$num ${PRINTER_CFG} >>printer.tmp
+            cat printer.tmp >${PRINTER_CFG}
             rm heater_bed.txt || echo "Not heater_bed.txt"
     fi
 
-    if grep -q '\[heater_bed' /opt/config/printer.base.cfg
+    if grep -q '\[heater_bed' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
-            cd /opt/config/
-            sed -e '/^\[heater_bed/,/^\[/d' printer.base.cfg >printer.base.tmp
-            diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+
+            sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
             sed -i '$d' heater_bed.txt
             num=$(wc -l heater_bed.txt|cut  -d " " -f1)
             num=$(($num-1))
-            sed -e "/^\[heater_bed/,+${num}d;" printer.base.cfg >printer.base.tmp
-            mv printer.base.tmp printer.base.cfg
-            rm -f heater_bed.txt
+            sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+            cat printer.base.tmp >${PRINTER_BASE}
+            rm -f heater_bed.txt printer.base.tmp
     fi
 
     # Удаляем fan_generic pcb_fan
-    if grep -q '\[fan_generic pcb_fan' /opt/config/printer.base.cfg
+    if grep -q '\[fan_generic pcb_fan' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
-            cd /opt/config/
-            sed -e '/^\[fan_generic pcb_fan/,/^\[/d' printer.base.cfg >printer.base.tmp
-            diff -u printer.base.cfg printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
+
+            sed -e '/^\[fan_generic pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
+            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
             sed -i '$d' heater_bed.txt
             num=$(wc -l heater_bed.txt|cut  -d " " -f1)
             num=$(($num-1))
-            sed -e "/^\[fan_generic pcb_fan/,+${num}d;" printer.base.cfg >printer.base.tmp
-            mv printer.base.tmp printer.base.cfg
-            rm -f heater_bed.txt
+            sed -e "/^\[fan_generic pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
+            cat printer.base.tmp >${PRINTER_BASE}
+            rm -f heater_bed.txt printer.base.tmp
     fi
 
     # Добавляем controller_fan driver_fan
-    if ! grep -q '\[controller_fan driver_fan' /opt/config/printer.base.cfg
+    if ! grep -q '\[controller_fan driver_fan' ${PRINTER_BASE}
         then
             NEED_REBOOT=1
             echo '
@@ -101,7 +103,7 @@ pin:PB7
 fan_speed: 1.0
 idle_timeout: 30
 stepper: stepper_x, stepper_y, stepper_z
-' >>/opt/config/printer.base.cfg
+' >>${PRINTER_BASE}
     fi
 
     if [ ${NEED_REBOOT} -eq 1 ]; then sync; sleep 5; sync; reboot; exit 1; fi;
