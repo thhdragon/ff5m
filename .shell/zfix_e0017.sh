@@ -5,7 +5,7 @@ clear_klipper()
 {
     find /opt/klipper/ -name __pycache__ -type d -exec rm -r "{}" \;
     sync
-    find /opt/klipper/ -name *.pyc -delete
+    find /opt/klipper/ -name *.pyc -exec rm "{}" \;
     sync
     echo "Klipper был изменен. Сейчас будет перезагрузка"
     sleep 5
