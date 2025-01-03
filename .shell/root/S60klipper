@@ -3,8 +3,8 @@
 # Start klipper
 #
 
-PYTHON=/root/klippy-env/bin/python3
-KLIPPER=/root/klippy-env/klippy/klippy.py
+PYTHON=/root/klipper-env/bin/python3
+KLIPPER=/root/klipper-env/klippy/klippy.py
 KLIPPER_CONF=/opt/config/printer.cfg
 KLIPPER_LOG=/data/logFiles/printer.log
 KLIPPER_UDS=/tmp/uds
