@@ -9,7 +9,7 @@ clear_klipper()
     sync
     echo "Klipper был изменен. Сейчас будет перезагрузка"
     sleep 5
-    reboot
+#    reboot
 }
 
 if [ "$1" == 0 ]
