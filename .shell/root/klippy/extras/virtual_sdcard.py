@@ -1,17 +1,11 @@
 # Virtual sdcard support (print files directly from a host g-code file)
 #
-# Copyright (C) 2018-2024  Kevin O'Connor <kevin@koconnor.net>
+# Copyright (C) 2018  Kevin O'Connor <kevin@koconnor.net>
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
-import os, sys, logging, io
+import os, logging, io
 
 VALID_GCODE_EXTS = ['gcode', 'g', 'gco']
-
-DEFAULT_ERROR_GCODE = """
-{% if 'heaters' in printer %}
-   TURN_OFF_HEATERS
-{% endif %}
-"""
 
 class VirtualSD:
     def __init__(self, config):
@@ -33,7 +27,7 @@ class VirtualSD:
         # Error handling
         gcode_macro = self.printer.load_object(config, 'gcode_macro')
         self.on_error_gcode = gcode_macro.load_template(
-            config, 'on_error_gcode', DEFAULT_ERROR_GCODE)
+            config, 'on_error_gcode', '')
         # Register commands
         self.gcode = self.printer.lookup_object('gcode')
         for cmd in ['M20', 'M21', 'M23', 'M24', 'M25', 'M26', 'M27']:
@@ -125,7 +119,7 @@ class VirtualSD:
             self.current_file.close()
             self.current_file = None
             self.print_stats.note_cancel()
-        self.file_position = self.file_size = 0
+        self.file_position = self.file_size = 0.
     # G-Code commands
     def cmd_error(self, gcmd):
         raise gcmd.error("SD write not supported")
@@ -134,7 +128,7 @@ class VirtualSD:
             self.do_pause()
             self.current_file.close()
             self.current_file = None
-        self.file_position = self.file_size = 0
+        self.file_position = self.file_size = 0.
         self.print_stats.reset()
         self.printer.send_event("virtual_sdcard:reset_file")
     cmd_SDCARD_RESET_FILE_help = "Clears a loaded SD File. Stops the print "\
@@ -264,10 +258,7 @@ class VirtualSD:
             # Dispatch command
             self.cmd_from_sd = True
             line = lines.pop()
-            if sys.version_info.major >= 3:
-                next_file_position = self.file_position + len(line.encode()) + 1
-            else:
-                next_file_position = self.file_position + len(line) + 1
+            next_file_position = self.file_position + len(line) + 1
             self.next_file_position = next_file_position
             try:
                 self.gcode.run_script(line)
