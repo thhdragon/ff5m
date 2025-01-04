@@ -33,6 +33,7 @@ pin:PB7
     fi
 
     rm -rf /data/.mod
+    rm /etc/init.d/S00fix
     rm /etc/init.d/S99moon
     rm /etc/init.d/S98camera
     rm /etc/init.d/S98zssh

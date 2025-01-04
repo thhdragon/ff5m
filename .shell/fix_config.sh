@@ -11,6 +11,8 @@ fix_config()
     PRINTER_BASE="/tmp/printer.base.cfg"
     PRINTER_CFG="/tmp/printer.cfg"
 
+    date
+
     cp ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
     cp ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
 
@@ -118,17 +120,23 @@ stepper: stepper_x, stepper_y, stepper_z
             cat ${PRINTER_CFG} >${PRINTER_CFG_ORIG}
             sync
 
-            sleep 5
-            sync
-
-            reboot
-            exit 1
+#            sleep 5
+#            sync
+#
+#            reboot
+            exit 0
     fi
 }
 
-mv /data/logFiles/fix_config.log.4 /data/logFiles/fix_config.log.5
-mv /data/logFiles/fix_config.log.3 /data/logFiles/fix_config.log.4
-mv /data/logFiles/fix_config.log.2 /data/logFiles/fix_config.log.3
-mv /data/logFiles/fix_config.log.1 /data/logFiles/fix_config.log.2
-mv /data/logFiles/fix_config.log /data/logFiles/fix_config.log.1
-fix_config &>/data/logFiles/fix_config.log
+mkdir -p /opt/config/mod_data/log/
+ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
+
+mv /opt/config/mod_data/log/fix_config.log.4 /opt/config/mod_data/log/fix_config.log.5
+mv /opt/config/mod_data/log/fix_config.log.3 /opt/config/mod_data/log/fix_config.log.4
+mv /opt/config/mod_data/log/fix_config.log.2 /opt/config/mod_data/log/fix_config.log.3
+mv /opt/config/mod_data/log/fix_config.log.1 /opt/config/mod_data/log/fix_config.log.2
+mv /opt/config/mod_data/log/fix_config.log /opt/config/mod_data/log/fix_config.log.1
+
+fix_config &>/opt/config/mod_data/log/fix_config.log
+
+sync
