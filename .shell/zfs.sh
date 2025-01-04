@@ -5,6 +5,7 @@ if [ "$2" == "0" ];
         echo "В фоне будет записано $1 MB"
         dd if=/dev/urandom of=/data/test.img bs=1M count=$1 conv=fsync 2>/dev/null &
     else
+        echo "Идет тестирование записи/чтения $1 MB данных. Ждите..."
         START=$(date +%s)
         dd if=/dev/urandom of=/data/test.img bs=1M count=$1 conv=fsync 2>/dev/null
         END=$(date +%s)
