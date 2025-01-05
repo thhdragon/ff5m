@@ -6,9 +6,18 @@ if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйт
 SIZE=$1
 FILE="/data"
 INFILE="/dev/zero"
+TIME_RAND=0
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
-[ "$4" == "1" ] && INFILE="/dev/urandom" && echo "Тестирование случайными данными"
+if [ "$4" == "1" ]
+    then
+        INFILE="/dev/urandom"
+        echo "Тестирование случайными данными"
+        read up rest </proc/uptime; t1="${up%.*}${up#*.}"
+        dd if=$INFILE of=/dev/null bs=1M count=${SIZE} conv=fsync status=none
+        read up rest </proc/uptime; t2="${up%.*}${up#*.}"
+        TIME_RAND=$(( 10*(t2-t1) ))
+fi
 
 FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
@@ -23,19 +32,19 @@ FILE="$FILE/test.img"
 if [ "$2" == "0" ]
     then
         echo "В фоне будет записано ${SIZE} MB"
-        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null &
+        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync status=none 2>/dev/null &
     else
         echo "Идет тестирование записи/чтения ${SIZE} MB данных. Ждите..."
 
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
-        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null
+        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync status=none 2>/dev/null
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
-        TIME_W=$(( 10*(t2-t1) ))
+        TIME_W=$(( 10*(t2-t1-TIME_RAND) ))
 
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
-        dd if=$FILE of=/dev/null bs=1M count=${SIZE} conv=fsync 2>/dev/null
+        dd if=$FILE of=/dev/null bs=1M count=${SIZE} conv=fsync status=none 2>/dev/null
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
-        TIME_R=$(( 10*(t2-t1) ))
+        TIME_R=$(( 10*(t2-t1-TIME_RAND) ))
 
         rm -f $FILE
 
