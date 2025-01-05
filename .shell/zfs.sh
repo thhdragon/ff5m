@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # Более точный замер времени - Alexander
-if [ $# -ne 2 ] && [ $# -ne 3 ] ; then echo "Используйте $0 SIZE [SYNC] [FLASH]"; exit 1; fi
+if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйте $0 SIZE [SYNC] [FLASH] [RANDOM]"; exit 1; fi
 
 SIZE=$1
 FILE="/data"
+INFILE="/dev/zero"
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
+[ "$3" == "1" ] && INFILE="/dev/urandom" && echo "Тестирование случайными данными"
 
 FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
@@ -21,12 +23,12 @@ FILE="$FILE/test.img"
 if [ "$2" == "0" ]
     then
         echo "В фоне будет записано ${SIZE} MB"
-        dd if=/dev/zero of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null &
+        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null &
     else
         echo "Идет тестирование записи/чтения ${SIZE} MB данных. Ждите..."
 
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
-        dd if=/dev/zero of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null
+        dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync 2>/dev/null
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
         TIME_W=$(( 10*(t2-t1) ))
 
