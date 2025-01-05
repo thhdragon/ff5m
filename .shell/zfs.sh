@@ -6,7 +6,7 @@ SIZE=$1
 FILE="/data/test.img"
 
 FREE_SPACE=$(df /data | tail -1 | tr -s ' ' | cut -d' ' -f4)
-MIN_SPACE=$(($SIZE*1024*1024))
+MIN_SPACE=$(($SIZE*1024))
 if [ "$FREE_SPACE" -lt "$MIN_SPACE" ]
     then
         echo "Не хватает свободного места на запись $SIZE MB";
