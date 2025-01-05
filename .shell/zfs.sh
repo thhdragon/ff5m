@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 # Более точный замер времени - Alexander
+if [ $# -ne 2 ]; then echo "Используйте $0 SIZE [SYNC]"; exit 1; fi
 
 SIZE=$1
 FILE="/data/test.img"
