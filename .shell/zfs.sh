@@ -1,18 +1,23 @@
 #!/bin/bash
 
 # Более точный замер времени - Alexander
-if [ $# -ne 2 ]; then echo "Используйте $0 SIZE [SYNC]"; exit 1; fi
+if [ $# -ne 2 ] && [ $# -ne 3 ] ; then echo "Используйте $0 SIZE [SYNC] [FLASH]"; exit 1; fi
 
 SIZE=$1
-FILE="/data/test.img"
+FILE="/data"
 
-FREE_SPACE=$(df /data | tail -1 | tr -s ' ' | cut -d' ' -f4)
+[ "$3" == "1" ] && FILE="/media"
+
+FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
-if [ "$FREE_SPACE" -lt "$MIN_SPACE" ]
+if [ "$FREE_SPACE" == "" ] || [ "$FREE_SPACE" -lt "$MIN_SPACE" ]
     then
         echo "Не хватает свободного места на запись $SIZE MB";
         exit 0
 fi
+
+FILE="$FILE/test.img"
+
 if [ "$2" == "0" ]
     then
         echo "В фоне будет записано ${SIZE} MB"
