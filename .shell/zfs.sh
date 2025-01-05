@@ -8,7 +8,7 @@ FILE="/data"
 INFILE="/dev/zero"
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
-[ "$3" == "1" ] && INFILE="/dev/urandom" && echo "Тестирование случайными данными"
+[ "$4" == "1" ] && INFILE="/dev/urandom" && echo "Тестирование случайными данными"
 
 FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
