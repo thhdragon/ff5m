@@ -6,7 +6,7 @@ if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйт
 SIZE=$1
 FILE="/data"
 INFILE="/dev/zero"
-TIME_RAND=0
+t3=0
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
 if [ "$4" == "1" ]
@@ -16,7 +16,7 @@ if [ "$4" == "1" ]
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
         dd if=$INFILE of=/dev/null bs=1M count=${SIZE} conv=fsync status=none
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
-        TIME_RAND=$(( 10*(t2-t1) ))
+        t3=$(( (t2-t1) ))
 fi
 
 FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
@@ -39,12 +39,12 @@ if [ "$2" == "0" ]
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
         dd if=$INFILE of=$FILE bs=1M count=${SIZE} conv=fsync status=none 2>/dev/null
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
-        TIME_W=$(( 10*(t2-t1-TIME_RAND) ))
+        TIME_W=$(( 10*(t2-t1-t3) ))
 
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
         dd if=$FILE of=/dev/null bs=1M count=${SIZE} conv=fsync status=none 2>/dev/null
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
-        TIME_R=$(( 10*(t2-t1-TIME_RAND) ))
+        TIME_R=$(( 10*(t2-t1-t3) ))
 
         rm -f $FILE
 
