@@ -6,7 +6,7 @@ if [ $# -ne 2 ] && [ $# -ne 3 ] ; then echo "Используйте $0 SIZE [SYN
 SIZE=$1
 FILE="/data"
 
-[ "$3" == "1" ] && FILE="/media"
+[ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
 
 FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
