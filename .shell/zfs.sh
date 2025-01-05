@@ -14,7 +14,7 @@ if [ "$4" == "1" ]
         INFILE="/dev/urandom"
         echo "Тестирование случайными данными"
         read up rest </proc/uptime; t1="${up%.*}${up#*.}"
-        dd if=$INFILE of=/dev/null bs=1M count=${SIZE} conv=fsync status=none
+        dd if=$INFILE of=/dev/null bs=1M count=${SIZE} status=none
         read up rest </proc/uptime; t2="${up%.*}${up#*.}"
         t3=$(( (t2-t1) ))
 fi
