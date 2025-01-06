@@ -128,6 +128,7 @@ start_prepare()
             then
                 SWAP="/media/swap"
                 if ! [ -f $SWAP ]; then dd if=/dev/zero of=$SWAP bs=1024 count=131072; mkswap $SWAP; fi;
+                swapon $SWAP
         fi
     fi
 
