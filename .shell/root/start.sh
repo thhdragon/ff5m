@@ -1,8 +1,22 @@
 #!/bin/sh
 
-if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=131072; mkswap /root/swap; fi;
+SWAP="/root/swap"
+if ! [ -f $SWAP ]; then dd if=/dev/zero of=$SWAP bs=1024 count=131072; mkswap $SWAP; fi;
 
-grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg || swapon /root/swap
+if grep -q "use_swap = 2" /opt/config/mod_data/variables.cfg
+    then
+    FREE_SPACE=$(df /media 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
+    MIN_SPACE=$((128*1024))
+
+    if [ "$FREE_SPACE" != "" ] && [ "$FREE_SPACE" -ge "$MIN_SPACE" ]
+        then
+            SWAP="/media/swap"
+            if ! [ -f $SWAP ]; then dd if=/dev/zero of=$SWAP bs=1024 count=131072; mkswap $SWAP; fi;
+    fi
+    swapon $SWAP
+fi
+
+grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg || swapon $SWAP
 
 mount --bind /data/lost+found /data/.mod
 
