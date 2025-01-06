@@ -118,7 +118,20 @@ start_prepare()
         cp /opt/klipper/config/* $MOD/opt/klipper/config
     fi
 
-    chroot $MOD /opt/config/mod/.shell/root/start.sh &
+    SWAP="/root/swap"
+    if grep -q "use_swap = 2" /opt/config/mod_data/variables.cfg
+        then
+        FREE_SPACE=$(df /media 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
+        MIN_SPACE=$((128*1024))
+
+        if [ "$FREE_SPACE" != "" ] && [ "$FREE_SPACE" -ge "$MIN_SPACE" ]
+            then
+                SWAP="/media/swap"
+                if ! [ -f $SWAP ]; then dd if=/dev/zero of=$SWAP bs=1024 count=131072; mkswap $SWAP; fi;
+        fi
+    fi
+
+    chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
 
     mkdir -p /data/lost+found
     sleep 10
