@@ -21,7 +21,7 @@ if [ "$4" == "1" ]
         t3=$(( (2*t2-t1-t0) ))
 fi
 
-FREE_SPACE=$(df $FILE 2>/dev/null| tail -1 | tr -s ' ' | cut -d' ' -f4)
+FREE_SPACE=$(df $FILE 2>/dev/null|grep -v /dev/root|grep -v Filesystem| tail -1 | tr -s ' ' | cut -d' ' -f4)
 MIN_SPACE=$(($SIZE*1024))
 if [ "$FREE_SPACE" == "" ] || [ "$FREE_SPACE" -lt "$MIN_SPACE" ]
     then
