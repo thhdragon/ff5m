@@ -4,14 +4,14 @@ set -x
 
 fix_config()
 {
+    echo "START fix_config"
+    date
 
     NEED_REBOOT=0
     PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
     PRINTER_CFG_ORIG="/opt/config/printer.cfg"
     PRINTER_BASE="/tmp/printer.base.cfg"
     PRINTER_CFG="/tmp/printer.cfg"
-
-    date
 
     cp ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
     cp ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
@@ -126,6 +126,7 @@ stepper: stepper_x, stepper_y, stepper_z
 #            reboot
             exit 0
     fi
+    echo "END fix_config"
 }
 
 mkdir -p /opt/config/mod_data/log/
