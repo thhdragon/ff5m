@@ -9,6 +9,7 @@ INFILE="/dev/zero"
 t3=0
 
 [ "$3" == "1" ] && FILE="/media" && echo "Тестирование USB FLASH"
+[ "$3" == "2" ] && FILE="/tmp" && echo "Тестирование RAM"
 if [ "$4" == "1" ]
     then
         INFILE="/dev/urandom"
