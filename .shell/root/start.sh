@@ -33,6 +33,8 @@ ntpd -dd -n -q -p ntp.kam.vniiftri.net
 /opt/config/mod/.shell/root/S70httpd start
 
 sleep 15
+cd /opt/config/mod/
+git log | head -3|grep Date >/opt/config/mod_data/date.txt
 echo "ZSSH_RELOAD" >/tmp/printer
 
 # 10 минут пробуем получить время
