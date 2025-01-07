@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Более точный замер времени - Alexander
-if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйте $0 SIZE [SYNC] [FLASH] [RANDOM]"; exit 1; fi
+if [ $# -ne 2 ] && [ $# -ne 3 ] && [ $# -ne 4 ]; then echo "Используйте $0 SIZE [SYNC] [FLASH] [RANDOM]\nhttps://github.com/ghzserg/zmod/wiki/Macros#test_emmc"; exit 1; fi
 
 SIZE=$1
 FILE="/data"
