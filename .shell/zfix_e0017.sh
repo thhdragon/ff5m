@@ -19,8 +19,8 @@ if [ "$1" == "0" ]
         sed -i 's|^LOOKAHEAD_FLUSH_TIME.*|LOOKAHEAD_FLUSH_TIME = 0.5|' $F
         sync
     else
-        grep -q "LOOKAHEAD_FLUSH_TIME = 0.250" $F && exit 0
-        sed -i 's|^LOOKAHEAD_FLUSH_TIME.*|LOOKAHEAD_FLUSH_TIME = 0.250|' $F
+        grep -q "LOOKAHEAD_FLUSH_TIME = 0.150" $F && exit 0
+        sed -i 's|^LOOKAHEAD_FLUSH_TIME.*|LOOKAHEAD_FLUSH_TIME = 0.150|' $F
         sync
 fi
 
