@@ -22,6 +22,7 @@ if [ "$1" == "CLOSE" ]
 else
     if [ "$1" == "PRINT" ]
         then
+            echo "EXCLUDE_OBJECT_DEFINE RESET=1" >/tmp/printer 2>/dev/null
             head -1000 "/data/$2" | grep ^EXCLUDE_OBJECT_DEFINE >/tmp/printer 2>/dev/null
             if [ "$3" == "PRECLEAR" ]
                 then
