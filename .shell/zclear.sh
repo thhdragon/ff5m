@@ -3,6 +3,7 @@
 if  [ "$1" == 1 ]
     then
         rm -rf /data/logFiles/*
+        rm -rf /opt/config/mod_data/log/*
         sync
 fi
 
