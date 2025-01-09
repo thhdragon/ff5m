@@ -8,6 +8,7 @@ restore_base()
     grep -q 'include ./mod/mod.cfg' /opt/config/printer.cfg && sed -i '|include ./mod/mod.cfg|d' /opt/config/printer.cfg
     grep -q 'include ./mod/display_off.cfg' /opt/config/printer.cfg && sed -i '|include ./mod/display_off.cfg|d' /opt/config/printer.cfg
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
+    grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py && cp /opt/config/.mod/.shell/save_variables.py.orig /opt/klipper/klippy/extras/save_variables.py
 
     # Удаляем controller_fan driver_fan
     if grep -q '\[controller_fan driver_fan' /opt/config/printer.base.cfg

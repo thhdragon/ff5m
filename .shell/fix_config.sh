@@ -19,6 +19,8 @@ fix_config()
     # Rem стукач
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
 
+    grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py || cp /opt/config/.mod/.shell/save_variables.py /opt/klipper/klippy/extras/save_variables.py
+
     grep -q 'include check_md5.cfg'   ${PRINTER_CFG} && sed -i '/include check_md5.cfg/d' ${PRINTER_CFG} && NEED_REBOOT=1
 
     sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG}
