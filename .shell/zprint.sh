@@ -18,7 +18,8 @@ if [ "$1" == "CLOSE" ]
         $CURL -s \
         http://$ip:8898/control \
         -H 'Content-Type: application/json' \
-        -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"payload\":{\"cmd\":\"stateCtrl_cmd\",\"args\":{\"action\":\"setClearPlatform\"}}}"
+        -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"payload\":{\"cmd\":\"stateCtrl_cmd\",\"args\":{\"action\":\"setClearPlatform\"}}}" || \
+        echo "Нет ответа от принтера с $ip. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\""
 else
     if [ "$1" == "PRINT" ]
         then
@@ -44,7 +45,8 @@ else
                     $CURL -s \
                         http://$ip:8898/printGcode \
                         -H 'Content-Type: application/json' \
-                        -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'"
+                        -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'" || \
+                        echo "Нет ответа от принтера с $ip. Необходимо настроить принтер. На экране принтера: \"Настройки\" -> \"Иконка WiFi\" -> \"Сетевой режим\" -> включить ползунок \"Только локальные сети\""
             fi
         else
             echo "Используйте $0 PRINT|CLOSE FILE [PRECLEAR]"
