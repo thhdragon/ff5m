@@ -57,6 +57,8 @@ pin:PB7
 
 start_prepare()
 {
+    renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
+
     MOD=/data/.mod/.zmod
 
     if [ -f /opt/config/mod/REMOVE ]
