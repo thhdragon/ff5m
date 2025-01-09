@@ -7,7 +7,6 @@
 from __future__ import annotations
 import logging
 # FF5M Fix Print Bug
-import socket
 import re
 # END FF5M Fix Print Bug
 from ..utils import Sentinel
@@ -166,11 +165,7 @@ class KlippyAPI(APITransport):
             if found:
                 script = f'LEVELING_PRINT_FILE FILENAME="{filename}"'
             else:
-                script = f'M23 /{filename}'
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.connect(("127.0.0.1", 8899))
-                    s.sendall(bytes("~M23 0:/user/"+filename+"\r\n","utf-8"))
-                    s.close()
+                script = f'NOLEVELING_PRINT_FILE FILENAME="{filename}"'
         # END FF5M Fix Print Bug
         if wait_klippy_started:
             await self.klippy.wait_started()

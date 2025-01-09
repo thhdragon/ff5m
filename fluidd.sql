@@ -600,6 +600,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "",
+            "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "noleveling_print_file",
+            "visible": true
+        },
+        {
             "alias": "Быстро закрыть диалоги",
             "categoryId": "944c031b-feef-4b75-badf-21c30508fb24",
             "color": "",
@@ -727,6 +735,14 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "NOLEVELING_PRINT_FILE",
+                    "pos": 11,
+                    "showInPause": false,
+                    "showInPrinting": false,
+                    "showInStandby": false
                 }
             ],
             "name": "0. Основное",
