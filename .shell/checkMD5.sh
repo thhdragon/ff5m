@@ -5,7 +5,7 @@ APP="/opt/Python-3.7.11/bin/python3 /root/printer_data/scripts/whconsole.py"
 FILE_NAME=${1}
 if [ -z "${FILE_NAME}" ]; then
     SCRIPT='
-{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=0"}}
+{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=1"}}
 {"id": 2, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
 {"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: Файл \\\"'${FILE_NAME##*/}'\\\" не указан. Печать отменена.\""}}
 {"id": -8888}
@@ -14,7 +14,7 @@ if [ -z "${FILE_NAME}" ]; then
   exit 1
 elif [ ! -f "${FILE_NAME}" ]; then
     SCRIPT='
-{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=1"}}
+{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=2"}}
 {"id": 2, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
 {"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: Файл \\\"'${FILE_NAME##*/}'\\\" не найден. Печать отменена.\""}}
 {"id": -8888}
@@ -32,7 +32,7 @@ ORIG_MD5="$(/usr/bin/awk -F: '/; MD5/{printf("%s", $2)}' "${FILE_NAME}"|/usr/bin
 if [ -z "${ORIG_MD5}" ]
     then
         SCRIPT='
-{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=2"}}
+{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=3"}}
 {"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"В файле \\\"'${FILE_NAME##*/}'\\\" нет MD5 суммы. Включите ее в Orca.\""}}
 {"id": -8888}
 '
@@ -62,14 +62,14 @@ else
         then
             /bin/rm -f "${FILE_NAME}"
             SCRIPT='
-{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=3"}}
+{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=4"}}
 {"id": 2, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
 {"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: MD5 сумма не совпала для файла \\\"'${FILE_NAME##*/}'\\\". Файл удален. Печать отменена.\""}}
 {"id": -8888}
 '
         else
     SCRIPT='
-{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=4"}}
+{"id": 1, "method": "gcode/script", "params": {"script": "SET_GCODE_VARIABLE MACRO=CHECK_MD5 VARIABLE=success VALUE=5"}}
 {"id": 2, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
 {"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: MD5 сумма не совпала для файла \\\"'${FILE_NAME##*/}'\\\". Печать отменена.\""}}
 {"id": -8888}
