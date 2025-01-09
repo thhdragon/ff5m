@@ -4,8 +4,20 @@ APP="/opt/Python-3.7.11/bin/python3 /root/printer_data/scripts/whconsole.py"
 
 FILE_NAME=${1}
 if [ -z "${FILE_NAME}" ]; then
+    SCRIPT='
+{"id": 1, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
+{"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: Файл \\\"'${FILE_NAME##*/}'\\\" не указан. Печать отменена.\""}}
+{"id": -8888}
+'
+  /bin/echo "${SCRIPT}"|${APP} /tmp/uds -- -8888 &>/dev/null
   exit 1
 elif [ ! -f "${FILE_NAME}" ]; then
+    SCRIPT='
+{"id": 1, "method": "gcode/script", "params": {"script": "CANCEL_PRINT"}}
+{"id": 8888, "method": "gcode/script", "params": {"script": "RESPOND TYPE=error MSG=\"Ошибка: Файл \\\"'${FILE_NAME##*/}'\\\" не найден. Печать отменена.\""}}
+{"id": -8888}
+'
+  /bin/echo "${SCRIPT}"|${APP} /tmp/uds -- -8888 &>/dev/null
   exit 2
 fi
 
