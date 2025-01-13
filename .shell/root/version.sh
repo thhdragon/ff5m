@@ -6,9 +6,9 @@ FIRMWARE_VERSION="$1"
 MOD_VERSION="$2"
 PATCH_VERSION="$3"
 
-if [ -z "$FIRMWARE_VERSION" ] || [ -z "$MOD_VERSION"] || [ -z "$PATCH_VERSION" ]; then
+if [ -z "${FIRMWARE_VERSION}" ] || [ -z "${MOD_VERSION}" ] || [ -z "${PATCH_VERSION}" ]; then
     echo "Error: Missing required argument(s)!"
-    echo "Usage: $0 <firmware_version> <mod_version> <pach_version>"
+    echo "Usage: $0 <firmware_version> <mod_version> <patch_version>"
     exit 1
 fi
 
@@ -28,10 +28,9 @@ update_var() {
 
 
 update_var "NAME" "zmod-lite"
-update_var "VERSION" "$MOD_VERSION"
-update_var "ID" "buildroot"
-update_var "VERSION_ID" "${MOD_VERSION}@${PATCH_VERSION}"
-update_var "PRETTY_NAME" "zmod-lite $VERSION"
-update_var "VERSION_CODENAME" "FF5M $FIRMWARE_VERSION"
+update_var "VERSION" "${MOD_VERSION}"
+update_var "VERSION_ID" "${MOD_VERSION}-${PATCH_VERSION}"
+update_var "PRETTY_NAME" "zmod-lite ${MOD_VERSION}"
+update_var "VERSION_CODENAME" "FF5M ${FIRMWARE_VERSION}"
 
 echo "The os-release file has been updated."

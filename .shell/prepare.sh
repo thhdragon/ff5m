@@ -152,18 +152,19 @@ start_prepare()
             fi
     fi
 
-    GIT_BRANCH=$(chroot /data/.mod/.zmod git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
-    GIT_COMMIT_ID=$(chroot /data/.mod/.zmod git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
-    
+    GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
+    GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
+
     FIRMWARE_VERSION=$(cat /root/version)
     MOD_VERSION=$(cat /opt/config/mod/version.txt)
-    PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID"
+    PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
 
     chroot $MOD /opt/config/mod/.shell/root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
 
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
-
+    
     sleep 10
 }
 

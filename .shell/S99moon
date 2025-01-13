@@ -10,18 +10,14 @@ start() {
 
 stop() {
     printf "Stopping moon: "
-    umount /data/.mod/
     chroot $MOD /opt/config/mod/.shell/root/stop.sh
-    mount --bind /data/lost+found /data/.mod
     echo "OK"
 }
 
 up() {
     printf "Starting moon: "
-    umount /data/.mod/
     chroot $MOD /opt/config/mod/.shell/root/start.sh &
     sleep 15
-    mount --bind /data/lost+found /data/.mod
     echo "OK"
 }
 
