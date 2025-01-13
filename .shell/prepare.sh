@@ -56,6 +56,16 @@ pin:PB7
     rm -rf /opt/var
 }
 
+update_var() {
+    local key="$1"
+    local value="$2"
+    if grep -q "^$key=" "$OS_RELEASE_FILE"; then
+        sed -i "s|^$key=.*|$key=\"$value\"|" "$OS_RELEASE_FILE"
+    else
+        echo "$key=\"$value\"" >> "$OS_RELEASE_FILE"
+    fi
+}
+
 start_prepare()
 {
     renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
@@ -141,6 +151,16 @@ start_prepare()
                     fi
             fi
     fi
+
+    GIT_BRANCH=$(chroot /data/.mod/.zmod git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_ID=$(chroot /data/.mod/.zmod git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
+    
+    FIRMWARE_VERSION=$(cat /root/version)
+    MOD_VERSION=$(cat /opt/config/mod/version.txt)
+    PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID"
+
+    chroot $MOD /opt/config/mod/.shell/root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+
 
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
 

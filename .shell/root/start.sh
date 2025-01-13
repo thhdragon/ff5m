@@ -10,8 +10,6 @@ if [ "$SWAP" == "/root/swap" ]
         grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg || swapon $SWAP
 fi
 
-mount --bind /data/lost+found /data/.mod
-
 date 2025.01.01-00:00:00
 
 # Пробуем синхронизировать время
