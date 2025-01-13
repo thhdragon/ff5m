@@ -3,7 +3,7 @@
 SWAP=$1
 echo "SWAP=$SWAP"
 
-if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=131072; mkswap /root/swap; fi;
+if ! [ -f /root/swap ]; then dd if=/dev/zero of=/root/swap bs=1024 count=$((128 * 1024)); mkswap /root/swap; fi;
 
 if [ "$SWAP" == "/root/swap" ]
     then
@@ -12,7 +12,7 @@ fi
 
 mount --bind /data/lost+found /data/.mod
 
-date 2024.01.01-00:00:00
+date 2025.01.01-00:00:00
 
 # Пробуем синхронизировать время
 ntpd -dd -n -q -p ru.pool.ntp.org || \

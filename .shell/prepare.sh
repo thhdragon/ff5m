@@ -144,9 +144,7 @@ start_prepare()
 
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
 
-    mkdir -p /data/lost+found
     sleep 10
-    mount --bind /data/lost+found /data/.mod
 }
 
 if [ -f /opt/config/mod/SKIP_ZMOD ]

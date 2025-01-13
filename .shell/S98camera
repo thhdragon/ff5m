@@ -10,14 +10,25 @@ if ! [ -f /opt/config/mod_data/camera.conf ]
 fi
 
 VIDEO="video0"
-source /opt/config/mod_data/camera.conf
+
+E_SHARPNESS=255
+E_BRIGHTNESS=0
+E_CONTRAST=255
+E_GAMMA=10
+E_GAIN=1
+
 PID_FILE=/run/camera.pid
+source /opt/config/mod_data/camera.conf
+
+_VIDEO_P="/dev/${VIDEO}"
 
 start() {
     if [ $START = "on" ]
         then
             /usr/bin/v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
-            start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/mjpg-streamer/bin/mjpg_streamer -- -o "/opt/mjpg-streamer/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/mjpg-streamer/lib/input_uvc.so -d /dev/${VIDEO} -r ${WIDTH}x${HEIGHT} -f $FPS"
+            start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/mjpg-streamer/bin/mjpg_streamer -- -o "/opt/mjpg-streamer/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/mjpg-streamer/lib/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $((${WIDTH}*${HEIGHT}*2))"
+            
+            reload
         else
             echo "Камера отключена"
     fi
@@ -26,10 +37,21 @@ start() {
 stop() {
     start-stop-daemon -K -p $PID_FILE 2>/dev/null >/dev/null
 }
+
 restart() {
     stop
     sleep 2
     start
+}
+
+reload() {
+    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null
+        v4l2-ctl --set-ctrl sharpness=${E_SHARPNESS} --device=${_VIDEO_P}
+        v4l2-ctl --set-ctrl brightness=${E_BRIGHTNESS} --device=${_VIDEO_P}
+        v4l2-ctl --set-ctrl contrast=${E_CONTRAST} --device=${_VIDEO_P}
+        v4l2-ctl --set-ctrl gamma=${E_GAMMA} --device=${_VIDEO_P}
+        v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
+    fi
 }
 
 case "$1" in
@@ -39,11 +61,14 @@ case "$1" in
   stop)
         stop
         ;;
-  restart|reload)
+  restart)
         restart
         ;;
+  reload)
+        reload
+        ;;
   *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Usage: $0 {start|stop|restart|reload}"
         exit 1
 esac
 

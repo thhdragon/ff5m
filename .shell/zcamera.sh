@@ -3,6 +3,8 @@
 # Camera config
 #
 
+if [ $1 = "RELOAD" ]; then /etc/init.d/S98camera reload; exit 0; fi
+
 if [ $# -ne 6 ]; then echo "Используйте $0 START WIDTH HEIGHT FPS VIDEO RESTART"; exit 1; fi
 
 echo "# Не редактируйте этот файл
@@ -28,6 +30,14 @@ FPS=$4
 
 # Видео устройство: video0
 VIDEO=$5
+
+# Настройки изображения камеры
+E_SHARPNESS=255
+E_BRIGHTNESS=0
+E_CONTRAST=255
+E_GAMMA=10
+E_GAIN=1
+
 " >/opt/config/mod_data/camera.conf
 
 [ $6 = "RESTART" ] && /etc/init.d/S98camera restart

@@ -104,6 +104,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "visible": true
         },
         {
+            "alias": "Создать резервную копию",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "config_backup",
+            "visible": true
+        },
+        {
+            "alias": "Восстановить резервную копию",
+            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
+            "color": "",
+            "disabledWhilePrinting": false,
+            "name": "config_restore",
+            "visible": true
+        },
+        {
             "alias": "",
             "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
             "color": "",
@@ -1016,6 +1032,22 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "color": "group",
                     "name": "ZSSH_RELOAD",
                     "pos": 23,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CONFIG_BACKUP",
+                    "pos": 24,
+                    "showInPause": true,
+                    "showInPrinting": true,
+                    "showInStandby": true
+                },
+                {
+                    "color": "group",
+                    "name": "CONFIG_RESTORE",
+                    "pos": 25,
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
