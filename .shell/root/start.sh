@@ -1,7 +1,11 @@
 #!/bin/sh
 
+NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"
+START_PROC_DONE_F="/tmp/start_proc_done"
+
+rm -f $START_PROC_DONE_F
+
 SWAP=$1
-echo "SWAP=$SWAP"
 
 if [ ! -f /root/swap ]; then
     dd if=/dev/zero of=/root/swap bs=1024 count=$((128 * 1024))
@@ -22,7 +26,7 @@ synchronize_time() {
     done
 }
 
-if [ ! -f /tmp/started ]; then
+if [ ! -f $NOT_FIRST_LAUNCH_F ]; then
     date 2025.01.01-00:00:00
     synchronize_time
 fi
@@ -30,24 +34,21 @@ fi
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
 
-if [ ! -f /tmp/started ]; then
-    echo "Waiting to avoid race conditions (?) during Firmware startup..."
-    sleep 15
-else
-    # Wait for Moonraker to start
-    for _ in $(seq 0 15); do
-        curl http://localhost:7125 > /dev/null 2>&1 && break
-        sleep 1
-    done
-fi
+# Wait for Moonraker to start
+for _ in $(seq 0 30); do
+    curl http://localhost:7125 > /dev/null 2>&1 && break
+    sleep 1
+done
 
 cd /opt/config/mod/
 git log | head -3 | grep Date > /opt/config/mod_data/date.txt
 echo "ZSSH_RELOAD" > /tmp/printer
 
-touch /tmp/started
+touch $START_PROC_DONE_F
 
-if [ ! -f /tmp/started ]; then
+if [ ! -f $NOT_FIRST_LAUNCH_F ]; then
+    touch $NOT_FIRST_LAUNCH_F
+
     for _ in $(seq 0 50); do
         synchronize_time && break
         sleep 5

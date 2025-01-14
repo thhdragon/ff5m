@@ -2,6 +2,8 @@
 
 MOD=/data/.mod/.zmod
 
+START_PROC_DONE_F="${MOD}/tmp/start_proc_done"
+
 unset LD_PRELOAD
 
 start() {
@@ -16,10 +18,14 @@ stop() {
 
 up() {
     printf "Starting moon: "
+
+    rm -f $START_PROC_DONE_F
     chroot $MOD /opt/config/mod/.shell/root/start.sh &
 
-    #TODO: Run starting script synchroniously and run background task to update time if needed
-    sleep 15
+    for _ in $(seq 0 15); do
+        test -f $START_PROC_DONE_F && break
+        sleep 1
+    done
     echo "OK"
 }
 
