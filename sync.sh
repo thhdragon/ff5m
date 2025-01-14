@@ -75,7 +75,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
         DEST_FILE="./mod/\${file#./.sync/}"
 
         if ! cmp -s "\$SRC_FILE" "\$DEST_FILE"; then
-            echo -e "${YELLOW}✏️ File changed: \$DEST_FILE${NC}"
+            echo -e "${YELLOW}► File changed: \$DEST_FILE${NC}"
             mkdir -p "\${DEST_FILE%/*}" && cp "\$SRC_FILE" "\$DEST_FILE"
             CHANGED=1
         fi
@@ -95,34 +95,34 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
             kill -0 "\$PID" 2>/dev/null || break
             sleep 1
         done
-        echo -e "${NC}✏️ Moonraker\t\t${BLUE}Stopped${NC}"
+        echo -e "${NC}► Moonraker\t\t${BLUE}Stopped${NC}"
 
-        echo -e "${NC}✏️ Database\t\t${YELLOW}Migrating...${NC}"
+        echo -e "${NC}► Database\t\t${YELLOW}Migrating...${NC}"
 
         /opt/config/mod/.shell/migrate_db.sh > /dev/null; ret=\$?
         if [ "\$ret" -ne 0 ]; then 
-            if [ "\$ret" -gt 1 ]; then echo -e "${NC}✏️ Database\t\t${RED}Migration failed${NC}"; exit 2;  fi
+            if [ "\$ret" -gt 1 ]; then echo -e "${NC}► Database\t\t${RED}Migration failed${NC}"; exit 2;  fi
 
-            echo -e "${NC}✏️ Database\t\t${BLUE}Up to date${NC}"
+            echo -e "${NC}► Database\t\t${BLUE}Up to date${NC}"
         else
-            echo -e "${NC}✏️ Database\t\t${GREEN}Migrated${NC}"
+            echo -e "${NC}► Database\t\t${GREEN}Migrated${NC}"
         fi
 
-        echo -e "${NC}✏️ Moonraker\t\t${YELLOW}Starting...${NC}"
+        echo -e "${NC}► Moonraker\t\t${YELLOW}Starting...${NC}"
         /etc/init.d/S99moon up > /dev/null
 
         PID=\$(cat /data/.mod/.zmod/run/moonraker.pid)
         kill -0 "\$PID" 2>/dev/null
-        if [ "\$?" -ne 0 ]; then echo -e "${NC}✏️ Moonraker\t\t${RED}Failed${NC}"; exit 2; fi
+        if [ "\$?" -ne 0 ]; then echo -e "${NC}► Moonraker\t\t${RED}Failed${NC}"; exit 2; fi
 
-        echo -e "${NC}✏️ Moonraker\t\t${GREEN}Started${NC}"
+        echo -e "${NC}► Moonraker\t\t${GREEN}Started${NC}"
 
-        echo -e "${NC}✏️ Klipper\t\t${YELLOW}Restarting...${NC}"
+        echo -e "${NC}► Klipper\t\t${YELLOW}Restarting...${NC}"
 
         /opt/config/mod/.shell/restart_klipper.sh > /dev/null
-        if [ "\$?" -ne 0 ]; then echo -e "${NC}✏️ Klipper\t\t${RED}Failed${NC}"; exit 2; fi
+        if [ "\$?" -ne 0 ]; then echo -e "${NC}► Klipper\t\t${RED}Failed${NC}"; exit 2; fi
         
-        echo -e "${NC}✏️ Klipper\t\t${GREEN}Done${NC}"
+        echo -e "${NC}► Klipper\t\t${GREEN}Done${NC}"
 
         echo; echo -e "${GREEN}All done!${NC}"
     else
