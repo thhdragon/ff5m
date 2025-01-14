@@ -7,4 +7,6 @@ if [ "$3" = "NO_PROGRESS" ]; then
     NP=1
 fi
 
-NO_PROGRESS=$NP nice -n 16 /usr/bin/python3 /root/printer_data/scripts/speed_test_rand.py "$1" $2
+# TODO: klipper sets strange variable which breaks python, idkw
+
+env -i NO_PROGRESS=$NP nice -n 16 /usr/bin/python3 /root/printer_data/scripts/speed_test_rand.py "$1" $2
