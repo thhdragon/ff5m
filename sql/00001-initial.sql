@@ -1,5 +1,4 @@
-DELETE FROM "main"."namespace_store"  WHERE namespace="fluidd" AND key="macros";
-INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('fluidd', 'macros', '{
+INSERT OR REPLACE INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('fluidd', 'macros', '{
     "categories": [
         {
             "id": "944c031b-feef-4b75-badf-21c30508fb24",
@@ -641,8 +640,8 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         }
     ]
 }');
-DELETE FROM "main"."namespace_store"  WHERE namespace="mainsail" AND key="macros";
-INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
+
+INSERT OR REPLACE INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
     "macrogroups": {
         "731852b2-3bf0-422a-a1fb-56d2f1f972a5": {
             "color": "primary",

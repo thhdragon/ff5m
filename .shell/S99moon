@@ -2,6 +2,8 @@
 
 MOD=/data/.mod/.zmod
 
+START_PROC_DONE_F="${MOD}/tmp/start_proc_done"
+
 unset LD_PRELOAD
 
 start() {
@@ -10,18 +12,20 @@ start() {
 
 stop() {
     printf "Stopping moon: "
-    umount /data/.mod/
     chroot $MOD /opt/config/mod/.shell/root/stop.sh
-    mount --bind /data/lost+found /data/.mod
     echo "OK"
 }
 
 up() {
     printf "Starting moon: "
-    umount /data/.mod/
+
+    rm -f $START_PROC_DONE_F
     chroot $MOD /opt/config/mod/.shell/root/start.sh &
-    sleep 15
-    mount --bind /data/lost+found /data/.mod
+
+    for _ in $(seq 0 15); do
+        test -f $START_PROC_DONE_F && break
+        sleep 1
+    done
     echo "OK"
 }
 
