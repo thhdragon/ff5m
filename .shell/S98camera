@@ -26,8 +26,8 @@ start() {
     if [ $START = "on" ]
         then
             /usr/bin/v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
-            start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/mjpg-streamer/bin/mjpg_streamer -- -o "/opt/mjpg-streamer/lib/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/mjpg-streamer/lib/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $((${WIDTH}*${HEIGHT}*2))"
-            
+            start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $((${WIDTH}*${HEIGHT}*2))"
+
             reload
         else
             echo "Камера отключена"
@@ -45,12 +45,15 @@ restart() {
 }
 
 reload() {
-    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null
+    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null;
+    then
         v4l2-ctl --set-ctrl sharpness=${E_SHARPNESS} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl brightness=${E_BRIGHTNESS} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl contrast=${E_CONTRAST} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gamma=${E_GAMMA} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
+
+        echo "OK"
     fi
 }
 

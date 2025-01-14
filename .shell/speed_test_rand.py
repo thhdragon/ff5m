@@ -8,8 +8,12 @@ PROGRESS_BAR_LENGTH = 50
 DEFAULT_FILE_BLOCK_SIZE = 1 * 1024 * 1024
 TARGET_FILE_SIZE = 256 * 1024 * 1024
 
+NO_PROGRESS = int(os.environ.get('NO_PROGRESS', "0"))
 
 def print_progress_bar(label, current_iteration, total_iterations):
+    if NO_PROGRESS:
+        return
+    
     filled_length = PROGRESS_BAR_LENGTH * current_iteration // total_iterations
     percentage = current_iteration * 100 // total_iterations
 
@@ -68,7 +72,8 @@ def test_disk_speed(file_path, block_size=16 * 1024, num_operations=None):
             i += 1
             print_progress_bar(f"Read Block Size: {block_size_in_kb:.1f}KB", i, count)
 
-    sys.stdout.write(f"\033[1K\rBlock Size {block_size_in_kb:.1f}KB:\n")
+    if not NO_PROGRESS: sys.stdout.write("\033[1K\r")
+    sys.stdout.write(f"Block Size {block_size_in_kb:.1f}KB:\n")
     sys.stdout.flush()
 
     read_end_time = time.time()
@@ -98,6 +103,8 @@ if path_free_space <= TARGET_FILE_SIZE:
         f"but got {path_free_space / 1024 / 1024}MB!\n")
     exit(2)
 
+print("Speed test started. Please be patient!\n")
+
 file_path = os.path.join(base_path, f"speed_test.{random.randint(int(1e6), int(1e7 - 1))}")
 print(f"Using temporary test file \"{file_path}\" of size {TARGET_FILE_SIZE / 1024 / 1024}MB\n")
 
@@ -109,8 +116,9 @@ try:
             f.write(generate_random_data(DEFAULT_FILE_BLOCK_SIZE))
             print_progress_bar("Generating test file", i, block_count)
 
+        if not NO_PROGRESS: sys.stdout.write("\033[1K\r")
         sys.stdout.write(
-            f"\033[1K\rFile of {(TARGET_FILE_SIZE / 1024 / 1024):0.1f}MB "
+            f"File of {(TARGET_FILE_SIZE / 1024 / 1024):0.1f}MB "
             f"created with speed {(TARGET_FILE_SIZE / 1024 / 1024 / (time.time() - create_start_time)):0.2f}MB/S\n\n"
         )
 
@@ -121,6 +129,8 @@ try:
     test_disk_speed(file_path, block_size=128 * 1024, num_operations=500)
     test_disk_speed(file_path, block_size=256 * 1024, num_operations=200)
     test_disk_speed(file_path, block_size=512 * 1024, num_operations=200)
+
+    print("\n Done!")
 except KeyboardInterrupt:
     print("\nAborted!")
 finally:

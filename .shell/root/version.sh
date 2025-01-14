@@ -31,6 +31,6 @@ update_var "NAME" "zmod-lite"
 update_var "VERSION" "${MOD_VERSION}"
 update_var "VERSION_ID" "${MOD_VERSION}-${PATCH_VERSION}"
 update_var "PRETTY_NAME" "zmod-lite ${MOD_VERSION}"
-update_var "VERSION_CODENAME" "FF5M ${FIRMWARE_VERSION}"
+update_var "VERSION_CODENAME" "FF5M ${FIRMWARE_VERSION} / ${MOD_VERSION}-${PATCH_VERSION}"
 
 echo "The os-release file has been updated."

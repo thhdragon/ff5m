@@ -17,6 +17,8 @@ stop() {
 up() {
     printf "Starting moon: "
     chroot $MOD /opt/config/mod/.shell/root/start.sh &
+
+    #TODO: Run starting script synchroniously and run background task to update time if needed
     sleep 15
     echo "OK"
 }

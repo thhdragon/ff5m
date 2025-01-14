@@ -162,9 +162,12 @@ start_prepare()
 
     chroot $MOD /opt/config/mod/.shell/root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
+    if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
+        /opt/config/mod/.shell/migrate_db.sh
+    fi
 
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
-    
+
     sleep 10
 }
 

@@ -20,6 +20,4 @@ CLIENT=$WEB
 " >/opt/config/mod_data/web.conf
 
 sync
-umount /data/.mod/
 chroot $MOD /opt/config/mod/.shell/root/S70httpd restart
-mount --bind /data/lost+found /data/.mod

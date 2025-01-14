@@ -1,5 +1,4 @@
-DELETE FROM "main"."namespace_store"  WHERE namespace="fluidd" AND key="macros";
-INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('fluidd', 'macros', '{
+INSERT OR REPLACE INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('fluidd', 'macros', '{
     "categories": [
         {
             "id": "944c031b-feef-4b75-badf-21c30508fb24",
@@ -101,22 +100,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
             "color": "",
             "disabledWhilePrinting": false,
             "name": "zssh_restart",
-            "visible": true
-        },
-        {
-            "alias": "Создать резервную копию",
-            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "config_backup",
-            "visible": true
-        },
-        {
-            "alias": "Восстановить резервную копию",
-            "categoryId": "0077449b-cd10-4059-aebd-bf17be6cb270",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "config_restore",
             "visible": true
         },
         {
@@ -657,8 +640,8 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('flui
         }
     ]
 }');
-DELETE FROM "main"."namespace_store"  WHERE namespace="mainsail" AND key="macros";
-INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
+
+INSERT OR REPLACE INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('mainsail', 'macros', '{
     "macrogroups": {
         "731852b2-3bf0-422a-a1fb-56d2f1f972a5": {
             "color": "primary",
@@ -1032,22 +1015,6 @@ INSERT INTO "main"."namespace_store" ("namespace", "key", "value") VALUES ('main
                     "color": "group",
                     "name": "ZSSH_RELOAD",
                     "pos": 23,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "CONFIG_BACKUP",
-                    "pos": 24,
-                    "showInPause": true,
-                    "showInPrinting": true,
-                    "showInStandby": true
-                },
-                {
-                    "color": "group",
-                    "name": "CONFIG_RESTORE",
-                    "pos": 25,
                     "showInPause": true,
                     "showInPrinting": true,
                     "showInStandby": true
