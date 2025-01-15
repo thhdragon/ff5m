@@ -23,6 +23,14 @@ cleanup() {
     rm "./${ARCHIVE_NAME}"
 }
 
+abort () {
+  trap SIGINT
+  echo; echo 'Aborted'
+  cleanup
+
+  exit 2
+}
+
 echo -e "${BLUE}Creating archive...${NC}"
 tar --exclude="./${ARCHIVE_NAME}" \
     --exclude='.git' \
@@ -31,16 +39,17 @@ tar --exclude="./${ARCHIVE_NAME}" \
     --disable-copyfile \
     -czf "${ARCHIVE_NAME}" .
 
+trap "abort" INT
+
 echo -e "${BLUE}Uploading archive to ${REMOTE_HOST}...${NC}"
 scp -O "./${ARCHIVE_NAME}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
 
 if [ $? -ne 0 ]; then
-    echo -e "\n${RED} Unable to upload sync archive to the printer at ${REMOTE_HOST}.${NC}"
+    echo -e "\n${RED}Unable to upload sync archive to the printer at ${REMOTE_HOST}.${NC}"
     echo "Make shure you have added identity to the printer:"
     echo "ssh-copy-id -i \"/path/to/ssh_key.pub\" root@${REMOTE_HOST}"
 
     cleanup
-
     exit 2
 fi
 
