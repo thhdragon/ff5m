@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
 
 if [ $# -lt 2 ]; then echo "Usage: $0 {path} {size}"; exit 1; fi
 

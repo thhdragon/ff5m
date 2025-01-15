@@ -1,5 +1,12 @@
 #!/bin/sh
 
+## General service to control zmod services
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
 MOD=/data/.mod/.zmod
 
 START_PROC_DONE_F="${MOD}/tmp/start_proc_done"

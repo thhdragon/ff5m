@@ -1,6 +1,10 @@
 #!/bin/bash
-#
-# Synchronize local changes to the printer
+
+## Synchronize local changes to the printer
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
 
 REMOTE_HOST="$1"
 SKIP_RESTART="${2:-0}"
@@ -23,7 +27,7 @@ cleanup() {
     rm "./${ARCHIVE_NAME}"
 }
 
-abort () {
+abort() {
     trap SIGINT
     echo; echo 'Aborted'
     cleanup
@@ -67,8 +71,11 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     }
 
     run_service() {
+        if [ "\$#" -lt 4 ]; then echo Missing required arguments; exit 3; fi
+
         local name="\$1"; local status="\$2"; local check_pid="\$3"
         if [ "\$check_pid" -eq 1 ]; then
+            if [ "\$#" -lt 6 ]; then echo Missing required arguments; exit 3; fi
             local pid_path="\$4"; local invert="\$5"
             shift 5; local command=("\$@")
         else

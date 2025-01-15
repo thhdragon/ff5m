@@ -1,5 +1,13 @@
 #!/bin/sh
 
+## Starting zmod services
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"
 START_PROC_DONE_F="/tmp/start_proc_done"
 

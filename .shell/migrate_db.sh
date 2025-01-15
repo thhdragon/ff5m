@@ -1,6 +1,11 @@
 #!/bin/bash
-#
-# Apply SQL migrations to Moonraker's database with detailed output
+
+## Apply SQL migrations to Moonraker's database with detailed output
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
 
 MIGRATION_DIR="/opt/config/mod/sql"
 DATABASE_PATH="/opt/config/mod_data/database/moonraker-sql.db"
