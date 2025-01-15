@@ -24,20 +24,20 @@ cleanup() {
 }
 
 abort () {
-  trap SIGINT
-  echo; echo 'Aborted'
-  cleanup
-
-  exit 2
+    trap SIGINT
+    echo; echo 'Aborted'
+    cleanup
+    
+    exit 2
 }
 
 echo -e "${BLUE}Creating archive...${NC}"
 tar --exclude="./${ARCHIVE_NAME}" \
-    --exclude='.git' \
-    --exclude='.vscode' \
-    --exclude='./sync*.tar.gz' \
-    --disable-copyfile \
-    -czf "${ARCHIVE_NAME}" .
+--exclude='.git' \
+--exclude='.vscode' \
+--exclude='./sync*.tar.gz' \
+--disable-copyfile \
+-czf "${ARCHIVE_NAME}" .
 
 trap "abort" INT
 
@@ -46,36 +46,87 @@ scp -O "./${ARCHIVE_NAME}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
 
 if [ $? -ne 0 ]; then
     echo -e "\n${RED}Unable to upload sync archive to the printer at ${REMOTE_HOST}.${NC}"
-    echo "Make shure you have added identity to the printer:"
+    echo "Make sure you have added identity to the printer:"
     echo "ssh-copy-id -i \"/path/to/ssh_key.pub\" root@${REMOTE_HOST}"
-
+    
     cleanup
     exit 2
 fi
 
 ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
-    cd "${REMOTE_DIR}" || exit 1
-
-    rm -rf "./.sync"
-    mkdir "./.sync"
+    ##############################################
 
     cleanup() {
         rm ./sync_*.tar*
         rm -r "./.sync"
     }
 
-    echo -e "${BLUE} Extracting archive...${NC}"
+    print_status() {
+        local name="\$1"; local status="\$2"; local color="\$3"
+        echo -e "${NC}► \${name}\t\t\${color}\${status}${NC}"
+    }
+
+    run_service() {
+        local name="\$1"; local status="\$2"
+        shift 2; local command=("\$@")
+
+        print_status "\$name" "\${status}..." "${YELLOW}"
+        \${command[@]} > /dev/null  2>&1
+        local ret=\$?
+        if [ "\$ret" -eq 0 ]; then
+            print_status "\$name" "Done" "${GREEN}"
+        else
+            print_status "\$name" "Failed" "${RED}"
+            exit 2
+        fi
+    }
+
+    run_with_pid_check() {
+        local name="\$1"; local status="\$2"; local pid_path="\$3"; local invert="\$4"
+        shift 4; local command=("\$@")
+
+        print_status "\$name" "\${status}..." "${YELLOW}"
+        \${command[@]} > /dev/null  2>&1
+        local ret=\$?
+        if [ "\$ret" -ne 0 ]; then
+            print_status "\$name" "Failed" "${RED}"
+            exit 2
+        fi
+
+        local pid=\$(cat "\$pid_path")
+        for i in \$(seq 0 15); do
+            kill -0 "\$pid" > /dev/null  2>&1; local ret=\$?
+            if [ \$((ret == 0 ? !invert : invert)) -eq 1 ]; then
+                print_status "\$name" "Done" "${GREEN}"
+                return
+            fi
+
+            sleep 1
+        done
+
+        print_status "\$name" "Timeout" "${RED}"
+        exit 2
+    }
+
+    ##############################################
+
+    cd "${REMOTE_DIR}" || exit 1
+
+    rm -rf "./.sync"
+    mkdir "./.sync"
+
+    echo -e "${BLUE}Extracting archive...${NC}"
 
     gzip -d "./${ARCHIVE_NAME}"
     tar -xf "./${ARCHIVE_NAME%.*}" -C "./.sync/"
 
     if [ \$? -ne 0 ]; then
-        echo -e "${RED} Failed to extract sync archive${NC}"
+        echo -e "${RED}Failed to extract sync archive${NC}"
         cleanup
         exit 1
     fi
 
-    echo -e "${BLUE} Comparing files...${NC}"
+    echo -e "${BLUE}Comparing files...${NC}"
 
     CHANGED=0
 
@@ -97,41 +148,10 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     if [ "\$CHANGED" -eq 1 ]; then
         echo; echo -e "${GREEN}Restarting services...${NC}"; echo
 
-        /etc/init.d/S99moon stop > /dev/null
-
-        PID=\$(cat /data/.mod/.zmod/run/moonraker.pid)
-        for i in \$(seq 0 15); do
-            kill -0 "\$PID" 2>/dev/null || break
-            sleep 1
-        done
-        echo -e "${NC}► Moonraker\t\t${BLUE}Stopped${NC}"
-
-        echo -e "${NC}► Database\t\t${YELLOW}Migrating...${NC}"
-
-        /opt/config/mod/.shell/migrate_db.sh > /dev/null; ret=\$?
-        if [ "\$ret" -ne 0 ]; then 
-            if [ "\$ret" -gt 1 ]; then echo -e "${NC}► Database\t\t${RED}Migration failed${NC}"; exit 2;  fi
-
-            echo -e "${NC}► Database\t\t${BLUE}Up to date${NC}"
-        else
-            echo -e "${NC}► Database\t\t${GREEN}Migrated${NC}"
-        fi
-
-        echo -e "${NC}► Moonraker\t\t${YELLOW}Starting...${NC}"
-        /etc/init.d/S99moon up > /dev/null
-
-        PID=\$(cat /data/.mod/.zmod/run/moonraker.pid)
-        kill -0 "\$PID" 2>/dev/null
-        if [ "\$?" -ne 0 ]; then echo -e "${NC}► Moonraker\t\t${RED}Failed${NC}"; exit 2; fi
-
-        echo -e "${NC}► Moonraker\t\t${GREEN}Started${NC}"
-
-        echo -e "${NC}► Klipper\t\t${YELLOW}Restarting...${NC}"
-
-        /opt/config/mod/.shell/restart_klipper.sh > /dev/null
-        if [ "\$?" -ne 0 ]; then echo -e "${NC}► Klipper\t\t${RED}Failed${NC}"; exit 2; fi
-        
-        echo -e "${NC}► Klipper\t\t${GREEN}Done${NC}"
+        run_with_pid_check "Moonraker" "Stopping" "/data/.mod/.zmod/run/moonraker.pid" 1 /etc/init.d/S99moon stop
+        run_service "Database"  "Migrating"  /opt/config/mod/.shell/migrate_db.sh
+        run_service "Moonraker" "Starting"   /etc/init.d/S99moon up
+        run_service "Klipper"   "Restarting" /opt/config/mod/.shell/restart_klipper.sh
 
         echo; echo -e "${GREEN}All done!${NC}"
     else

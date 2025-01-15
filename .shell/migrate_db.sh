@@ -44,10 +44,9 @@ apply_migrations() {
 
     if [ "$migration_applied" -eq 0 ]; then
         echo "Database already up to date"
-        exit 1
+    else
+        echo "All migrations have been processed"
     fi
-
-    echo "All migrations have been processed."
 }
 
 apply_migrations
