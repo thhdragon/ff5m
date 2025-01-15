@@ -67,46 +67,43 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     }
 
     run_service() {
-        local name="\$1"; local status="\$2"
-        shift 2; local command=("\$@")
-
-        print_status "\$name" "\${status}..." "${YELLOW}"
-        \${command[@]} > /dev/null  2>&1
-        local ret=\$?
-        if [ "\$ret" -eq 0 ]; then
-            print_status "\$name" "Done" "${GREEN}"
+        local name="\$1"; local status="\$2"; local check_pid="\$3"
+        if [ "\$check_pid" -eq 1 ]; then
+            local pid_path="\$4"; local invert="\$5"
+            shift 5; local command=("\$@")
         else
-            print_status "\$name" "Failed" "${RED}"
-            exit 2
+            shift 3; local command=("\$@")
         fi
-    }
-
-    run_with_pid_check() {
-        local name="\$1"; local status="\$2"; local pid_path="\$3"; local invert="\$4"
-        shift 4; local command=("\$@")
 
         print_status "\$name" "\${status}..." "${YELLOW}"
-        \${command[@]} > /dev/null  2>&1
+
+        \${command[@]} > /dev/null 2>&1
         local ret=\$?
+
         if [ "\$ret" -ne 0 ]; then
             print_status "\$name" "Failed" "${RED}"
             exit 2
         fi
 
+        if [ "\$check_pid" -eq 0 ]; then
+            print_status "\$name" "Done" "${GREEN}"
+            return
+        fi
+
         local pid=\$(cat "\$pid_path")
         for i in \$(seq 0 15); do
-            kill -0 "\$pid" > /dev/null  2>&1; local ret=\$?
+            kill -0 "\$pid" > /dev/null 2>&1; local ret=\$?
             if [ \$((ret == 0 ? !invert : invert)) -eq 1 ]; then
                 print_status "\$name" "Done" "${GREEN}"
                 return
             fi
-
             sleep 1
         done
 
         print_status "\$name" "Timeout" "${RED}"
         exit 2
     }
+
 
     ##############################################
 
@@ -148,10 +145,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     if [ "\$CHANGED" -eq 1 ]; then
         echo; echo -e "${GREEN}Restarting services...${NC}"; echo
 
-        run_with_pid_check "Moonraker" "Stopping" "/data/.mod/.zmod/run/moonraker.pid" 1 /etc/init.d/S99moon stop
-        run_service "Database"  "Migrating"  /opt/config/mod/.shell/migrate_db.sh
-        run_service "Moonraker" "Starting"   /etc/init.d/S99moon up
-        run_service "Klipper"   "Restarting" /opt/config/mod/.shell/restart_klipper.sh
+        run_service "Moonraker" "Stopping"      1 \
+            "/data/.mod/.zmod/run/moonraker.pid"    1   /etc/init.d/S99moon stop
+
+        run_service "Database"  "Migrating"     0   /opt/config/mod/.shell/migrate_db.sh
+        run_service "Moonraker" "Starting"      0   /etc/init.d/S99moon up
+        run_service "Klipper"   "Restarting"    0   /opt/config/mod/.shell/restart_klipper.sh
 
         echo; echo -e "${GREEN}All done!${NC}"
     else
