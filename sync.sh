@@ -39,6 +39,7 @@ echo -e "${BLUE}Creating archive...${NC}"
 tar --exclude="./${ARCHIVE_NAME}" \
 --exclude='.git' \
 --exclude='.vscode' \
+--exclude='.DS_Store' \
 --exclude='./sync*.tar.gz' \
 --disable-copyfile \
 -czf "${ARCHIVE_NAME}" .
@@ -57,7 +58,7 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
+ssh "${REMOTE_USER}@${REMOTE_HOST}" bash --noprofile -l << EOF
     ##############################################
 
     cleanup() {
@@ -147,10 +148,18 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
 
     cleanup
 
+    # To avoid restarting after Moonraker's Git repair.
+    SKIP_REBOOT_F="/data/.mod/.zmod/tmp/zmod_skip_reboot"
+
+    if [ "\$CHANGED" -eq 1 ] && [ ! -f "\$SKIP_REBOOT_F" ]; then
+        echo -e "\n${YELLOW}Setup reboot skip for next zmod update${NC}"
+        touch /data/.mod/.zmod/
+    fi
+
     if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
 
     if [ "\$CHANGED" -eq 1 ]; then
-        echo; echo -e "${GREEN}Restarting services...${NC}"; echo
+        echo; echo -e "${GREEN}Restarting services...${NC}\n"
 
         run_service "Moonraker" "Stopping"      1 \
             "/data/.mod/.zmod/run/moonraker.pid"    1   /etc/init.d/S99moon stop

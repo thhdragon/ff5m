@@ -51,7 +51,8 @@ case "$1" in
     ;;
     restart|reload)
         stop
-        start
+        sleep 1
+        up
     ;;
     *)
         echo "Usage: $0 {start|stop|restart|up}"
