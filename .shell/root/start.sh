@@ -26,7 +26,7 @@ if [ "$SWAP" = "/root/swap" ]; then
     fi
 fi
 
-TIME_IN_SYNC=0
+$( [ -f $NOT_FIRST_LAUNCH_F ] ); TIME_IN_SYNC=$(( $? == 0 ))
 
 synchronize_time() {
     echo "Trying to synchronize time..."
@@ -38,15 +38,16 @@ synchronize_time() {
             echo "Successfully synchronize time"
             date
             TIME_IN_SYNC=1
-            return
+            return 0
         fi
     done
     
     echo "Unable to synchronize time"
+    return 1
 }
 
-if [ ! -f $NOT_FIRST_LAUNCH_F ]; then
-    echo "Initiali time synchronization"
+if [ "$TIME_IN_SYNC" -eq 0 ]; then
+    echo "*** Initial time synchronization"
     
     date 2025.01.01-00:00:00
     synchronize_time
@@ -71,12 +72,12 @@ touch $NOT_FIRST_LAUNCH_F
 touch $START_PROC_DONE_F
 
 if [ "$TIME_IN_SYNC" -eq 0 ]; then
-    echo "Postponed time synchronization"
+    echo "*** Postponed time synchronization"
     
     for _ in $(seq 0 50); do
         synchronize_time && break
         sleep 5
     done
-    
-    echo "Done"
 fi
+
+echo "Done"
