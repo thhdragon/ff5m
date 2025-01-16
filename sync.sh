@@ -6,20 +6,53 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-REMOTE_HOST="$1"
-SKIP_RESTART="${2:-0}"
-REMOTE_USER="root"
-REMOTE_DIR="/opt/config/"
-ARCHIVE_NAME="sync_$(date +%Y%m%d_%H%M%S).tar.gz"
-
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No color
 
-if [ -z "$REMOTE_HOST" ]; then
-    echo -e "${RED}Usage: $0 <printer_ip>${NC}"
+
+REMOTE_HOST=""
+REMOTE_USER="root"
+REMOTE_DIR="/opt/config/"
+ARCHIVE_NAME="sync_$(date +%Y%m%d_%H%M%S).tar.gz"
+SKIP_HEAVY=0
+SKIP_RESTART=0
+HELP=0
+VERBOSE=0
+
+while [ "$#" -gt 0 ]; do
+    param=$1; shift
+    case $param in
+        --host|-h)
+            REMOTE_HOST="$1"; shift
+            echo -e "${BLUE}Remote host: ${REMOTE_HOST}.${NC}"
+        ;;
+        --skip-restart|-sr)
+            SKIP_RESTART=1
+            echo -e "${BLUE}Services restart will be skiped.${NC}"
+        ;;
+        --skip-heavy|-sh)
+            SKIP_HEAVY=1
+            echo -e "${BLUE}Heavy files will be skiped.${NC}"
+        ;;
+        --verbose|-v)
+            echo -e "${BLUE}Vebose mode enabled.${NC}"
+            VERBOSE=1
+        ;;
+        --help)
+            HELP=1
+        ;;
+        *)
+            HELP=1
+            echo -e "${RED}Unknow parameter: \"${param}\"${NC}"
+        ;;
+    esac
+done
+
+if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
+    echo -e "${RED}Usage: $0 --host <printer_ip> [--skip-restart] [--skip-heavy] [--verbose] [--help]${NC}"
     exit 1
 fi
 
@@ -35,16 +68,41 @@ abort() {
     exit 2
 }
 
-echo -e "${BLUE}Creating archive...${NC}"
-tar --exclude="./${ARCHIVE_NAME}" \
---exclude='.git' \
---exclude='.vscode' \
---exclude='.DS_Store' \
---exclude='./sync*.tar.gz' \
---disable-copyfile \
--czf "${ARCHIVE_NAME}" .
-
 trap "abort" INT
+
+declare -a arr EXCLUDES=(
+    "./${ARCHIVE_NAME}"
+    ".git"
+    ".vscode"
+    ".DS_Store"
+    "./sync*.tar.gz"
+)
+
+if [ "$SKIP_HEAVY" -eq 1 ]; then
+    EXCLUDES+=(
+        "./.shell/root/docs/"
+        "./.shell/root/config/"
+        "./.shell/root/klippy/"
+        "./.shell/root/moonraker/"
+        "./.zsh/.oh-my-zsh/"
+    )
+fi
+
+echo -e "${BLUE}Creating archive...${NC}"
+
+EXCLUDE_STR=""
+for e in "${EXCLUDES[@]}"; do
+    EXCLUDE_STR+="--exclude='$e' "
+    if [ "$VERBOSE" -eq 1 ]; then echo "► Excluding: \"$e\""; fi
+done
+
+eval "tar $EXCLUDE_STR --disable-copyfile -czf \"${ARCHIVE_NAME}\" ."
+if [ $? -ne 0 ]; then
+    echo -e "\n${RED}Unable to create sync archive.${NC}"
+    
+    cleanup
+    exit 2
+fi
 
 echo -e "${BLUE}Uploading archive to ${REMOTE_HOST}...${NC}"
 scp -O "./${ARCHIVE_NAME}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
@@ -58,10 +116,12 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-ssh "${REMOTE_USER}@${REMOTE_HOST}" bash --noprofile -l << EOF
+ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     ##############################################
 
     cleanup() {
+        if [ "$VERBOSE" -eq 1 ]; then echo "Clenup: remove sync files..."; fi
+
         rm ./sync_*.tar*
         rm -r "./.sync"
     }
@@ -85,7 +145,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash --noprofile -l << EOF
 
         print_status "\$name" "\${status}..." "${YELLOW}"
 
-        \${command[@]} > /dev/null 2>&1
+        if [ "$VERBOSE" -eq 0 ]; then
+            \${command[@]} > /dev/null 2>&1
+        else
+            \${command[@]}
+        fi
+
         local ret=\$?
 
         if [ "\$ret" -ne 0 ]; then
@@ -112,7 +177,6 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash --noprofile -l << EOF
         exit 2
     }
 
-
     ##############################################
 
     cd "${REMOTE_DIR}" || exit 1
@@ -138,6 +202,8 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash --noprofile -l << EOF
     while read -r file; do
         SRC_FILE="\$file"
         DEST_FILE="./mod/\${file#./.sync/}"
+
+        if [ "$VERBOSE" -eq 1 ]; then echo "► Check: \$SRC_FILE"; fi
 
         if ! cmp -s "\$SRC_FILE" "\$DEST_FILE"; then
             echo -e "${YELLOW}► File changed: \$DEST_FILE${NC}"

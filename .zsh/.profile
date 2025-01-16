@@ -1,2 +1,5 @@
 export SHELL=`which zsh`
-[ -z "$ZSH_VERSION" ] && exec "$SHELL" -l
+
+if [ -n "$SSH_TTY" ] && [ -z "$ZSH_VERSION" ]; then
+    exec "$SHELL" -l
+fi
