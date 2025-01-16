@@ -54,6 +54,8 @@ if [ $RECOVER_RET != "OK" ]; then
     exit 3
 fi
 
-# This message not printed, since /machine/update/recover reboots if succeed
-
 echo "ZMOD source changed successfully!"
+echo; echo "Rebooting..."
+
+sync
+reboot
