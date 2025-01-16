@@ -70,7 +70,7 @@ abort() {
 
 trap "abort" INT
 
-declare -a arr EXCLUDES=(
+declare -a EXCLUDES=(
     "./${ARCHIVE_NAME}"
     ".git"
     ".vscode"
@@ -120,7 +120,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     ##############################################
 
     cleanup() {
-        if [ "$VERBOSE" -eq 1 ]; then echo "Clenup: remove sync files..."; fi
+        if [ "$VERBOSE" -eq 1 ]; then echo "Cleanup: remove sync files..."; fi
 
         rm ./sync_*.tar*
         rm -r "./.sync"
