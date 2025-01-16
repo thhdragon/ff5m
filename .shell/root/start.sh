@@ -48,8 +48,6 @@ for _ in $(seq 0 30); do
     sleep 1
 done
 
-cd /opt/config/mod/
-git log | head -3 | grep Date > /opt/config/mod_data/date.txt
 echo "ZSSH_RELOAD" > /tmp/printer
 
 touch $START_PROC_DONE_F
