@@ -119,6 +119,13 @@ start_prepare()
     mkdir -p $MOD/root/printer_data/comms
     mkdir -p $MOD/root/printer_data/certs
 
+    # oh-my-zsh
+    mkdir -p /root/.oh-my-zsh
+    mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
+    ln -s /opt/config/mod/.zsh/.profile /root/.profile
+    ln -s /opt/config/mod/.zsh/.zshrc /root/.zshrc
+
+
     if  ! [ -d $MOD/opt/klipper/docs ]
      then
         mkdir -p $MOD/opt/klipper/docs

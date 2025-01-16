@@ -1,3 +1,4 @@
 .vscode
 .idea
 sync_*.tar*
+.DS_store

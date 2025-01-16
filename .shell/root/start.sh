@@ -78,6 +78,5 @@ if [ "$TIME_IN_SYNC" -eq 0 ]; then
         sleep 5
     done
     
-    date
     echo "Done"
 fi
