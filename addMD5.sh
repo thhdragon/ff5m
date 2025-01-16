@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# Author: Alexander
+##
+## Adding MD5 checkum to gcode file
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
 
 if [ $# -ne 1 ]; then echo "Usage: ./$0 your_file.gcode"; exit 1; fi
 if ! [ -f $1 ]; then echo "File $1 not found"; exit 1; fi

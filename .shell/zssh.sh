@@ -4,7 +4,6 @@
 #
 
 renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
-/root/printer_data/scripts/zversion.sh
 
 if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART|RELOAD) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT REMOTE_RUN RESTART|NOTRESTART"; exit 1; fi
 

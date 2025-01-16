@@ -13,7 +13,6 @@ if len(sys.argv)==2:
         s.sendall(bytes("~"+sys.argv[1]+"\r\n","utf-8"))
         data = s.recv(1024)
         print('Received', repr(data))
-        s.close()
 
 if len(sys.argv)==3:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -21,4 +20,3 @@ if len(sys.argv)==3:
         s.sendall(bytes("~M23 0:/user/"+sys.argv[2]+"\r\n","utf-8"))
         data = s.recv(1024)
         print('Received', repr(data))
-        s.close()

@@ -1,5 +1,13 @@
 #!/bin/sh
 
+## Starting zmod services
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"
 START_PROC_DONE_F="/tmp/start_proc_done"
 
@@ -18,18 +26,34 @@ if [ "$SWAP" = "/root/swap" ]; then
     fi
 fi
 
+$( [ -f $NOT_FIRST_LAUNCH_F ] ); TIME_IN_SYNC=$(( $? == 0 ))
+
 synchronize_time() {
+    echo "Trying to synchronize time..."
     for server in ru.pool.ntp.org 1.ru.pool.ntp.org 2.ru.pool.ntp.org 3.ru.pool.ntp.org \
     4.ru.pool.ntp.org ntp1.vniiftri.ru ntp2.vniiftri.ru ntp3.vniiftri.ru \
     ntp4.vniiftri.ru ntp5.vniiftri.ru ntp.sstf.nsk.ru timesstf.sstf.nsk.ru ntp.kam.vniiftri.net; do
-        ntpd -dd -n -q -p $server && return
+        ntpd -dd -n -q -p $server > /dev/null 2>&1
+        if [ "$?" -eq 0 ]; then 
+            echo "Successfully synchronize time"
+            date
+            TIME_IN_SYNC=1
+            return 0
+        fi
     done
+    
+    echo "Unable to synchronize time"
+    return 1
 }
 
-if [ ! -f $NOT_FIRST_LAUNCH_F ]; then
+if [ "$TIME_IN_SYNC" -eq 0 ]; then
+    echo "*** Initial time synchronization"
+    
     date 2025.01.01-00:00:00
     synchronize_time
 fi
+
+echo "Starting services..."
 
 /opt/config/mod/.shell/root/S65moonraker start
 /opt/config/mod/.shell/root/S70httpd start
@@ -40,21 +64,20 @@ for _ in $(seq 0 30); do
     sleep 1
 done
 
-cd /opt/config/mod/
-git log | head -3 | grep Date > /opt/config/mod_data/date.txt
+echo "Services started"
+
 echo "ZSSH_RELOAD" > /tmp/printer
 
+touch $NOT_FIRST_LAUNCH_F
 touch $START_PROC_DONE_F
 
-if [ ! -f $NOT_FIRST_LAUNCH_F ]; then
-    touch $NOT_FIRST_LAUNCH_F
-
+if [ "$TIME_IN_SYNC" -eq 0 ]; then
+    echo "*** Postponed time synchronization"
+    
     for _ in $(seq 0 50); do
         synchronize_time && break
         sleep 5
     done
-    
-    date
 fi
 
-echo "Start END"
+echo "Done"

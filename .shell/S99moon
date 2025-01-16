@@ -1,27 +1,37 @@
 #!/bin/sh
 
+## General service to control zmod services
+##
+## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
 MOD=/data/.mod/.zmod
 
+NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"
 START_PROC_DONE_F="${MOD}/tmp/start_proc_done"
 
 unset LD_PRELOAD
 
 start() {
-  /etc/init.d/prepare.sh &
+    if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 1; fi
+
+    /etc/init.d/prepare.sh &
 }
 
 stop() {
-    printf "Stopping moon: "
+    echo "Stopping moon..."
     chroot $MOD /opt/config/mod/.shell/root/stop.sh
     echo "OK"
 }
 
 up() {
-    printf "Starting moon: "
-
+    echo "Starting moon..."
+    
     rm -f $START_PROC_DONE_F
     chroot $MOD /opt/config/mod/.shell/root/start.sh &
-
+    
     for _ in $(seq 0 15); do
         test -f $START_PROC_DONE_F && break
         sleep 1
@@ -32,17 +42,18 @@ up() {
 case "$1" in
     up)
         up
-        ;;
+    ;;
     start)
         start
-        ;;
+    ;;
     stop)
         stop
-        ;;
+    ;;
     restart|reload)
         stop
-        start
-        ;;
+        sleep 1
+        up
+    ;;
     *)
         echo "Usage: $0 {start|stop|restart|up}"
         exit 1

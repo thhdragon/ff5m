@@ -111,7 +111,8 @@ class Machine:
             "none": BaseProvider,
             "systemd_cli": SystemdCliProvider,
             "systemd_dbus": SystemdDbusProvider,
-            "supervisord_cli": SupervisordCliProvider
+            "supervisord_cli": SupervisordCliProvider,
+            "simple": SimpleProvider,
         }
         self.provider_type = config.get('provider', 'systemd_dbus')
         pclass = providers.get(self.provider_type)
@@ -1606,6 +1607,20 @@ class SupervisordCliProvider(BaseProvider):
             return service_info
         service_info["properties"] = dict(spv_config[section_name])
         return service_info
+
+# Simple service restarting provider, based on custom script (default path: /etc/init.d/)
+class SimpleProvider(BaseProvider):
+    def __init__(self, config: ConfigHelper) -> None:
+        super().__init__(config)
+        self.script_path = config.get("script_path", "/etc/init.d/")
+        self.script_timeout = config.getfloat("script_timeout", 30.)
+
+    async def do_service_action(
+        self, action: str, service_name: str
+    ) -> None:
+        path = os.path.join(self.script_path, service_name)
+        cmd = f"{path} {action}"
+        return await self.shell_cmd.exec_cmd(cmd, timeout=self.script_timeout)
 
 
 # Install validation
