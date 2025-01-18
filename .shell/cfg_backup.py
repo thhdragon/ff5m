@@ -143,12 +143,12 @@ class Configuration:
         for section in self.sections:
             params = list(section.parameters)
             if len(params) == 1 and section.contains(PARAM_WILDCARD):
-                print(f"{'Save' if section.action(PARAM_WILDCARD) == Action.ADD else "Remove"} entire section {section.name!r}")
+                print(f"{'Save' if section.action(PARAM_WILDCARD) == Action.ADD else 'Remove'} entire section {section.name!r}")
                 continue
 
             print(f"Section {section.name}")
             for param in params:
-                print(f"\t {'Save' if param.action == Action.ADD else "Remove"} "
+                print(f"\t {'Save' if param.action == Action.ADD else 'Remove'} "
                       f"{param.name if param.name != PARAM_WILDCARD else '<others>'}")
 
 
@@ -359,7 +359,7 @@ def backup(file_path, dst_path, dry=False):
 ## Restore command implementation
 ##########################################################################
 
-def parse_backup(file_path):
+def load_backup(file_path):
     print(f"Parsing backup \"{file_path}\"...")
 
     result = dict()
@@ -375,12 +375,17 @@ def parse_backup(file_path):
             if VERBOSE: print(f"Loaded section: {section_name}")
         elif token == CfgToken.PARAMETER and section_name and PARAMETERS.is_saving(section_name, param_name=kwargs["key"]):
             section[kwargs["key"]] = kwargs["value"]
-            if VERBOSE: print(f"  - Load Parameter {kwargs["key"]}")
+            if VERBOSE: print(f"  - Load Parameter {kwargs['key']}")
         elif token in {CfgToken.BREAK or CfgToken.SECTION}:
             section = None
             section_name = None
 
     iterate_printer_config_tokens(file_path, callback=_parse_data)
+
+    if all(len(d) == 0 for d in result.values()):
+        print("Backup file doesn't contains any properties", file=sys.stderr)
+        exit(4)
+
     return result
 
 
@@ -423,7 +428,7 @@ def restore(file_path, saved_data, dry=False):
             elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
                 should_write_src_line = False
                 file_changed = True
-                print(f"Deleted {section_name} {kwargs["key"]}")
+                print(f"Deleted {section_name} {kwargs['key']}")
 
             # Process saved sections/parameters
             elif token == CfgToken.SECTION and line in data:
@@ -476,6 +481,71 @@ def restore(file_path, saved_data, dry=False):
     print("\nDone!")
 
 
+def has_changes(file_path, saved_data):
+    print(f"Verifying config \"{file_path}\"...\n")
+
+    file_changed = False
+    data = deepcopy(saved_data)
+
+    section_data: Dict[str, Dict[str, str]] | None = None
+    section_name: Optional[str] = None
+
+    def _parse_config(token, line, **kwargs):
+        nonlocal data, file_changed, section_data, section_name
+
+        # Process section switch
+        if token == CfgToken.BREAK or token == CfgToken.SECTION:
+            if section_data is not None:
+                for key, value in section_data.items():
+                    file_changed = True
+                    print(f"To add {section_name} {key}: <-- {value}")
+
+                del data[section_name]
+
+            section_data = None
+            section_name = None
+
+        # Process removed sections/parameters
+        if token == CfgToken.SECTION and PARAMETERS.is_removing(line):
+            section_name = line
+            file_changed = True
+            print(f"To delete section {section_name}")
+        elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
+            file_changed = True
+            print(f"To delete {section_name} {kwargs['key']}")
+
+        # Process saved sections/parameters
+        elif token == CfgToken.SECTION and line in data:
+            section_data = data[line]
+            section_name = line
+        elif token == CfgToken.PARAMETER and section_data and kwargs["key"] in section_data:
+            prop = kwargs["key"]
+            actual_value = kwargs["value"]
+            saved_value = section_data[prop]
+            del section_data[prop]
+
+            if actual_value != saved_value:
+                print(f"To restore {section_name} {prop}: {actual_value} <-- {saved_value}")
+                file_changed = True
+            elif VERBOSE:
+                print(f"Not Changed {section_name} {prop}: {actual_value}")
+
+    iterate_printer_config_tokens(file_path, callback=_parse_config)
+
+    # Add missing sections/props
+    for section_name, section_data in data.items():
+        if len(section_data) == 0:
+            continue
+
+        print(f"To add section {section_name}")
+
+        for prop_key, prop_value in section_data.items():
+            file_changed = True
+            print(f"To add {section_name} {prop_key}: <-- {prop_value}")
+
+    return file_changed
+
+
 # @formatter:off
 PARAMETERS = (
     ConfigurationBuilder()
@@ -501,8 +571,8 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--params", type=str,
                         help="Path to backup parameters configuration file", )
     parser.add_argument("-m", "--mode", type=str,
-                        choices=["backup", "restore"],
-                        help="Mode: (backup, restore)")
+                        choices=["backup", "restore", "verify"],
+                        help="Mode: (backup, restore, verify)")
     parser.add_argument("--dry", action="store_true",
                         help='Dry run', default=False)
     parser.add_argument("--verbose", action="store_true",
@@ -540,12 +610,15 @@ if __name__ == "__main__":
             print(f"Backup file doesn't exists: \"{data_path}\"\n", file=sys.stderr)
             exit(2)
 
-        backup_data = parse_backup(data_path)
-        if all(len(d) == 0 for d in backup_data.values()):
-            print("Backup file doesn't contains any properties", file=sys.stderr)
-            exit(4)
-
+        backup_data = load_backup(data_path)
         restore(config_path, backup_data, dry_run)
+    elif mode == "verify":
+        backup_data = load_backup(data_path)
+        if has_changes(config_path, backup_data):
+            print("Config changed!")
+            exit(1)
+
+        print("Config doesn't contains changed properties!")
     else:
         parser.print_help(sys.stderr)
         exit(1)
