@@ -9,20 +9,198 @@ import os.path
 import re
 import sys
 
+from abc import ABC, abstractmethod
+from copy import deepcopy
 from enum import Enum
+from typing import Optional, Dict, Self, Iterable
 
-VERBOSE = 0
+PARAM_WILDCARD = "*"
+VERBOSE = False
 
-PARAMETERS_TO_ADD = {
-    "[stepper_x]": {"rotation_distance"},
-    "[stepper_y]": {"rotation_distance"},
-    "[stepper_z]": {"rotation_distance"}
-}
 
-PARAMETERS_TO_REMOVE = dict()
+## Backup configuration
+##########################################################################
 
-SECTIONS_TO_ADD = set()
-SECTIONS_TO_REMOVE = set()
+class Action(Enum):
+    ADD = '+'
+    REMOVE = '-'
+
+
+class NameEqualable(ABC):
+    @property
+    @abstractmethod
+    def name(self):
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.name == other.name
+        return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, self.__class__):
+            return self.name < other.name
+        return NotImplemented
+
+    def __hash__(self):
+        return self.name.__hash__()
+
+
+class ParameterConfiguration(NameEqualable):
+    def __init__(self, name: str, action: Action):
+        self._name = name
+        self._action = action
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def action(self):
+        return self._action
+
+
+class SectionConfiguration(NameEqualable):
+    def __init__(self, section_name):
+        self._name = section_name
+        self._parameters: Dict[str, ParameterConfiguration] = {}
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def parameters(self) -> Iterable[ParameterConfiguration]:
+        return self._parameters.values()
+
+    def add(self, parameter: ParameterConfiguration):
+        if parameter.name in self._parameters:
+            raise ValueError(f"Section {self.name}: Parameter already exists {parameter.name!r}")
+
+        self._parameters[parameter.name] = parameter
+
+    def contains(self, param_name: str) -> bool:
+        return self.action(param_name) is not None
+
+    def action(self, param_name: str) -> Optional[Action]:
+        param = self._parameters.get(param_name, None)
+        if param is not None:
+            return param.action
+
+        param = self._parameters.get(PARAM_WILDCARD, None)
+        if param is not None:
+            return param.action
+
+        return None
+
+
+class Configuration:
+    def __init__(self):
+        self._sections: Dict[str, SectionConfiguration] = dict()
+
+    @property
+    def sections(self) -> Iterable[SectionConfiguration]:
+        return self._sections.values()
+
+    def start_section(self, section_name: str) -> SectionConfiguration:
+        section = self._sections.get(section_name, None)
+        if not section:
+            section = SectionConfiguration(section_name)
+            self._sections[section_name] = section
+
+        return section
+
+    def contains(self, section_name: str, *, param_name: Optional[str] = None) -> bool:
+        if param_name:
+            return self.action(section_name, param_name) is not None
+        return section_name in self._sections
+
+    def action(self, section_name: str, param_name: str) -> Optional[Action]:
+        section = self._sections.get(section_name, None)
+        return section.action(param_name) if section else None
+
+    def is_saving(self, section_name, *, param_name: Optional[str] = None) -> bool:
+        section = self._sections.get(section_name, None)
+        if section is None:
+            return False
+
+        if param_name is not None:
+            return section.action(param_name) == Action.ADD
+
+        return any(param.action == Action.ADD for param in section.parameters)
+
+    def is_removing(self, section_name, *, param_name: Optional[str] = None) -> bool:
+        section = self._sections.get(section_name, None)
+        if section is None:
+            return False
+
+        if param_name is not None:
+            return section.action(param_name) == Action.REMOVE
+
+        return all(param.action == Action.REMOVE for param in section.parameters)
+
+    def print(self):
+        for section in self.sections:
+            params = list(section.parameters)
+            if len(params) == 1 and section.contains(PARAM_WILDCARD):
+                print(f"{'Save' if section.action(PARAM_WILDCARD) == Action.ADD else "Remove"} entire section {section.name!r}")
+                continue
+
+            print(f"Section {section.name}")
+            for param in params:
+                print(f"\t {'Save' if param.action == Action.ADD else "Remove"} "
+                      f"{param.name if param.name != PARAM_WILDCARD else '<others>'}")
+
+
+class ConfigurationBuilder:
+    class _SectionBuilder:
+        def __init__(self, config_builder, section: SectionConfiguration):
+            self._config_builder = config_builder
+            self._section = section
+
+        @property
+        def section(self):
+            return self._section
+
+        def add_wildcard(self, action: Action = Action.ADD) -> Self:
+            self.add(PARAM_WILDCARD, action)
+            return self
+
+        def add(self, name: str, action: Action = Action.ADD) -> Self:
+            try:
+                self._section.add(ParameterConfiguration(name, action))
+            except ValueError as e:
+                print(f"Error: {e}", file=sys.stderr)
+                self._config_builder._has_errors = True
+
+            return self
+
+        def start_section(self, name: str):
+            return self._config_builder.start_section(name)
+
+        def build(self) -> Configuration:
+            return self._config_builder.build()
+
+    def __init__(self):
+        self._config = Configuration()
+        self._has_errors = False
+
+    @property
+    def has_errors(self):
+        return self._has_errors
+
+    def start_section(self, name: str) -> _SectionBuilder:
+        return self._SectionBuilder(self, self._config.start_section(name))
+
+    def build(self) -> Configuration:
+        return self._config
+
+
+## Printer's configuration parsing
+##########################################################################
+
+SECTION_RE = re.compile(r"^\[(\w+)(?:\s*(\w+))?]$")
+PARAMETER_RE = re.compile(r"^(\w+):\s*(.+)$")
 
 
 class CfgToken(Enum):
@@ -33,11 +211,7 @@ class CfgToken(Enum):
     OTHER = 5  # multi-line params, etc
 
 
-SECTION_RE = re.compile(r"^\[(\w+)(?:\s*(\w+))?]$")
-PARAMETER_RE = re.compile(r"^(\w+):\s*(.+)$")
-
-
-def parse_cfg(file_path, *, callback):
+def iterate_printer_config_tokens(file_path, *, callback):
     with open(file_path, "r") as in_f:
         for line in in_f:
             s_line = line.strip()
@@ -57,6 +231,15 @@ def parse_cfg(file_path, *, callback):
                 callback(CfgToken.OTHER, line=line)
 
 
+## Backup/Restore configuration parsing
+##########################################################################
+
+PARAMETER_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
+PARAMETER_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
+SECTION_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
+SECTION_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
+
+
 class ParametersToken(Enum):
     SECTION_PARAMETER_ADD = 1
     SECTION_PARAMETER_REMOVE = 2
@@ -65,13 +248,7 @@ class ParametersToken(Enum):
     COMMENT = 5
 
 
-PARAMETER_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
-PARAMETER_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
-SECTION_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
-SECTION_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
-
-
-def parse_parameters(file_path, *, callback):
+def iterate_cmd_config_tokens(file_path, *, callback):
     with open(file_path, "r") as in_file:
         for line in in_file:
             s_line = line.strip()
@@ -90,98 +267,81 @@ def parse_parameters(file_path, *, callback):
             elif m := SECTION_REMOVE_RE.match(s_line):
                 callback(ParametersToken.SECTION_REMOVE, line=s_line, section=m.group(1))
             else:
-                print(f"Invalid parameter line: {s_line}\n", file=sys.stderr)
+                print(f"Warning: Invalid parameter line: {s_line}", file=sys.stderr)
 
 
-def load_parameters(file_path):
+## Parameters configuration loading
+##########################################################################
+
+def parse_cmd_configuration(file_path) -> Configuration:
+    builder = ConfigurationBuilder()
+
     def _callback(token, line, **kwargs):
-        def _add_param(dict_, section, param):
-            if section not in dict_:
-                dict_[section] = set()
-
-            dict_[section].add(param)
-
         if token == ParametersToken.SECTION_PARAMETER_ADD:
-            _add_param(PARAMETERS_TO_ADD, kwargs["section"], kwargs["parameter"])
-            if VERBOSE: print(f"Parameter to add: {kwargs['section']} {kwargs['parameter']}")
-
+            builder.start_section(kwargs["section"]).add(kwargs["parameter"], Action.ADD)
         elif token == ParametersToken.SECTION_PARAMETER_REMOVE:
-            _add_param(PARAMETERS_TO_REMOVE, kwargs["section"], kwargs["parameter"])
-            if VERBOSE: print(f"Parameter to remove: {kwargs['section']} {kwargs['parameter']}")
-
+            builder.start_section(kwargs["section"]).add(kwargs["parameter"], Action.REMOVE)
         elif token == ParametersToken.SECTION_ADD:
-            SECTIONS_TO_ADD.add(kwargs["section"])
-            if VERBOSE: print(f"Section to add: {kwargs['section']}")
-
+            builder.start_section(kwargs["section"]).add_wildcard(Action.ADD)
         elif token == ParametersToken.SECTION_REMOVE:
-            SECTIONS_TO_REMOVE.add(kwargs["section"])
-            if VERBOSE: print(f"Section to remove: {kwargs['section']}")
-
-    PARAMETERS_TO_ADD.clear()
-    PARAMETERS_TO_REMOVE.clear()
-    SECTIONS_TO_ADD.clear()
-    SECTIONS_TO_REMOVE.clear()
+            builder.start_section(kwargs["section"]).add_wildcard(Action.REMOVE)
 
     print(f"Loading parameters from \"{file_path}\"...")
-    parse_parameters(file_path, callback=_callback)
+    iterate_cmd_config_tokens(file_path, callback=_callback)
 
-    for section in SECTIONS_TO_REMOVE:
-        if section in PARAMETERS_TO_REMOVE:
-            print(f"Entire section {section} will be deleted. No need to delete individual props")
-            del PARAMETERS_TO_REMOVE[section]
+    new_config = builder.build()
 
-        # TODO: it's may be useful to delete entire section and then add only needed parameters
-        if section in SECTIONS_TO_ADD or section in PARAMETERS_TO_ADD:
-            print(f"Entire section {section} will be removed. Adding parameters is forbidden!\n", file=sys.stderr)
-            exit(6)
+    if VERBOSE:
+        print("\nLoaded configuration:")
+        new_config.print()
+        print()
 
-    for section, parameters in PARAMETERS_TO_REMOVE.items():
-        if section not in PARAMETERS_TO_ADD:
-            continue
+    for section in new_config.sections:
+        wildcard_action = section.action(PARAM_WILDCARD)
+        if wildcard_action is not None:
+            if any(p.action == wildcard_action and p.name != PARAM_WILDCARD for p in section.parameters):
+                print(f"Warning: Section {section.name!r} has redundant named rule(s) since it already contains "
+                      f"{PARAM_WILDCARD!r} with same action {wildcard_action.name!r}", file=sys.stderr)
 
-        section_add = PARAMETERS_TO_ADD[section]
-        for param in parameters:
-            if param in section_add:
-                print(f"Parameter in {section} {param} marked for removal but also for addition!\n", file=sys.stderr)
-                exit(6)
+    # print(f"Warning: Section {self.name!r} adding {parameter.name!r}, "
+    #       f"configuration contains both {PARAM_WILDCARD!r} and named parameters", file=sys.stderr)
 
-    for section in SECTIONS_TO_ADD:
-        if section in PARAMETERS_TO_ADD:
-            print(f"Entire section {section} will be saved. No need to add individual props")
-            del PARAMETERS_TO_ADD[section]
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    if builder.has_errors:
+        print("Parameters configuration has errors. Exit.", file=sys.stderr)
+        exit(6)
+
+    return new_config
 
 
-def backup(config_path, dst_path, dry=False):
-    print(f"Parsing config \"{config_path}\"...")
+## Backup command implementation
+##########################################################################
+
+def backup(file_path, dst_path, dry=False):
+    print(f"Parsing config \"{file_path}\"...")
 
     tmp_path = dst_path + ".tmp"
     with (open(tmp_path, "w") as out_f):
         empty = True
         section_key = None
-        section_cfg = None
 
         def _callback(token, line, **kwargs):
-            nonlocal section_key, section_cfg, empty
-            if token == CfgToken.SECTION:
+            nonlocal section_key, empty
+
+            if token == CfgToken.SECTION and PARAMETERS.is_saving(line):
                 section_key = line
-
-                if line in PARAMETERS_TO_ADD:
-                    section_cfg = PARAMETERS_TO_ADD[line]
-                elif line not in SECTIONS_TO_ADD:
-                    return
-
-                out_f.write(line + "\n")
+                out_f.write(section_key + "\n")
                 if VERBOSE: print(f"Section: {line}")
-            elif token == CfgToken.PARAMETER and (section_cfg and kwargs["key"] in section_cfg or
-                                                  section_key and section_key in SECTIONS_TO_ADD):
+            elif token == CfgToken.PARAMETER and PARAMETERS.is_saving(section_key, param_name=kwargs["key"]):
                 out_f.write(line + "\n")
-                if VERBOSE: print(f"  - {line}")
                 empty = False
-            elif token == CfgToken.BREAK:
+                if VERBOSE: print(f"  - {line}")
+            elif token in {CfgToken.BREAK, CfgToken.SECTION}:
                 section_key = None
-                section_cfg = None
 
-        parse_cfg(config_path, callback=_callback)
+        iterate_printer_config_tokens(file_path, callback=_callback)
 
     if empty:
         print("Unable to find any parameters in config. Backup not created\n", file=sys.stderr)
@@ -196,128 +356,138 @@ def backup(config_path, dst_path, dry=False):
     print("\nDone!")
 
 
-def restore(config_path, data_path, dry=False):
-    print(f"Parsing backup \"{data_path}\"...")
+## Restore command implementation
+##########################################################################
 
-    data = dict()
-    section = None
-    section_name = None
+def parse_backup(file_path):
+    print(f"Parsing backup \"{file_path}\"...")
+
+    result = dict()
+    section: Optional[Dict[str, dict]] = None
+    section_name: Optional[str] = None
 
     def _parse_data(token, line, **kwargs):
-        nonlocal data, section, section_name
-        if token == CfgToken.SECTION and (line in SECTIONS_TO_ADD
-                                          or line in PARAMETERS_TO_ADD):
-            if line not in data:
-                data[line] = dict()
-            section = data[line]
+        nonlocal result, section, section_name
+        if token == CfgToken.SECTION and PARAMETERS.is_saving(line):
+            if line not in result: result[line] = dict()
+            section = result[line]
             section_name = line
             if VERBOSE: print(f"Loaded section: {section_name}")
-
-        elif token == CfgToken.PARAMETER and section is not None and ((section_name not in PARAMETERS_TO_REMOVE
-                                                                       or kwargs['key'] not in PARAMETERS_TO_REMOVE[
-                                                                           section_name])
-                                                                      and (section_name in SECTIONS_TO_ADD
-                                                                           or kwargs['key'] in PARAMETERS_TO_ADD[
-                                                                               section_name])):
-            if VERBOSE: print(f"  - Load Parameter {kwargs['key']}")
+        elif token == CfgToken.PARAMETER and section_name and PARAMETERS.is_saving(section_name, param_name=kwargs["key"]):
             section[kwargs["key"]] = kwargs["value"]
+            if VERBOSE: print(f"  - Load Parameter {kwargs["key"]}")
+        elif token in {CfgToken.BREAK or CfgToken.SECTION}:
+            section = None
+            section_name = None
 
-    parse_cfg(data_path, callback=_parse_data)
+    iterate_printer_config_tokens(file_path, callback=_parse_data)
+    return result
 
-    if not all(len(d) for d in data.values()):
-        print("Backup file doesn't contains any properties", file=sys.stderr)
-        exit(4)
 
-    print(f"Restoring config \"{config_path}\"...\n")
+def restore(file_path, saved_data, dry=False):
+    print(f"Restoring config \"{file_path}\"...\n")
 
-    restored = False
-    tmp_path = config_path + ".tmp"
+    file_changed = False
+    tmp_path = file_path + ".tmp"
+
+    data = deepcopy(saved_data)
 
     with open(tmp_path, "w") as out_f:
-        section = None
-        section_name = None
-        last_token = None
+        section_data: Dict[str, Dict[str, str]] | None = None
+        section_name: Optional[str] = None
+        last_token: Optional[CfgToken] = None
 
         def _parse_config(token, line, **kwargs):
-            nonlocal restored, data, section, section_name, last_token
+            nonlocal file_changed, data, section_data, section_name, last_token
             should_write_src_line = True
 
             # Process section switch
             if token == CfgToken.BREAK or token == CfgToken.SECTION:
-                if section is not None:
-                    for key, value in section.items():
+                if section_data is not None:
+                    for key, value in section_data.items():
                         out_f.write(f"{key}: {value}\n")
                         print(f"Added {section_name} {key}: <-- {value}")
-                        restored = True
+                        file_changed = True
 
                     del data[section_name]
 
-                section = None
+                section_data = None
                 section_name = None
 
-            if token == CfgToken.SECTION and line in SECTIONS_TO_REMOVE:
+            # Process removed sections/parameters
+            if token == CfgToken.SECTION and PARAMETERS.is_removing(line):
                 section_name = line
                 should_write_src_line = False
-                restored = True
+                file_changed = True
                 print(f"Deleted {section_name}")
-
-            elif token == CfgToken.SECTION and line in data:
-                section = data[line]
-                section_name = line
-
-            elif token == CfgToken.PARAMETER and (section_name in SECTIONS_TO_REMOVE
-                                                  or (section_name in PARAMETERS_TO_REMOVE
-                                                      and kwargs["key"] in PARAMETERS_TO_REMOVE[section_name])):
+            elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
                 should_write_src_line = False
-                restored = True
+                file_changed = True
                 print(f"Deleted {section_name} {kwargs["key"]}")
 
-            elif token == CfgToken.PARAMETER and section is not None and kwargs["key"] in section:
+            # Process saved sections/parameters
+            elif token == CfgToken.SECTION and line in data:
+                section_data = data[line]
+                section_name = line
+            elif token == CfgToken.PARAMETER and section_data and kwargs["key"] in section_data:
                 prop = kwargs["key"]
                 actual_value = kwargs["value"]
-                saved_value = section[prop]
-                del section[prop]
+                saved_value = section_data[prop]
+                del section_data[prop]
 
                 if actual_value != saved_value:
                     out_f.write(f"{prop}: {saved_value}\n")
-                    print(f"Restored {section_name} {prop}: {actual_value} <-- {saved_value}")
                     should_write_src_line = False
-                    restored = True
+                    file_changed = True
+                    print(f"Restored {section_name} {prop}: {actual_value} <-- {saved_value}")
                 elif VERBOSE:
                     print(f"Not Changed {section_name} {prop}: {actual_value}")
 
+            last_token = token
             if should_write_src_line:
                 out_f.write(line + "\n")
-            last_token = token
 
-        parse_cfg(config_path, callback=_parse_config)
+        iterate_printer_config_tokens(file_path, callback=_parse_config)
 
         if last_token != CfgToken.BREAK:
             out_f.write("\n")
 
         # Add missing sections/props
-        for section_name, section in data.items():
-            if len(section) == 0:
+        for section_name, section_data in data.items():
+            if len(section_data) == 0:
                 continue
 
             out_f.write(f"\n{section_name}\n")
             print(f"Added Section {section_name}")
 
-            for key, value in section.items():
-                out_f.write(f"{key}: {value}\n")
-                print(f"Added {section_name} {key}: <-- {value}")
-                restored = True
+            for prop_key, prop_value in section_data.items():
+                out_f.write(f"{prop_key}: {prop_value}\n")
+                file_changed = True
+                print(f"Added {section_name} {prop_key}: <-- {prop_value}")
 
-    if not restored:
+    if not file_changed:
         print("Config doesn't contains changed properties!")
         return
 
     if not dry:
-        print(f"Update config \"{config_path}\"")
-        os.rename(tmp_path, config_path)
+        print(f"Update config \"{file_path}\"")
+        os.rename(tmp_path, file_path)
 
     print("\nDone!")
 
+
+# @formatter:off
+PARAMETERS = (
+    ConfigurationBuilder()
+        .start_section("[stepper_x ]")
+            .add("rotation_distance")
+        .start_section("[stepper_y]")
+            .add("rotation_distance")
+        .start_section("[stepper_z]")
+            .add("rotation_distance")
+        .build()
+)
+# @formatter:on
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Printer configuration backup & restore script")
@@ -356,10 +526,10 @@ if __name__ == "__main__":
         exit(2)
 
     if params_path:
-        load_parameters(params_path)
+        PARAMETERS = parse_cmd_configuration(params_path)
         print()
 
-    if len(PARAMETERS_TO_ADD) == 0 and len(PARAMETERS_TO_REMOVE) == 0 and len(SECTIONS_TO_REMOVE) == 0:
+    if len(list(PARAMETERS.sections)) == 0:
         print(f"Parameters list is empty!\n", file=sys.stderr)
         exit(5)
 
@@ -370,7 +540,12 @@ if __name__ == "__main__":
             print(f"Backup file doesn't exists: \"{data_path}\"\n", file=sys.stderr)
             exit(2)
 
-        restore(config_path, data_path, dry_run)
+        backup_data = parse_backup(data_path)
+        if all(len(d) == 0 for d in backup_data.values()):
+            print("Backup file doesn't contains any properties", file=sys.stderr)
+            exit(4)
+
+        restore(config_path, backup_data, dry_run)
     else:
         parser.print_help(sys.stderr)
         exit(1)
