@@ -412,10 +412,6 @@ def load_backup(file_path):
 
     iterate_printer_config_tokens(file_path, callback=_parse_data)
 
-    if all(len(d) == 0 for d in result.values()):
-        print("Backup file doesn't contains any properties", file=sys.stderr)
-        exit(4)
-
     return result
 
 
@@ -432,6 +428,13 @@ def restore(file_path, saved_data, dry=False):
         section_data: Dict[str, Dict[str, str]] | None = None
         section_name: Optional[str] = None
 
+        def _add_section_props(props):
+            nonlocal file_changed
+            for key, value in props.items():
+                out_f.write(f"{key}: {value}\n")
+                print(f"Added {section_name} {key}: <-- {value}")
+                file_changed = True
+
         def _parse_config(token, line, **kwargs):
             nonlocal file_changed, data, section_data, section_name
             should_write_src_line = True
@@ -439,11 +442,7 @@ def restore(file_path, saved_data, dry=False):
             # Process section switch
             if token == CfgToken.BREAK or token == CfgToken.SECTION:
                 if section_data is not None:
-                    for key, value in section_data.items():
-                        out_f.write(f"{key}: {value}\n")
-                        print(f"Added {section_name} {key}: <-- {value}")
-                        file_changed = True
-
+                    _add_section_props(section_data)
                     del data[section_name]
 
                 section_data = None
@@ -502,17 +501,19 @@ def restore(file_path, saved_data, dry=False):
             print(f"Added include {path!r}")
             file_changed = True
 
+        # Check if last section has unprocessed parameters
+        if section_name is not None and section_name in data:
+            _add_section_props(section_data)
+            del data[section_name]
+            section_name = None
+
         # Add missing sections/props
         for name, section_data in data.items():
             if len(section_data) == 0:
                 continue
 
-            # Check if previous (only) section has unprocessed parameters
-            if section_name != name:
-                out_f.write(f"\n{name}\n")
-                print(f"Added Section {section_name}")
-
-            section_name = None
+            out_f.write(f"\n{name}\n")
+            print(f"Added Section {name}")
 
             for prop_key, prop_value in section_data.items():
                 out_f.write(f"{prop_key}: {prop_value}\n")
@@ -526,6 +527,8 @@ def restore(file_path, saved_data, dry=False):
     if not dry:
         print(f"Update config \"{file_path}\"")
         os.rename(tmp_path, file_path)
+    else:
+        print(f"Saved to \"{tmp_path}\"")
 
     print("\nDone!")
 
@@ -599,8 +602,6 @@ def has_changes(file_path, saved_data):
 
         if section_name != name:
             print(f"To Add section {name}")
-
-        section_name = None
 
         for prop_key, prop_value in section_data.items():
             file_changed = True
