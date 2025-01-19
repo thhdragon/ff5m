@@ -11,8 +11,9 @@ import sys
 
 from abc import ABC, abstractmethod
 from copy import deepcopy
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Dict, Self, Iterable, Tuple
+from typing import Optional, Dict, Self, Iterable, Tuple, Set
 
 PARAM_WILDCARD = "*"
 VERBOSE = False
@@ -142,7 +143,10 @@ class Configuration:
         if param_name is not None:
             return section.action(param_name) == Action.REMOVE
 
-        return all(param.action == Action.REMOVE for param in section.parameters)
+        if section.action(PARAM_WILDCARD) == Action.REMOVE:
+            return not any(param.action != Action.REMOVE for param in section.parameters)
+
+        return False
 
     def print(self):
         for path, action in self.includes:
@@ -337,14 +341,11 @@ def parse_cmd_configuration(file_path) -> Configuration:
         print()
 
     for section in new_config.sections:
-        wildcard_action = section.action(PARAM_WILDCARD)
-        if wildcard_action is not None:
-            if any(p.action == wildcard_action and p.name != PARAM_WILDCARD for p in section.parameters):
-                print(f"Warning: Section {section.name!r} has redundant named rule(s) since it already contains "
-                      f"{PARAM_WILDCARD!r} with same action {wildcard_action.name!r}", file=sys.stderr)
-
-    # print(f"Warning: Section {self.name!r} adding {parameter.name!r}, "
-    #       f"configuration contains both {PARAM_WILDCARD!r} and named parameters", file=sys.stderr)
+        if (wildcard_action := section.action(PARAM_WILDCARD)) is not None \
+                and any(p.action == wildcard_action and p.name != PARAM_WILDCARD for p in section.parameters):
+            print(f"Warning: Section {section.name!r} has redundant named rule(s) "
+                  f"since it already contains {PARAM_WILDCARD!r} "
+                  f"with same action {wildcard_action.name!r}", file=sys.stderr)
 
     sys.stdout.flush()
     sys.stderr.flush()
@@ -396,8 +397,59 @@ def backup(file_path, dst_path, dry=False):
     print("\nDone!")
 
 
-## Restore command implementation
+## Auxiliary restore classes
 ##########################################################################
+
+@dataclass
+class RestoreState:
+    @dataclass
+    class SectionState:
+        name: str
+        data: Dict[str, str] | None = None
+
+    data: Dict[str, Dict[str, str]]
+    includes: Set[str]
+
+    is_changed = False
+    is_end = False
+    current_section: Optional[SectionState] = None
+
+    def load_section(self, section_name: str):
+        self.current_section = self.SectionState(section_name, self.data.get(section_name))
+
+    def pop_saved_value(self, param_name: str):
+        if not self.current_section: raise Exception("Section not selected!")
+        return self.current_section.data.pop(param_name)
+
+    def pop_include(self, include_path: str):
+        self.includes.remove(include_path)
+        return include_path
+
+    def has_section_data(self, param_name: str):
+        if not self.current_section or not self.current_section.data: return False
+        return param_name in self.current_section.data
+
+    def is_saving(self, *, param_name: Optional[str] = None):
+        if not self.current_section: raise Exception("Section not selected!")
+        return PARAMETERS.is_saving(self.current_section.name, param_name=param_name)
+
+    def is_removing(self, *, param_name: Optional[str] = None):
+        if not self.current_section: raise Exception("Section not selected!")
+        return PARAMETERS.is_removing(self.current_section.name, param_name=param_name)
+
+    def mark_parameter_used(self, param_name: str):
+        if not self.current_section or self.current_section.data is None:
+            raise Exception(f"Trying to mark used parameter {param_name!r} without section selected")
+        elif param_name not in self.current_section:
+            raise Exception(f"Trying to mark used non-existing section's ${self.current_section.name!r} parameter {param_name!r}")
+
+        del self.current_section.data[param_name]
+
+    def mark_section_used(self):
+        if not self.current_section: raise Exception("Trying to mark used empty section!")
+        del self.data[self.current_section.name]
+        self.current_section = None
+
 
 def load_backup(file_path):
     print(f"Parsing backup \"{file_path}\"...")
@@ -425,114 +477,106 @@ def load_backup(file_path):
     return result
 
 
+## Restore command implementation
+##########################################################################
+
 def restore(file_path, saved_data, dry=False):
     print(f"Restoring config \"{file_path}\"...\n")
 
-    file_changed = False
-    end_file = False
     tmp_path = file_path + ".tmp"
+    state = RestoreState(
+        data=deepcopy(saved_data),
+        includes={inc for inc, act in PARAMETERS.includes if act == Action.ADD}
+    )
 
-    data = deepcopy(saved_data)
-    includes_to_add = {inc for inc, act in PARAMETERS.includes if act == Action.ADD}
+    def _handle_section_end(section):
+        if section.data is None: return
+
+        for key, value in section.data.items():
+            out_f.write(f"{key}: {value}\n")
+            state.is_changed = True
+            print(f"Added {state.current_section.name} {key}: <-- {value}")
+
+        state.mark_section_used()
 
     with open(tmp_path, "w") as out_f:
-        section_data: Dict[str, Dict[str, str]] | None = None
-        section_name: Optional[str] = None
-
-        def _handle_section_end(props):
-            nonlocal file_changed
-            for key, value in props.items():
-                out_f.write(f"{key}: {value}\n")
-                print(f"Added {section_name} {key}: <-- {value}")
-                file_changed = True
-
-        def _handle_editable_block_end():
-            nonlocal section_name, section_data, file_changed
-            # Check missing includes:
-            for include_path in includes_to_add:
-                print(f"Added include {include_path!r}")
-                file_changed = True
-
-            # Check if last section has unprocessed parameters
-            if section_name is not None and section_name in data:
-                _handle_section_end(data[section_name])
-                del data[section_name]
-
-            section_name = None
-            section_data = None
-
-            # Add missing sections/props
-            for name, section_data_ in data.items():
-                if len(section_data_) == 0:
-                    continue
-
-                out_f.write(f"\n{name}\n")
-                print(f"Added Section {name}")
-
-                for prop_key, prop_value in section_data_.items():
-                    out_f.write(f"{prop_key}: {prop_value}\n")
-                    file_changed = True
-                    print(f"Added {name} {prop_key}: <-- {prop_value}")
-
-            out_f.write("\n")
-
         def _parse_config(token, line, **kwargs):
-            nonlocal file_changed, end_file, data, section_data, section_name
             should_write_src_line = True
 
-            if end_file and token in {CfgToken.SECTION, CfgToken.PARAMETER, CfgToken.INCLUDE}:
+            if state.is_end and token in {CfgToken.SECTION, CfgToken.PARAMETER, CfgToken.INCLUDE}:
                 print(f"Warning: read token {token.name!r} after end of editable file part: {kwargs}", file=sys.stderr)
 
             # Process section switch
-            if token == CfgToken.BREAK or token == CfgToken.SECTION:
-                if section_data is not None:
-                    _handle_section_end(section_data)
-                    del data[section_name]
+            if token in {CfgToken.BREAK, CfgToken.SECTION}:
+                if state.current_section:
+                    _handle_section_end(state.current_section)
 
-                section_data = None
-                section_name = line if token == CfgToken.SECTION else None
+                if token == CfgToken.SECTION:
+                    state.load_section(line)
 
             # Process removed sections/parameters
-            if token == CfgToken.SECTION and PARAMETERS.is_removing(section_name):
+            if token == CfgToken.SECTION and state.is_removing():
                 should_write_src_line = False
-                file_changed = True
-                print(f"Deleted {section_name}")
-            elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
+                state.is_changed = True
+                print(f"Removed {state.current_section.name}")
+            elif token == CfgToken.PARAMETER and state.is_removing(param_name=kwargs["key"]):
                 should_write_src_line = False
-                file_changed = True
-                print(f"Deleted {section_name} {kwargs['key']}")
+                state.is_changed = True
+                print(f"Removed {state.current_section.name} {kwargs['key']}")
 
             # Process saved sections/parameters
-            elif token == CfgToken.SECTION and section_name in data:
-                section_data = data[section_name]
-            elif token == CfgToken.PARAMETER and section_data and kwargs["key"] in section_data:
-                prop = kwargs["key"]
+            elif token == CfgToken.PARAMETER and state.has_section_data(prop := kwargs["key"]):
                 actual_value = kwargs["value"]
-                saved_value = section_data[prop]
-                del section_data[prop]
+                saved_value = state.pop_saved_value(prop)
+
+                # TODO: add to check for parameter duplicates after that
 
                 if actual_value != saved_value:
-                    out_f.write(f"{prop}: {saved_value}\n")
+                    state.is_changed = True
                     should_write_src_line = False
-                    file_changed = True
-                    print(f"Restored {section_name} {prop}: {actual_value} <-- {saved_value}")
+                    out_f.write(f"{prop}: {saved_value}\n")
+                    print(f"Restored {state.current_section.name} {prop}: {actual_value} <-- {saved_value}")
                 elif VERBOSE:
-                    print(f"Not Changed {section_name} {prop}: {actual_value}")
+                    print(f"Not Changed {state.current_section.name} {prop}: {actual_value}")
 
             elif token == CfgToken.INCLUDE:
                 act = PARAMETERS.include_action(kwargs["path"])
+
                 if act == Action.ADD:
-                    includes_to_add.remove(kwargs["path"])
-                elif act == Action.REMOVE:
-                    print(f"Deleted include {kwargs['path']!r}")
-                    file_changed = True
+                    state.pop_include(kwargs["path"])
+                else:
+                    state.is_changed = True
+                    print(f"Removed Include {kwargs['path']!r}")
 
                 # Skip all 'ADD' and 'REMOVE' includes, since we already added them at the beginning
                 should_write_src_line = act is None
 
             elif token == CfgToken.EDITABLE_BLOCK_END:
-                _handle_editable_block_end()
-                end_file = True
+                state.is_end = True
+
+                # Check missing includes:
+                for include_path in state.includes:
+                    state.is_changed = True
+                    print(f"Added Include {include_path!r}")
+
+                # Handle last section (if any) unprocessed parameters
+                if state.current_section:
+                    _handle_section_end(state.current_section)
+
+                # Add missing sections/props
+                for name, section_data_ in state.data.items():
+                    if len(section_data_) == 0:
+                        continue
+
+                    out_f.write(f"\n{name}\n")
+                    state.is_changed = True
+                    print(f"Added Section {name}")
+
+                    for prop_key, prop_value in section_data_.items():
+                        out_f.write(f"{prop_key}: {prop_value}\n")
+                        print(f"Added {name} {prop_key}: <-- {prop_value}")
+
+                out_f.write("\n")
 
             if should_write_src_line:
                 out_f.write(line + "\n")
@@ -544,7 +588,7 @@ def restore(file_path, saved_data, dry=False):
 
         iterate_printer_config_tokens(file_path, callback=_parse_config)
 
-    if not file_changed:
+    if not state.is_changed:
         print("Config doesn't contains changed properties!")
         return
 
@@ -557,96 +601,96 @@ def restore(file_path, saved_data, dry=False):
     print("\nDone!")
 
 
+## Verify command implementation
+##########################################################################
+
 def has_changes(file_path, saved_data):
     print(f"Verifying config \"{file_path}\"...\n")
 
-    file_changed = False
-    end_file = False
-    data = deepcopy(saved_data)
-    includes_to_add = {inc for inc, act in PARAMETERS.includes if act == Action.ADD}
+    state = RestoreState(
+        data=deepcopy(saved_data),
+        includes={inc for inc, act in PARAMETERS.includes if act == Action.ADD}
+    )
 
-    section_data: Dict[str, Dict[str, str]] | None = None
-    section_name: Optional[str] = None
+    def _handle_section_end(section: RestoreState.SectionState):
+        if section.data is None: return
+
+        for key, value in section.data.items():
+            state.is_changed = True
+            print(f"To Add {state.current_section.name} {key}: <-- {value}")
+
+        state.mark_section_used()
 
     def _parse_config(token, line, **kwargs):
-        nonlocal data, file_changed, end_file, section_data, section_name
-
-        def _handle_section_end(props):
-            nonlocal file_changed
-            for key, value in props.items():
-                file_changed = True
-                print(f"To Add {section_name} {key}: <-- {value}")
-
-        if end_file and token in {CfgToken.SECTION, CfgToken.PARAMETER, CfgToken.INCLUDE}:
+        if state.is_end and token in {CfgToken.SECTION, CfgToken.PARAMETER, CfgToken.INCLUDE}:
             print(f"Warning: read token {token.name!r} after end of editable file part: {kwargs}", file=sys.stderr)
 
         # Process section switch
-        if token == CfgToken.BREAK or token == CfgToken.SECTION:
-            if section_data is not None:
-                _handle_section_end(section_data)
-                del data[section_name]
+        if token in {CfgToken.BREAK, CfgToken.SECTION}:
+            if state.current_section:
+                _handle_section_end(state.current_section)
 
-            section_name = line if token == CfgToken.SECTION else None
-            section_data = None
+            if token == CfgToken.SECTION:
+                state.load_section(line)
 
         # Process removed sections/parameters
-        if token == CfgToken.SECTION and PARAMETERS.is_removing(section_name):
-            file_changed = True
-            print(f"To Remove section {section_name}")
-        elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
-            file_changed = True
-            print(f"To Remove {section_name} {kwargs['key']}")
+        if token == CfgToken.SECTION and state.is_removing():
+            state.is_changed = True
+            print(f"To Remove section {state.current_section.name}")
+        elif token == CfgToken.PARAMETER and state.is_removing(param_name=kwargs["key"]):
+            state.is_changed = True
+            print(f"To Remove {state.current_section.name} {kwargs['key']}")
 
         # Process saved sections/parameters
-        elif token == CfgToken.SECTION and section_name in data:
-            section_data = data[section_name]
-        elif token == CfgToken.PARAMETER and section_data and kwargs["key"] in section_data:
-            prop = kwargs["key"]
+        elif token == CfgToken.PARAMETER and state.has_section_data(prop := kwargs["key"]):
             actual_value = kwargs["value"]
-            saved_value = section_data[prop]
-            del section_data[prop]
+            saved_value = state.pop_saved_value(prop)
+
+            # TODO: add to check for parameter duplicates after that
 
             if actual_value != saved_value:
-                print(f"To Restore {section_name} {prop}: {actual_value} <-- {saved_value}")
-                file_changed = True
+                state.is_changed = True
+                print(f"To Restore {state.current_section.name} {prop}: {actual_value} <-- {saved_value}")
             elif VERBOSE:
-                print(f"Not Changed {section_name} {prop}: {actual_value}")
+                print(f"Not Changed {state.current_section.name} {prop}: {actual_value}")
 
         elif token == CfgToken.INCLUDE and (a := PARAMETERS.include_action(kwargs["path"])) is not None:
             if a == Action.ADD:
-                includes_to_add.remove(kwargs["path"])
+                state.pop_include(kwargs["path"])
             else:
-                print(f"To Remove include {kwargs['path']!r}")
-                file_changed = True
+                state.is_changed = True
+                print(f"To Remove Include {kwargs['path']!r}")
 
         elif token == CfgToken.EDITABLE_BLOCK_END:
+            state.is_end = True
+
             # Check missing includes
-            for include in includes_to_add:
-                file_changed = True
-                print(f"To Add include {include!r}")
+            for include in state.includes:
+                state.is_changed = True
+                print(f"To Add Include {include!r}")
 
-            # Check if last section has unprocessed parameters
-            if section_name is not None and section_name in data:
-                _handle_section_end(data[section_name])
-                del data[section_name]
-
-            section_name = None
-            section_data = None
+            # Handle last section (if any) unprocessed parameters
+            if state.current_section:
+                _handle_section_end(state.current_section)
 
             # Check missing sections/props
-            for name, section_data_ in data.items():
+            for name, section_data_ in state.data.items():
                 if len(section_data_) == 0:
                     continue
 
-                for prop_key, prop_value in section_data_.items():
-                    file_changed = True
-                    print(f"To Add {name} {prop_key}: <-- {prop_value}")
+                print(f"To Add Section {name}")
 
-            end_file = True
+                for prop_key, prop_value in section_data_.items():
+                    state.is_changed = True
+                    print(f"To Add {name} {prop_key}: <-- {prop_value}")
 
     iterate_printer_config_tokens(file_path, callback=_parse_config)
 
-    return file_changed
+    return state.is_changed
+
+
+## Main code
+##########################################################################
 
 
 # @formatter:off
@@ -735,7 +779,7 @@ if __name__ == "__main__":
             backup_data = dict()
 
         if has_changes(config_path, backup_data):
-            print("Config changed!")
+            print("\nConfig changed!")
             exit(1)
 
         print("Config doesn't contains changed properties!")
