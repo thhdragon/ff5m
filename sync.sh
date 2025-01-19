@@ -73,6 +73,7 @@ trap "abort" INT
 declare -a EXCLUDES=(
     "./${ARCHIVE_NAME}"
     ".git"
+    ".idea"
     ".vscode"
     ".DS_Store"
     "./sync*.tar.gz"

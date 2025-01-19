@@ -51,7 +51,7 @@ case "$1" in
     ;;
     restart|reload)
         stop
-        sleep 1
+        while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
         up
     ;;
     *)

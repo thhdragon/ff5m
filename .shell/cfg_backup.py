@@ -666,7 +666,7 @@ if __name__ == "__main__":
         PARAMETERS = parse_cmd_configuration(params_path)
         print()
 
-    if len(list(PARAMETERS.sections)) == 0:
+    if len(list(PARAMETERS.sections)) == 0 and len(list(PARAMETERS.includes)) == 0:
         print(f"Parameters list is empty!\n", file=sys.stderr)
         exit(5)
 
