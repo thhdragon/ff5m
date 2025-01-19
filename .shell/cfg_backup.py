@@ -12,7 +12,7 @@ import sys
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from enum import Enum
-from typing import Optional, Dict, Self, Iterable
+from typing import Optional, Dict, Self, Iterable, Tuple
 
 PARAM_WILDCARD = "*"
 VERBOSE = False
@@ -97,10 +97,15 @@ class SectionConfiguration(NameEqualable):
 class Configuration:
     def __init__(self):
         self._sections: Dict[str, SectionConfiguration] = dict()
+        self._includes: Dict[str, Action] = dict()
 
     @property
     def sections(self) -> Iterable[SectionConfiguration]:
         return self._sections.values()
+
+    @property
+    def includes(self) -> Iterable[Tuple[str, Action]]:
+        return self._includes.items()
 
     def start_section(self, section_name: str) -> SectionConfiguration:
         section = self._sections.get(section_name, None)
@@ -110,14 +115,14 @@ class Configuration:
 
         return section
 
-    def contains(self, section_name: str, *, param_name: Optional[str] = None) -> bool:
-        if param_name:
-            return self.action(section_name, param_name) is not None
-        return section_name in self._sections
+    def add_include(self, path: str, action: Action):
+        if path in self._includes:
+            raise ValueError(f"Include {path!r} already exists")
 
-    def action(self, section_name: str, param_name: str) -> Optional[Action]:
-        section = self._sections.get(section_name, None)
-        return section.action(param_name) if section else None
+        self._includes[path] = action
+
+    def include_action(self, path: str) -> Optional[Action]:
+        return self._includes.get(path, None)
 
     def is_saving(self, section_name, *, param_name: Optional[str] = None) -> bool:
         section = self._sections.get(section_name, None)
@@ -140,6 +145,9 @@ class Configuration:
         return all(param.action == Action.REMOVE for param in section.parameters)
 
     def print(self):
+        for path, action in self.includes:
+            print(f"Include {'Add' if action == Action.ADD else 'Remove'} {path!r}")
+
         for section in self.sections:
             params = list(section.parameters)
             if len(params) == 1 and section.contains(PARAM_WILDCARD):
@@ -189,6 +197,10 @@ class ConfigurationBuilder:
     def has_errors(self):
         return self._has_errors
 
+    def include(self, path: str, action: Action = Action.ADD) -> Self:
+        self._config.add_include(path, action)
+        return self
+
     def start_section(self, name: str) -> _SectionBuilder:
         return self._SectionBuilder(self, self._config.start_section(name))
 
@@ -199,16 +211,20 @@ class ConfigurationBuilder:
 ## Printer's configuration parsing
 ##########################################################################
 
+INCLUDE_PATH_SYMBOLS = "a-zA-Z0-9./_"
+
+INCLUDE_RE = re.compile(r"^\[include\s*([" + INCLUDE_PATH_SYMBOLS + r"]+)]$")
 SECTION_RE = re.compile(r"^\[(\w+)(?:\s*(\w+))?]$")
 PARAMETER_RE = re.compile(r"^(\w+)\s*[=:]\s*(.+)$")
 
 
 class CfgToken(Enum):
-    SECTION = 1
-    PARAMETER = 2
-    COMMENT = 3
-    BREAK = 4
-    OTHER = 5  # multi-line params, etc
+    INCLUDE = 1
+    SECTION = 2
+    PARAMETER = 3
+    COMMENT = 4
+    BREAK = 5
+    OTHER = 6  # multi-line params, etc
 
 
 def iterate_printer_config_tokens(file_path, *, callback):
@@ -220,6 +236,8 @@ def iterate_printer_config_tokens(file_path, *, callback):
                 callback(CfgToken.COMMENT, line=s_line)
             elif len(s_line) == 0:
                 callback(CfgToken.BREAK, line="")
+            elif m := INCLUDE_RE.match(s_line):
+                callback(CfgToken.INCLUDE, line=s_line, path=m.group(1))
             elif m := SECTION_RE.match(s_line):
                 if m.group(2):
                     callback(CfgToken.SECTION, line=s_line, type=m.group(1), key=m.group(2).strip())
@@ -238,14 +256,18 @@ PARAMETER_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
 PARAMETER_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s+(\w+)\s*(?:#.*)?$")
 SECTION_ADD_RE = re.compile(r"^(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
 SECTION_REMOVE_RE = re.compile(r"^-\s*(\[\w+\s*(?:\w+)?])\s*(?:#.*)?$")
+INCLUDE_ADD_RE = re.compile(r"^\[include \s*([" + INCLUDE_PATH_SYMBOLS + r"]+)]\s*(?:#.*)?$")
+INCLUDE_REMOVE_RE = re.compile(r"^-\s*\[include \s*([" + INCLUDE_PATH_SYMBOLS + r"]+)]\s*(?:#.*)?$")
 
 
 class ParametersToken(Enum):
     SECTION_PARAMETER_ADD = 1
     SECTION_PARAMETER_REMOVE = 2
-    SECTION_ADD = 3
-    SECTION_REMOVE = 4
-    COMMENT = 5
+    INCLUDE_ADD = 3
+    INCLUDE_REMOVE = 4
+    SECTION_ADD = 5
+    SECTION_REMOVE = 6
+    COMMENT = 7
 
 
 def iterate_cmd_config_tokens(file_path, *, callback):
@@ -262,6 +284,10 @@ def iterate_cmd_config_tokens(file_path, *, callback):
             elif m := PARAMETER_REMOVE_RE.match(s_line):
                 callback(ParametersToken.SECTION_PARAMETER_REMOVE,
                          line=s_line, section=m.group(1), parameter=m.group(2))
+            elif m := INCLUDE_ADD_RE.match(s_line):
+                callback(ParametersToken.INCLUDE_ADD, line=s_line, path=m.group(1))
+            elif m := INCLUDE_REMOVE_RE.match(s_line):
+                callback(ParametersToken.INCLUDE_REMOVE, line=s_line, path=m.group(1))
             elif m := SECTION_ADD_RE.match(s_line):
                 callback(ParametersToken.SECTION_ADD, line=s_line, section=m.group(1))
             elif m := SECTION_REMOVE_RE.match(s_line):
@@ -285,6 +311,10 @@ def parse_cmd_configuration(file_path) -> Configuration:
             builder.start_section(kwargs["section"]).add_wildcard(Action.ADD)
         elif token == ParametersToken.SECTION_REMOVE:
             builder.start_section(kwargs["section"]).add_wildcard(Action.REMOVE)
+        elif token == ParametersToken.INCLUDE_ADD:
+            builder.include(kwargs["path"], Action.ADD)
+        elif token == ParametersToken.INCLUDE_REMOVE:
+            builder.include(kwargs["path"], Action.REMOVE)
 
     print(f"Loading parameters from \"{file_path}\"...")
     iterate_cmd_config_tokens(file_path, callback=_callback)
@@ -396,14 +426,14 @@ def restore(file_path, saved_data, dry=False):
     tmp_path = file_path + ".tmp"
 
     data = deepcopy(saved_data)
+    includes_to_add = {inc for inc, act in PARAMETERS.includes if act == Action.ADD}
 
     with open(tmp_path, "w") as out_f:
         section_data: Dict[str, Dict[str, str]] | None = None
         section_name: Optional[str] = None
-        last_token: Optional[CfgToken] = None
 
         def _parse_config(token, line, **kwargs):
-            nonlocal file_changed, data, section_data, section_name, last_token
+            nonlocal file_changed, data, section_data, section_name
             should_write_src_line = True
 
             # Process section switch
@@ -446,11 +476,31 @@ def restore(file_path, saved_data, dry=False):
                 elif VERBOSE:
                     print(f"Not Changed {section_name} {prop}: {actual_value}")
 
+            elif token == CfgToken.INCLUDE:
+                act = PARAMETERS.include_action(kwargs["path"])
+                if act == Action.ADD:
+                    includes_to_add.remove(kwargs["path"])
+                elif act == Action.REMOVE:
+                    print(f"Deleted include {kwargs['path']!r}")
+
+                # Skip all 'ADD' and 'REMOVE' includes, since we already added them at the beginning
+                should_write_src_line = act is None
+
             last_token = token
             if should_write_src_line:
                 out_f.write(line + "\n")
 
+        # Add includes at the beginning
+        for path, action in PARAMETERS.includes:
+            if action == Action.ADD:
+                out_f.write(f"[include {path}]\n")
+
         iterate_printer_config_tokens(file_path, callback=_parse_config)
+
+        # Check missing includes:
+        for path in includes_to_add:
+            print(f"Added include {path!r}")
+            file_changed = True
 
         # Add missing sections/props
         for name, section_data in data.items():
@@ -485,6 +535,7 @@ def has_changes(file_path, saved_data):
 
     file_changed = False
     data = deepcopy(saved_data)
+    includes_to_add = {inc for inc, act in PARAMETERS.includes if act == Action.ADD}
 
     section_data: Dict[str, Dict[str, str]] | None = None
     section_name: Optional[str] = None
@@ -497,7 +548,7 @@ def has_changes(file_path, saved_data):
             if section_data is not None:
                 for key, value in section_data.items():
                     file_changed = True
-                    print(f"To add {section_name} {key}: <-- {value}")
+                    print(f"To Add {section_name} {key}: <-- {value}")
 
                 del data[section_name]
 
@@ -507,10 +558,10 @@ def has_changes(file_path, saved_data):
         # Process removed sections/parameters
         if token == CfgToken.SECTION and PARAMETERS.is_removing(section_name):
             file_changed = True
-            print(f"To delete section {section_name}")
+            print(f"To Remove section {section_name}")
         elif token == CfgToken.PARAMETER and PARAMETERS.is_removing(section_name, param_name=kwargs["key"]):
             file_changed = True
-            print(f"To delete {section_name} {kwargs['key']}")
+            print(f"To Remove {section_name} {kwargs['key']}")
 
         # Process saved sections/parameters
         elif token == CfgToken.SECTION and section_name in data:
@@ -527,7 +578,19 @@ def has_changes(file_path, saved_data):
             elif VERBOSE:
                 print(f"Not Changed {section_name} {prop}: {actual_value}")
 
+        elif token == CfgToken.INCLUDE and (a := PARAMETERS.include_action(kwargs["path"])) is not None:
+            if a == Action.ADD:
+                includes_to_add.remove(kwargs["path"])
+            else:
+                print(f"To Remove include {kwargs['path']!r}")
+                file_changed = True
+
     iterate_printer_config_tokens(file_path, callback=_parse_config)
+
+    # Check missing includes
+    for include in includes_to_add:
+        file_changed = True
+        print(f"To Add include {include!r}")
 
     # Check missing sections/props
     for name, section_data in data.items():
@@ -535,13 +598,13 @@ def has_changes(file_path, saved_data):
             continue
 
         if section_name != name:
-            print(f"To add section {name}")
+            print(f"To Add section {name}")
 
         section_name = None
 
         for prop_key, prop_value in section_data.items():
             file_changed = True
-            print(f"To add {name} {prop_key}: <-- {prop_value}")
+            print(f"To Add {name} {prop_key}: <-- {prop_value}")
 
     return file_changed
 
@@ -584,11 +647,11 @@ if __name__ == "__main__":
 
     config_path = args.config
     data_path = args.data
-    mode = args.mode
-    dry_run = args.dry
     params_path = args.params
-    VERBOSE = args.verbose
+    mode = args.mode
     avoid_writes = args.avoid_writes
+    dry_run = args.dry
+    VERBOSE = args.verbose
 
     if not os.path.isfile(config_path):
         print(f"Config file doesn't exists: \"{config_path}\"\n", file=sys.stderr)
