@@ -481,6 +481,7 @@ def restore(file_path, saved_data, dry=False):
                     includes_to_add.remove(kwargs["path"])
                 elif act == Action.REMOVE:
                     print(f"Deleted include {kwargs['path']!r}")
+                    file_changed = True
 
                 # Skip all 'ADD' and 'REMOVE' includes, since we already added them at the beginning
                 should_write_src_line = act is None
@@ -637,6 +638,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--mode", type=str,
                         choices=["backup", "restore", "verify"],
                         help="Mode: (backup, restore, verify)")
+    parser.add_argument("-n", "--no_data", action="store_true",
+                        help="Run without data source (useful when you only need to delete parameters)", default=False)
     parser.add_argument("-w", "--avoid_writes", action="store_true",
                         help="Avoid additional writes to disk", default=False)
     parser.add_argument("--dry", action="store_true",
@@ -650,6 +653,7 @@ if __name__ == "__main__":
     data_path = args.data
     params_path = args.params
     mode = args.mode
+    no_data = args.no_data
     avoid_writes = args.avoid_writes
     dry_run = args.dry
     VERBOSE = args.verbose
@@ -673,17 +677,25 @@ if __name__ == "__main__":
     if mode == "backup":
         backup(config_path, data_path, dry_run)
     elif mode == "restore":
-        if not os.path.isfile(data_path):
-            print(f"Backup file doesn't exists: \"{data_path}\"\n", file=sys.stderr)
-            exit(2)
+        if not no_data:
+            if not os.path.isfile(data_path):
+                print(f"Backup file doesn't exists: \"{data_path}\"\n", file=sys.stderr)
+                exit(2)
 
-        backup_data = load_backup(data_path)
+            backup_data = load_backup(data_path)
+        else:
+            backup_data = dict()
+
         if not avoid_writes or has_changes(config_path, backup_data):
             restore(config_path, backup_data, dry_run)
         else:
             print("Config doesn't contains changed properties!")
     elif mode == "verify":
-        backup_data = load_backup(data_path)
+        if not no_data:
+            backup_data = load_backup(data_path)
+        else:
+            backup_data = dict()
+
         if has_changes(config_path, backup_data):
             print("Config changed!")
             exit(1)
