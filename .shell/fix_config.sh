@@ -1,133 +1,63 @@
 #!/bin/sh
 
+## Mod's configuration preparation script
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+MOD=/data/.mod/.zmod
+
 set -x
 
-fix_config()
-{
+fix_config() {
     echo "START fix_config"
     date
 
-    NEED_REBOOT=0
-    PRINTER_BASE_ORIG="/opt/config/printer.base.cfg"
-    PRINTER_CFG_ORIG="/opt/config/printer.cfg"
-    PRINTER_BASE="/tmp/printer.base.cfg"
-    PRINTER_CFG="/tmp/printer.cfg"
+    TMP_CFG_PATH=/tmp/printer.tmp.cfg
 
-    cp ${PRINTER_BASE_ORIG} ${PRINTER_BASE}
-    cp ${PRINTER_CFG_ORIG} ${PRINTER_CFG}
+    # Move parameters from printer.base.cfg to printer.cfg
+    
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode backup \
+        --config /opt/config/printer.base.cfg \
+        --data $TMP_CFG_PATH \
+        --params /opt/config/mod/.shell/cfg/init.move.cfg
 
-    # Rem стукач
+    if [ $? -eq 0 ]; then
+        DATA_MOVE_CFG=$TMP_CFG_PATH
+        # TODO: Merge?
+    else
+        DATA_MOVE_CFG=/opt/config/mod/.shell/cfg/data.init.move.cfg
+    fi
+
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+            --mode restore --avoid_writes \
+            --config /opt/config/printer.cfg \
+            --data $DATA_MOVE_CFG \
+            --params /opt/config/mod/.shell/cfg/init.move.cfg
+
+    # Initialized printer.base.cfg to printer.cfg with custom configuration
+
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.shell/cfg/init.cfg
+        
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod/.shell/cfg/init.base.cfg \
+        --data /opt/config/mod/.shell/cfg/data.init.base.cfg
+
+    # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
 
+    # TODO: remove modified variable files ?
     grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py || cp /opt/config/mod/.shell/save_variables.py /opt/klipper/klippy/extras/save_variables.py
 
-    grep -q 'include check_md5.cfg'   ${PRINTER_CFG} && sed -i '/include check_md5.cfg/d' ${PRINTER_CFG} && NEED_REBOOT=1
-
-    sed -i 's|\[include ./mod/display_off.cfg\]|\[include ./mod/mod.cfg\]|' ${PRINTER_CFG}
-
-    ! grep -q 'include ./mod/mod.cfg' ${PRINTER_CFG} && sed -i '2 i\[include ./mod/mod.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-
-    grep -q 'include mod.user.cfg' ${PRINTER_CFG} && sed -i 's|\[include mod.user.cfg\]|\[include ./mod_data/user.cfg\]|' ${PRINTER_CFG} && NEED_REBOOT=1
-
-    ! grep -q 'include ./mod_data/user.cfg'  ${PRINTER_CFG} && sed -i '3 i\[include ./mod_data/user.cfg]' ${PRINTER_CFG} && NEED_REBOOT=1
-    if ! grep -q '\[heater_bed' ${PRINTER_CFG}
-        then
-            NEED_REBOOT=1
-
-            # Copy and remove from printer.base.cfg
-            if grep -q '\[heater_bed' ${PRINTER_BASE}
-                then
-                    sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-                    diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-                    sed -i '$d' heater_bed.txt
-                    num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-                    num=$(($num-1))
-                    sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-                    cat printer.base.tmp >${PRINTER_BASE}
-                    rm -f printer.base.tmp
-                else
-                    echo "[heater_bed]
-heater_pin: PB9
-sensor_type: Generic 3950
-sensor_pin: PC3
-pullup_resistor: 4700
-control: pid
-pid_Kp: 32.79
-pid_Ki: 4.970
-pid_Kd: 54.118
-#control: watermark
-#max_power: 1.0
-min_temp: -100
-max_temp: 130
-
-" >heater_bed.txt
-            fi
-
-            num=$(cat -n ${PRINTER_CFG} |grep ./mod_data/user.cfg| awk '{print $1}')
-            head -n $num ${PRINTER_CFG} >printer.tmp
-            echo "" >>printer.tmp
-            cat heater_bed.txt >>printer.tmp
-            num=$(($num+1))
-            tail -n +$num ${PRINTER_CFG} >>printer.tmp
-            cat printer.tmp >${PRINTER_CFG}
-            rm heater_bed.txt || echo "Not heater_bed.txt"
-    fi
-
-    if grep -q '\[heater_bed' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-
-            sed -e '/^\[heater_bed/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[heater_bed/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-            cat printer.base.tmp >${PRINTER_BASE}
-            rm -f heater_bed.txt printer.base.tmp
-    fi
-
-    # Удаляем fan_generic pcb_fan
-    if grep -q '\[fan_generic pcb_fan' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-
-            sed -e '/^\[fan_generic pcb_fan/,/^\[/d' ${PRINTER_BASE} >printer.base.tmp
-            diff -u ${PRINTER_BASE} printer.base.tmp | grep -v "printer.base.cfg" |grep "^-" | cut -b 2- >heater_bed.txt
-            sed -i '$d' heater_bed.txt
-            num=$(wc -l heater_bed.txt|cut  -d " " -f1)
-            num=$(($num-1))
-            sed -e "/^\[fan_generic pcb_fan/,+${num}d;" ${PRINTER_BASE} >printer.base.tmp
-            cat printer.base.tmp >${PRINTER_BASE}
-            rm -f heater_bed.txt printer.base.tmp
-    fi
-
-    # Добавляем controller_fan driver_fan
-    if ! grep -q '\[controller_fan driver_fan' ${PRINTER_BASE}
-        then
-            NEED_REBOOT=1
-            echo '
-[controller_fan driver_fan]
-pin:PB7
-fan_speed: 1.0
-idle_timeout: 30
-stepper: stepper_x, stepper_y, stepper_z
-' >>${PRINTER_BASE}
-    fi
-
-    if [ ${NEED_REBOOT} -eq 1 ]
-        then
-            cat ${PRINTER_BASE} >${PRINTER_BASE_ORIG}
-            sync
-            cat ${PRINTER_CFG} >${PRINTER_CFG_ORIG}
-            sync
-
-#            sleep 5
-#            sync
-#
-#            reboot
-            exit 0
-    fi
     echo "END fix_config"
 }
 

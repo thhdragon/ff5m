@@ -13,16 +13,16 @@ set -x
 
 restore_base() {
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-    --mode restore \
-    --config /opt/config/printer.cfg \
-    --no_data \
-    --params /opt/config/mod/.shell/cfg/restore.cfg
-    
+        --mode restore \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.shell/cfg/restore.cfg
+        
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-    --mode restore \
-    --config /opt/config/printer.base.cfg \
-    --params /opt/config/mod/.shell/cfg/restore.base.cfg \
-    --data /opt/config/mod/.shell/cfg/data.restore.base.cfg
+        --mode restore \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod/.shell/cfg/restore.base.cfg \
+        --data /opt/config/mod/.shell/cfg/data.restore.base.cfg
     
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
     # TODO: remove modified variable files ?
