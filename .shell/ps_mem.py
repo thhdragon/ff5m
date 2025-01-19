@@ -374,10 +374,13 @@ def getCmdName(pid, split_args, discriminate_by_pid, exe_only=False):
 def human(num, power="Ki", units=None):
     if units is None:
         powers = ["Ki", "Mi", "Gi", "Ti"]
-        while num >= 1000: #4 digits
+        while num >= 100: # Try to use bigger unit as possible
             num /= 1024.0
             power = powers[powers.index(power)+1]
-        return "%.1f %sB" % (num, power)
+        if round(num, 1) == int(num):
+            return "%i %sB" % (int(num), power[:1])
+        else:
+            return "%.1f %sB" % (num, power[:1])
     else:
         return "%.f" % ((num * 1024) / units)
 
@@ -555,9 +558,9 @@ def get_memory_usage(pids_to_show, split_args, discriminate_by_pid,
     return sorted_cmds, shareds, count, total, swaps, total_swap
 
 def print_header(show_swap, discriminate_by_pid):
-    output_string = " Private  +   Shared  =  RAM used"
+    output_string = " Private  +  Shared =    RAM   "
     if show_swap:
-        output_string += "   Swap used"
+        output_string += "  Swap "
     output_string += "\tProgram"
     if discriminate_by_pid:
         output_string += "[pid]"
@@ -569,11 +572,11 @@ def print_memory_usage(sorted_cmds, shareds, count, total, swaps, total_swap,
                        show_swap):
     for cmd in sorted_cmds:
 
-        output_string = "%9s + %9s = %9s"
+        output_string = "%8s + %8s = %8s"
         output_data = (human(cmd[1]-shareds[cmd[0]]),
                        human(shareds[cmd[0]]), human(cmd[1]))
         if show_swap:
-            output_string += "   %9s"
+            output_string += " %8s"
             output_data += (human(swaps[cmd[0]]),)
         output_string += "\t%s\n"
         output_data += (cmd_with_count(cmd[0], count[cmd[0]]),)
@@ -582,11 +585,11 @@ def print_memory_usage(sorted_cmds, shareds, count, total, swaps, total_swap,
 
     # Only show totals if appropriate
     if have_swap_pss and show_swap:  # kernel will have_pss
-        sys.stdout.write("%s\n%s%9s%s%9s\n%s\n" %
-                         ("-" * 45, " " * 24, human(total), " " * 3,
-                          human(total_swap), "=" * 45))
+        sys.stdout.write("%s\n%s%8s%s%8s\n%s\n" %
+                         ("-" * 38, " " * 22, human(total), " ",
+                          human(total_swap), "=" * 38))
     elif have_pss:
-        sys.stdout.write("%s\n%s%9s\n%s\n" %
+        sys.stdout.write("%s\n%s%8s\n%s\n" %
                          ("-" * 33, " " * 24, human(total), "=" * 33))
 
 
