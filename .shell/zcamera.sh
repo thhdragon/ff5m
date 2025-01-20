@@ -2,8 +2,8 @@
 
 ## Auxiliary script for zmod camera
 ##
-## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
-## Copyright (C) 2025 Sergei Rozhkov <https://github.com/ghzserg>
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
@@ -52,7 +52,7 @@ ss -tuln | grep 8080 > /dev/null; STREAM_ACIVE=$(( $? == 0 ))
 if (( $STREAM_ACIVE && !$ZCAM_ACTIVE )); then
 cat > /tmp/printer << EOF
 RESPOND TYPE=command MSG="action:prompt_begin Веб-Камера"
-RESPOND TYPE=command MSG="action:prompt_text Камера уже включена! Выключите её  экране принтера и поворите попытку!"
+RESPOND TYPE=command MSG="action:prompt_text Камера уже включена! Выключите её экране принтера и поворите попытку!"
 RESPOND TYPE=command MSG="action:prompt_end"
 RESPOND TYPE=command MSG="action:prompt_show"
 EOF

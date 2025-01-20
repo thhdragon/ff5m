@@ -2,7 +2,7 @@
 
 ## Synchronize local changes to the printer
 ##
-## Copyright (C) 2025 Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
@@ -70,12 +70,14 @@ abort() {
 
 trap "abort" INT
 
-declare -a arr EXCLUDES=(
+declare -a EXCLUDES=(
     "./${ARCHIVE_NAME}"
     ".git"
+    ".idea"
     ".vscode"
     ".DS_Store"
     "./sync*.tar.gz"
+    "./sync.sh"
 )
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
@@ -120,7 +122,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     ##############################################
 
     cleanup() {
-        if [ "$VERBOSE" -eq 1 ]; then echo "Clenup: remove sync files..."; fi
+        if [ "$VERBOSE" -eq 1 ]; then echo "Cleanup: remove sync files..."; fi
 
         rm ./sync_*.tar*
         rm -r "./.sync"
@@ -219,7 +221,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
 
     if [ "\$CHANGED" -eq 1 ] && [ ! -f "\$SKIP_REBOOT_F" ]; then
         echo -e "\n${YELLOW}Setup reboot skip for next zmod update${NC}"
-        touch /data/.mod/.zmod/
+        touch "\$SKIP_REBOOT_F"
     fi
 
     if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
