@@ -55,8 +55,7 @@ restore_base() {
 start_prepare() {
     renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
     
-    if [ -f /opt/config/mod/REMOVE ]
-    then
+    if [ -f /opt/config/mod/REMOVE ]; then
         restore_base
         
         # Remove ROOT
@@ -72,8 +71,7 @@ start_prepare() {
         exit
     fi
     
-    if [ -f /opt/config/mod/SOFT_REMOVE ]
-    then
+    if [ -f /opt/config/mod/SOFT_REMOVE ]; then
         restore_base
         
         sync
@@ -83,8 +81,13 @@ start_prepare() {
         exit
     fi
     
-    /opt/config/mod/.shell/fix_config.sh
+    if [ ! -f /etc/init.d/S00fix ]; then
+        /opt/config/mod/.shell/fix_config.sh
+        ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
+    fi
+    
     echo "System start" >/data/logFiles/ssh.log
+    
     mount -t proc /proc $MOD/proc
     mount --rbind /sys $MOD/sys
     mount --rbind /dev $MOD/dev
@@ -120,16 +123,17 @@ start_prepare() {
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
     
     chroot $MOD /opt/config/mod/.shell/root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
-    
+
+    /opt/config/mod/.shell/motd.sh > /etc/motd
     
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
     fi
     
+    /opt/config/mod/.shell/zshaper.sh --clear
+    
     SWAP="/root/swap"
     chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
-    
-    sleep 10
 }
 
 if [ -f /opt/config/mod/SKIP_ZMOD ]

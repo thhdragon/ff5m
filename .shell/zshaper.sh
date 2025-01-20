@@ -11,9 +11,14 @@ MOD=/data/.mod/.zmod
 
 case $1 in
     --clear)
-        rm -f /tmp/*.csv
-        rm -f /opt/config/mod_data/*.csv
-        rm -f /opt/config/mod_data/*.png
+        rm -f /opt/config/mod_data/calibration_data*.csv
+        
+        images=$(find /opt/config/mod_data -name "calibration_data_*.png" -mtime +1 -maxdepth 1 -type f | sort)
+        
+        images_x=$(echo "$images" | grep -i "x.png" | head -n -1)
+        images_y=$(echo "$images" | grep -i "y.png" | head -n -1)
+        
+        echo -e "${images_x}\n${images_y}" | xargs -r -I{} -- rm {}
     ;;
     --calculate)
         cp /tmp/*.csv /opt/config/mod_data/

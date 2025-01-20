@@ -72,13 +72,14 @@ fix_config() {
 }
 
 mkdir -p /opt/config/mod_data/log/
-ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
 
 mv /opt/config/mod_data/log/fix_config.log.4 /opt/config/mod_data/log/fix_config.log.5
 mv /opt/config/mod_data/log/fix_config.log.3 /opt/config/mod_data/log/fix_config.log.4
 mv /opt/config/mod_data/log/fix_config.log.2 /opt/config/mod_data/log/fix_config.log.3
 mv /opt/config/mod_data/log/fix_config.log.1 /opt/config/mod_data/log/fix_config.log.2
 mv /opt/config/mod_data/log/fix_config.log /opt/config/mod_data/log/fix_config.log.1
+
+/opt/config/mod/.shell/motd.sh
 
 fix_config &>/opt/config/mod_data/log/fix_config.log
 
