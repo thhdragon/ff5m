@@ -52,6 +52,16 @@ fix_config() {
         --params /opt/config/mod/.shell/cfg/init.base.cfg \
         --data /opt/config/mod/.shell/cfg/data.init.base.cfg
 
+
+    # Restore printer.baes.cfg if changed since backup
+    if [ -f /opt/config/printer.base.cfg.bak ]; then
+        chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+            --mode restore --avoid_writes \
+            --config /opt/config/printer.base.cfg \
+            --params /opt/config/mod_data/backup.params.cfg \
+            --data /opt/config/printer.base.cfg.bak
+    fi
+
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
 
