@@ -135,6 +135,7 @@ start_prepare() {
 if [ -f /opt/config/mod/SKIP_ZMOD ]
 then
     rm -f /opt/config/mod/SKIP_ZMOD
+    md -p /data/lost+found
     mount --bind /data/lost+found /data/.mod
     exit 0
 fi

@@ -52,7 +52,7 @@ ss -tuln | grep 8080 > /dev/null; STREAM_ACIVE=$(( $? == 0 ))
 if (( $STREAM_ACIVE && !$ZCAM_ACTIVE )); then
 cat > /tmp/printer << EOF
 RESPOND TYPE=command MSG="action:prompt_begin Веб-Камера"
-RESPOND TYPE=command MSG="action:prompt_text Камера уже включена! Выключите её  экране принтера и поворите попытку!"
+RESPOND TYPE=command MSG="action:prompt_text Камера уже включена! Выключите её экране принтера и поворите попытку!"
 RESPOND TYPE=command MSG="action:prompt_end"
 RESPOND TYPE=command MSG="action:prompt_show"
 EOF

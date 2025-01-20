@@ -77,6 +77,7 @@ declare -a EXCLUDES=(
     ".vscode"
     ".DS_Store"
     "./sync*.tar.gz"
+    "./sync.sh"
 )
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
