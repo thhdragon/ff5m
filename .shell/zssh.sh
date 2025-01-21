@@ -1,9 +1,11 @@
 #!/bin/sh
-#
-# SSH for Telegram Bot
-#
 
-renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
+##
+## SSH tunnel for Telegram Bot
+##
+## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
 
 if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART|RELOAD) SSH_SERVER SSH_PORT SSH_USER VIDEO_PORT MOON_PORT REMOTE_RUN RESTART|NOTRESTART"; exit 1; fi
 
@@ -14,8 +16,7 @@ if [ $1 = "START" ]; then START='on'; fi;
 if [ $1 = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
 if [ $1 = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
 
-if ! [ -f "/opt/config/mod_data/ssh.conf" ] || [ ${START} = 'on' ]
- then
+if ! [ -f "/opt/config/mod_data/ssh.conf" ] || [ ${START} = 'on' ]; then
 echo "# Не редактируйте этот файл
 # Используйте макрос
 #

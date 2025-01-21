@@ -17,8 +17,14 @@ REMOTE_HOST=""
 REMOTE_USER="root"
 REMOTE_DIR="/opt/config/"
 ARCHIVE_NAME="sync_$(date +%Y%m%d_%H%M%S).tar.gz"
+
 SKIP_HEAVY=0
+
 SKIP_RESTART=0
+SKIP_MOON_RESTART=0
+SKIP_KLIPPER_RESTART=0
+SKIP_MIGRATE=0
+
 HELP=0
 VERBOSE=0
 
@@ -33,6 +39,18 @@ while [ "$#" -gt 0 ]; do
             SKIP_RESTART=1
             echo -e "${BLUE}Services restart will be skiped.${NC}"
         ;;
+        --skip-moon-restart)
+            SKIP_MOON_RESTART=1
+            echo -e "${BLUE}Moonraker restart will be skiped.${NC}"
+        ;;
+        --skip-klipper-restart)
+            SKIP_KLIPPER_RESTART=1
+            echo -e "${BLUE}Klipper restart will be skiped.${NC}"
+        ;;
+        --skip-database)
+            SKIP_MIGRATE=1
+            echo -e "${BLUE}Database migration will be skiped.${NC}"
+        ;;
         --skip-heavy|-sh)
             SKIP_HEAVY=1
             echo -e "${BLUE}Heavy files will be skiped.${NC}"
@@ -41,7 +59,7 @@ while [ "$#" -gt 0 ]; do
             echo -e "${BLUE}Vebose mode enabled.${NC}"
             VERBOSE=1
         ;;
-        --help)
+        --help|-h)
             HELP=1
         ;;
         *)
@@ -52,7 +70,19 @@ while [ "$#" -gt 0 ]; do
 done
 
 if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
-    echo -e "${RED}Usage: $0 --host <printer_ip> [--skip-restart] [--skip-heavy] [--verbose] [--help]${NC}"
+    echo -e "${RED}Usage:${NC} $0 --host <printer_ip> [options]"
+    echo -e ""
+    echo -e "${BLUE}Options:${NC}"
+    echo -e "    --host, -h               Specify the remote printer's IP address."
+    echo -e "    --skip-heavy, -sh        Skip transferring heavy files."
+    echo -e "    --skip-restart, -sr      Skip restarting the services."
+    echo -e "    --skip-database          Skip database migration."
+    echo -e "    --skip-moon-restart      Skip restarting Moonraker."
+    echo -e "    --skip-klipper-restart   Skip restarting Klipper."
+    echo -e "    --verbose, -v            Enable verbose mode for detailed output."
+    echo -e "    --help, -h               Display this help message."
+    echo -e ""
+    echo -e "${RED}Example:${NC} $0 --host 192.168.1.100 --skip-restart --verbose"
     exit 1
 fi
 
@@ -134,15 +164,21 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     }
 
     run_service() {
-        if [ "\$#" -lt 4 ]; then echo Missing required arguments; exit 3; fi
+        if [ "\$#" -lt 5 ]; then echo Missing required arguments; exit 3; fi
 
         local name="\$1"; local status="\$2"; local check_pid="\$3"
         if [ "\$check_pid" -eq 1 ]; then
             if [ "\$#" -lt 6 ]; then echo Missing required arguments; exit 3; fi
-            local pid_path="\$4"; local invert="\$5"
-            shift 5; local command=("\$@")
+            local pid_path="\$4"; local invert="\$5"; local skip="\$6"
+            shift 6; local command=("\$@")
         else
-            shift 3; local command=("\$@")
+            local skip="\$4"
+            shift 4; local command=("\$@")
+        fi
+
+        if [ "\$skip" -eq 1 ]; then
+            print_status "\$name" "\${status} skipped." "${BLUE}"
+            return 0
         fi
 
         print_status "\$name" "\${status}..." "${YELLOW}"
@@ -229,12 +265,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     if [ "\$CHANGED" -eq 1 ]; then
         echo; echo -e "${GREEN}Restarting services...${NC}\n"
 
-        run_service "Moonraker" "Stopping"      1 \
-            "/data/.mod/.zmod/run/moonraker.pid"    1   /etc/init.d/S99moon stop
+        run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
+            "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99moon stop
 
-        run_service "Database"  "Migrating"     0   /opt/config/mod/.shell/migrate_db.sh
-        run_service "Moonraker" "Starting"      0   /etc/init.d/S99moon up
-        run_service "Klipper"   "Restarting"    0   /opt/config/mod/.shell/restart_klipper.sh
+        run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
+        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
+        run_service "Klipper"   "Restarting"    0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh
 
         echo; echo -e "${GREEN}All done!${NC}"
     else

@@ -11,21 +11,23 @@ echo "Remove old repository data..."
 rm -rf /opt/config/mod/.git
 rm -rf /opt/config/.mod_repo_backup
 
-sed -i '/\[update_manager zmod\]/,/^$/ { 
-  /origin:/ { 
-    s|: .*|: https://github.com/DrA1ex/ff5m.git| 
+sed -i '/\[update_manager zmod\]/,/^$/ {
+  /origin:/ {
+    s|: .*|: https://github.com/DrA1ex/ff5m.git|
     # Stop processing further matches in this address block
     b
-  } 
+  }
 }' /opt/config/moonraker.conf
 if [ $? -ne 0 ]; then echo "Unable to update moonraker.conf"; exit 1; fi
 
+sync
+
 sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
-    "UPDATE namespace_store \
+"UPDATE namespace_store \
     SET value = json_set(value, \
         '$.upstream_url', 'https://github.com/DrA1ex/ff5m.git', \
         '$.recovery_url', 'https://github.com/DrA1ex/ff5m.git') \
-    WHERE namespace = 'update_manager' AND key = 'zmod';"
+WHERE namespace = 'update_manager' AND key = 'zmod';"
 
 # sqlite3 /opt/config/mod_data/database/moonraker-sql.db \
 #     "UPDATE namespace_store \
@@ -57,5 +59,4 @@ fi
 echo "ZMOD source changed successfully!"
 echo; echo "Rebooting..."
 
-sync
 reboot

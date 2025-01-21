@@ -53,7 +53,7 @@ restore_base() {
 }
 
 start_prepare() {
-    renice -16 $(ps |grep klippy.py| grep -v grep| awk '{print $1}')
+    renice -16 $(ps | grep klippy.py | grep -v grep | awk '{print $1}')
     
     if [ -f /opt/config/mod/REMOVE ]; then
         restore_base
