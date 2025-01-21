@@ -3,10 +3,12 @@
 ## This script will restart Klipper on FlashForge Adventurer 5M(Pro)
 ## like original QT factory application does it.
 ##
+## Or restart it using Moonraker's API
+##
 ## This script needs working GDB for operation.
 ##
-## Copyright (c) 2024, Dark Simpson
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+## Copyright (c) 2024, Dark Simpson
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
@@ -18,7 +20,7 @@ export PATH="$PATH:/opt/bin:/opt/sbin"
 # Add also -1 in expression, to avoid capture any other process that interacts with FirwmareExe
 pid=$(ps | grep "[f]irmwareExe -1" | awk '{print $1}')
 
-if [ $pid -ne 0 ]; then
+if [ ! -z "$pid" ]; then
     
     echo Screen executable PID is $pid, calling GDB to perform manipulations...
     
@@ -75,6 +77,8 @@ EOF
     echo "Deleting created during restart backup files..."
     find /opt/config -name "printer-$(date +"%Y%m%d")*.cfg" -maxdepth 1 -type f -exec rm -f {} +
 else
-    echo "Error: Unable to find FirmwareExe process"
-    exit 1
+    echo "Unable to find FirmwareExe process. Restart using Moonraker's API"
+    /opt/config/mod/.shell/zmoon.sh "restart_klipper"
 fi
+
+exit $?
