@@ -79,7 +79,11 @@ mv /opt/config/mod_data/log/fix_config.log.2 /opt/config/mod_data/log/fix_config
 mv /opt/config/mod_data/log/fix_config.log.1 /opt/config/mod_data/log/fix_config.log.2
 mv /opt/config/mod_data/log/fix_config.log /opt/config/mod_data/log/fix_config.log.1
 
-/opt/config/mod/.shell/motd.sh
+# Klipper extensions
+ln -s /opt/config/mod/.shell/plugins/* /opt/klipper/klippy/extras/
+
+# Motd
+/opt/config/mod/.shell/motd.sh > /etc/motd
 
 fix_config &>/opt/config/mod_data/log/fix_config.log
 
