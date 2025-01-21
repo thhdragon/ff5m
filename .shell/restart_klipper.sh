@@ -17,6 +17,12 @@ unset LD_LIBRARY_PATH
 unset LD_PRELOAD
 export PATH="$PATH:/opt/bin:/opt/sbin"
 
+if [ "$1" = "--hard" ]; then
+  pid=$(ps | grep "[k]lippy.py" | awk '{print $1}')
+  kill "$pid" && /opt/klipper/start.sh 
+  exit $?
+fi
+
 # Add also -1 in expression, to avoid capture any other process that interacts with FirwmareExe
 pid=$(ps | grep "[f]irmwareExe -1" | awk '{print $1}')
 

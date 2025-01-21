@@ -25,6 +25,8 @@ SKIP_MOON_RESTART=0
 SKIP_KLIPPER_RESTART=0
 SKIP_MIGRATE=0
 
+KLIPPER_HARD_RESTART=0
+
 HELP=0
 VERBOSE=0
 
@@ -33,30 +35,34 @@ while [ "$#" -gt 0 ]; do
     case $param in
         --host|-h)
             REMOTE_HOST="$1"; shift
-            echo -e "${BLUE}Remote host: ${REMOTE_HOST}.${NC}"
+            echo -e "${BLUE}[+] Remote host: ${REMOTE_HOST}.${NC}"
         ;;
         --skip-restart|-sr)
             SKIP_RESTART=1
-            echo -e "${BLUE}Services restart will be skiped.${NC}"
+            echo -e "${BLUE}[+] Services restart will be skipped.${NC}"
         ;;
         --skip-moon-restart)
             SKIP_MOON_RESTART=1
-            echo -e "${BLUE}Moonraker restart will be skiped.${NC}"
+            echo -e "${BLUE}[+] Moonraker restart will be skipped.${NC}"
         ;;
         --skip-klipper-restart)
             SKIP_KLIPPER_RESTART=1
-            echo -e "${BLUE}Klipper restart will be skiped.${NC}"
+            echo -e "${BLUE}[+] Klipper restart will be skipped.${NC}"
         ;;
         --skip-database)
             SKIP_MIGRATE=1
-            echo -e "${BLUE}Database migration will be skiped.${NC}"
+            echo -e "${BLUE}[+] Database migration will be skipped.${NC}"
         ;;
         --skip-heavy|-sh)
             SKIP_HEAVY=1
-            echo -e "${BLUE}Heavy files will be skiped.${NC}"
+            echo -e "${BLUE}[+] Heavy files will be skipped.${NC}"
+        ;;
+        --hard-klipper-restart)
+            KLIPPER_HARD_RESTAR=1
+            echo -e "${BLUE}[+] Klipper hard restart mode enabled.${NC}"
         ;;
         --verbose|-v)
-            echo -e "${BLUE}Vebose mode enabled.${NC}"
+            echo -e "${BLUE}[+] Vebose mode enabled.${NC}"
             VERBOSE=1
         ;;
         --help|-h)
@@ -79,6 +85,7 @@ if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
     echo -e "    --skip-database          Skip database migration."
     echo -e "    --skip-moon-restart      Skip restarting Moonraker."
     echo -e "    --skip-klipper-restart   Skip restarting Klipper."
+    echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
     echo -e "    --verbose, -v            Enable verbose mode for detailed output."
     echo -e "    --help, -h               Display this help message."
     echo -e ""
@@ -270,7 +277,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
 
         run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
         run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
-        run_service "Klipper"   "Restarting"    0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh
+
+        if [ "$KLIPPER_HARD_RESTART" -ne 1 ]; then
+        run_service "Klipper"   "Restarting"    0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh --hard
+        else
+        run_service "Klipper"   "Reloading"     0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh
+        fi
 
         echo; echo -e "${GREEN}All done!${NC}"
     else
