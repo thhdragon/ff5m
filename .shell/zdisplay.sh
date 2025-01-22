@@ -28,7 +28,7 @@ display_off() {
 }
 
 test() {
-    local is_display_on=$(grep -q "display_off = 1" < "$CFG_PATH"; echo $?)
+    local is_display_on=$(< "$CFG_PATH" grep -q "display_off = 1"; echo $?)
     return "$is_display_on"
 }
 

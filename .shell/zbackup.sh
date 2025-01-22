@@ -41,4 +41,4 @@ if [ "$3" = 1 ]; then PARAMS="$PARAMS --verbose"; fi
 
 # TODO: klipper sets LD_PRELOAD variable, idkw
 
-LD_PRELOAD= chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py $PARAMS
+LD_PRELOAD="" chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py "$PARAMS"

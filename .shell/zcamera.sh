@@ -61,4 +61,4 @@ EOF
     exit 1
 fi
 
-[ $6 = "RESTART" ] && /etc/init.d/S98camera restart
+[ "$6" = "RESTART" ] && /etc/init.d/S98camera restart

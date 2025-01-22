@@ -22,11 +22,11 @@ fi
 
 if [ "$SWAP" = "/root/swap" ]; then
     if ! grep -q "use_swap = 0" /opt/config/mod_data/variables.cfg; then
-        swapon $SWAP
+        swapon "$SWAP"
     fi
 fi
 
-$( [ -f $NOT_FIRST_LAUNCH_F ] ); TIME_IN_SYNC=$(( $? == 0 ))
+[ -f $NOT_FIRST_LAUNCH_F ] ; TIME_IN_SYNC=$(( $? == 0 ))
 
 synchronize_time() {
     echo "Trying to synchronize time..."

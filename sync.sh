@@ -68,14 +68,14 @@ while [ "$#" -gt 0 ]; do
             print_label "-" "Heavy files will be skipped."
         ;;
         --hard-klipper-restart)
-            KLIPPER_HARD_RESTAR=1
+            KLIPPER_HARD_RESTART=1
             print_label "+" "Klipper hard restart mode enabled."
         ;;
         --verbose|-v)
             print_label "*" "Vebose mode enabled."
             VERBOSE=1
         ;;
-        --help|-h)
+        --help)
             HELP=1
         ;;
         *)

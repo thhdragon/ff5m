@@ -10,7 +10,7 @@
 
 /root/printer_data/scripts/ps_mem.py --swap > /tmp/mem
 
-cat /tmp/mem | sed 's/python3.11/Moonraker/' | sed 's/firmwareExe/Экран/' | sed 's/mjpg_streamer/Камера/'
+< /tmp/mem sed 's/python3.11/Moonraker/' | sed 's/firmwareExe/Экран/' | sed 's/mjpg_streamer/Камера/'
 rm -f /tmp/mem
 
 free -m

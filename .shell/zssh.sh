@@ -12,9 +12,9 @@ if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART|RELOAD) S
 SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
 
 START='off'
-if [ $1 = "START" ]; then START='on'; fi;
-if [ $1 = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
-if [ $1 = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
+if [ "$1" = "START" ]; then START='on'; fi;
+if [ "$1" = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
+if [ "$1" = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
 
 if ! [ -f "/opt/config/mod_data/ssh.conf" ] || [ ${START} = 'on' ]; then
 echo "# Не редактируйте этот файл
@@ -57,4 +57,4 @@ else
     sed -i 's|START=.*|START=off|' /opt/config/mod_data/ssh.conf
 fi
 
-[ $8 = "RESTART" ] && /etc/init.d/S98zssh restart
+[ "$8" = "RESTART" ] && /etc/init.d/S98zssh restart

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 unset LD_PRELOAD
 unset LD_LIBRARY_PATH

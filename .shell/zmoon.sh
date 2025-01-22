@@ -18,7 +18,8 @@ send() {
     
     echo "Sending..."
     
-    local http_code=$($CURL -s -w "%{http_code}" -o /dev/null -X POST "$addr")
+    local http_code
+    http_code=$($CURL -s -w "%{http_code}" -o /dev/null -X POST "$addr")
     if [ "$?" -ne 0 ]; then
         echo "Query failed \"$addr\". curl errored"
         exit 1
@@ -35,15 +36,15 @@ send() {
 
 CMD="$1"
 
-if [ $CMD == "restart_klipper" ]; then
+if [ "$CMD" == "restart_klipper" ]; then
     send "printer/restart"
 fi
 
-if [ $CMD == "restart_firmware" ]; then
+if [ "$CMD" == "restart_firmware" ]; then
     send "printer/firmware_restart"
 fi
 
-if [ $CMD == "recover" ]; then
+if [ "$CMD" == "recover" ]; then
     send "machine/update/recover?name=zmod&hard=true"
 fi
 
