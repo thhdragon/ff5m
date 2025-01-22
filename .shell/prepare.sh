@@ -82,8 +82,9 @@ start_prepare() {
     fi
     
     if [ ! -f /etc/init.d/S00fix ]; then
-        /opt/config/mod/.shell/fix_config.sh
-        ln -s /opt/config/mod/.shell/fix_config.sh /etc/init.d/S00fix
+        rm -f /etc/init.d/S00fix
+        ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
+        /etc/init.d/S00init
     fi
     
     echo "System start" >/data/logFiles/ssh.log
