@@ -3,7 +3,6 @@
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
-from encodings import search_function
 
 
 class LoadCellTareGcode:
@@ -49,6 +48,7 @@ class LoadCellTareGcode:
             self._cell_tare()
 
             if self.level_pin.last_state:
+
                 gcmd.respond_info(f"Load cell tared and confirmed.")
                 ok = True
                 break
