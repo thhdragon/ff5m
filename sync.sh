@@ -6,8 +6,8 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-GREEN='\033[0;32m'
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No color
@@ -30,39 +30,49 @@ KLIPPER_HARD_RESTART=0
 HELP=0
 VERBOSE=0
 
+print_label() {
+    if [ $# -eq 2 ]; then
+        echo -e "${BLUE}[$1] $2${NC}"
+    else
+        echo -e "${BLUE}$1${NC}"
+    fi
+}
+
+echo -e "${GREEN}Flashforge zmod-lite synchronization script${NC}\n"
+
 while [ "$#" -gt 0 ]; do
     param=$1; shift
     case $param in
         --host|-h)
             REMOTE_HOST="$1"; shift
-            echo -e "${BLUE}[+] Remote host: ${REMOTE_HOST}.${NC}"
+            print_label "!" "Remote host: ${REMOTE_HOST}."
         ;;
         --skip-restart|-sr)
             SKIP_RESTART=1
-            echo -e "${BLUE}[+] Services restart will be skipped.${NC}"
+            print_label "-" "Services restart will be skipped."
         ;;
         --skip-moon-restart)
             SKIP_MOON_RESTART=1
-            echo -e "${BLUE}[+] Moonraker restart will be skipped.${NC}"
+            print_label "-" "Moonraker restart will be skipped."
         ;;
         --skip-klipper-restart)
             SKIP_KLIPPER_RESTART=1
-            echo -e "${BLUE}[+] Klipper restart will be skipped.${NC}"
+            print_label "-" "Klipper restart will be skipped."
         ;;
         --skip-database)
             SKIP_MIGRATE=1
-            echo -e "${BLUE}[+] Database migration will be skipped.${NC}"
+            print_label "-" "Database migration will be skipped."
         ;;
         --skip-heavy|-sh)
             SKIP_HEAVY=1
-            echo -e "${BLUE}[+] Heavy files will be skipped.${NC}"
+            print_label "-" "Heavy files will be skipped."
         ;;
         --hard-klipper-restart)
             KLIPPER_HARD_RESTAR=1
-            echo -e "${BLUE}[+] Klipper hard restart mode enabled.${NC}"
+            print_label "+" "Klipper hard restart mode enabled."
         ;;
         --verbose|-v)
-            echo -e "${BLUE}[+] Vebose mode enabled.${NC}"
+            print_label "*" "Vebose mode enabled."
             VERBOSE=1
         ;;
         --help|-h)
@@ -127,7 +137,7 @@ if [ "$SKIP_HEAVY" -eq 1 ]; then
     )
 fi
 
-echo -e "${BLUE}Creating archive...${NC}"
+echo; print_label "Creating archive..."
 
 EXCLUDE_STR=""
 for e in "${EXCLUDES[@]}"; do
@@ -143,7 +153,7 @@ if [ $? -ne 0 ]; then
     exit 2
 fi
 
-echo -e "${BLUE}Uploading archive to ${REMOTE_HOST}...${NC}"
+print_label "Uploading archive to ${REMOTE_HOST}..."
 scp -O "./${ARCHIVE_NAME}" "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}"
 
 if [ $? -ne 0 ]; then
@@ -154,6 +164,8 @@ if [ $? -ne 0 ]; then
     cleanup
     exit 2
 fi
+
+echo
 
 ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     ##############################################
