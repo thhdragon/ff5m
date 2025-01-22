@@ -17,43 +17,39 @@ fix_config() {
 
     TMP_CFG_PATH=/tmp/printer.tmp.cfg
 
-    # Move parameters from printer.base.cfg to printer.cfg
-    
+    # Create dump with parameters from printer.base.cfg
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
         --mode backup \
         --config /opt/config/printer.base.cfg \
         --data $TMP_CFG_PATH \
         --params /opt/config/mod/.shell/cfg/init.move.cfg
 
+    # If any parameters found
     if [ $? -eq 0 ]; then
+        # TODO: Merge with defaults?
         DATA_MOVE_CFG=$TMP_CFG_PATH
-        # TODO: Merge?
     else
         DATA_MOVE_CFG=/opt/config/mod/.shell/cfg/data.init.move.cfg
     fi
 
+    # Move params from printer.base.cfg to printer.cfg
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
             --mode restore --avoid_writes \
             --config /opt/config/printer.cfg \
             --data $DATA_MOVE_CFG \
             --params /opt/config/mod/.shell/cfg/init.move.cfg
 
-    # Initialized printer.base.cfg to printer.cfg with custom configuration
-
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore --avoid_writes \
-        --config /opt/config/printer.cfg \
-        --no_data \
-        --params /opt/config/mod/.shell/cfg/init.cfg
-        
+    # Initialize display configuration
+    /opt/config/mod/.shell/zdisplay.sh init
+    
+    # Init printer.base.cfg configuration
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.base.cfg \
         --params /opt/config/mod/.shell/cfg/init.base.cfg \
         --data /opt/config/mod/.shell/cfg/data.init.base.cfg
 
-
-    # Restore printer.baes.cfg if changed since backup
+    # Restore printer.base.cfg if changed since backup
     if [ -f /opt/config/printer.base.cfg.bak ]; then
         chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
             --mode restore --avoid_writes \

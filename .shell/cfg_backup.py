@@ -544,7 +544,7 @@ def restore(file_path, saved_data, dry=False):
 
                 if act == Action.ADD:
                     state.pop_include(kwargs["path"])
-                else:
+                elif act == Action.REMOVE:
                     state.is_changed = True
                     print(f"Removed Include {kwargs['path']!r}")
 
@@ -769,6 +769,7 @@ if __name__ == "__main__":
             backup_data = dict()
 
         if not avoid_writes or has_changes(config_path, backup_data):
+            print()
             restore(config_path, backup_data, dry_run)
         else:
             print("Config doesn't contains changed properties!")

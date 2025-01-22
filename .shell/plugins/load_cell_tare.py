@@ -36,6 +36,7 @@ class LoadCellTareGcode:
 
         gcmd.respond_info(f"Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
 
+        # TODO: Is it okay ???
         if weight < threshold_weight:
             gcmd.respond_info(f"Current weight threshold: {weight} < {threshold_weight}. Skipping tare.")
             return
