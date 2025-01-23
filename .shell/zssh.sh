@@ -3,6 +3,7 @@
 ##
 ## SSH tunnel for Telegram Bot
 ##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
@@ -12,49 +13,31 @@ if [ $# -ne 8 ]; then echo "Используйте (START|STOP|RESTART|RELOAD) S
 SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
 
 START='off'
+
 if [ "$1" = "START" ]; then START='on'; fi;
 if [ "$1" = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
 if [ "$1" = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
 
-if ! [ -f "/opt/config/mod_data/ssh.conf" ] || [ ${START} = 'on' ]; then
-echo "# Не редактируйте этот файл
-# Используйте макрос
-#
-# ZSSH_ON SSH_SERVER=$2 SSH_PORT=$3 SSH_USER=$4 VIDEO_PORT=$5 MOON_PORT=$6
-# или
-# ZSSH_OFF
-#
-# Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2
-# ${SSH_PUB}
-# В файле authorized_keys уберите первые 2 символа '# ' - это коментарий
+CFG_SCRIPT="/opt/config/mod/.shell/zconf.sh"
+CFG_PATH="/opt/config/mod_data/ssh.conf"
 
-# Запускать ssh (on|off)
-START=${START}
+# Create default configuration if needed
+if [ ! -f "$CFG_PATH" ]; then
+    cp "/opt/config/mod/.shell/cfg/default/ssh.conf" "$CFG_PATH"
+fi
 
-# Удаленный SSH сервер
-SSH_SERVER=$2
+# Update configuration
+if [ ${START} = 'on' ]; then
+    $CFG_SCRIPT $CFG_PATH --set START="on" \
+                SSH_SERVER="$2" SSH_PORT="$3" \
+                SSH_USER="$4"  VIDEO_PORT="$5" MOON_PORT="$6" REMOTE_RUN="\"$7\""
 
-# Порт SSH сервера (22)
-SSH_PORT=$3
-
-# Имя пользователя для авторизации
-SSH_USER=$4
-
-# Порт трансляции видео на удаленном сервере (8080)
-VIDEO_PORT=$5
-
-# Порт moonraker на удаленном сервере (7125)
-MOON_PORT=$6
-
-# Какую команду запускать на удаленном сервере (./ff5m.sh bot1)
-REMOTE_RUN='$7'
-" >/opt/config/mod_data/ssh.conf
-
-echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
-echo "${SSH_PUB}"
+    echo "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для пользователя $4 на ssh сервере $2"
+    echo "${SSH_PUB}"
+    echo "В файле authorized_keys уберите первые 2 символа '# ' - это коментарий"
 
 else
-    sed -i 's|START=.*|START=off|' /opt/config/mod_data/ssh.conf
+    $CFG_SCRIPT $CFG_PATH --set START="off"
 fi
 
 [ "$8" = "RESTART" ] && /etc/init.d/S98zssh restart

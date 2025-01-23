@@ -291,9 +291,9 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
         run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
 
         if [ "$KLIPPER_HARD_RESTART" -ne 1 ]; then
-        run_service "Klipper"   "Restarting"    0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh --hard
-        else
         run_service "Klipper"   "Reloading"     0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh
+        else
+        run_service "Klipper"   "Restarting"    0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh --hard
         fi
 
         echo; echo -e "${GREEN}All done!${NC}"

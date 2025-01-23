@@ -3,6 +3,7 @@
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
+from email.policy import default
 
 
 class LoadCellTareGcode:
@@ -34,6 +35,10 @@ class LoadCellTareGcode:
         threshold_weight = self.variables.allVariables.get("cell_weight", 0)
 
         gcmd.respond_info(f"Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
+
+        macro_obj = self.printer.lookup_object('gcode_macro START_PRINT')
+        value = macro_obj.variables.get('screen', "<default_value>")
+        gcmd.respond_info(f"'screen' value = {value}")
 
         # TODO: Is it okay ???
         if weight < threshold_weight:

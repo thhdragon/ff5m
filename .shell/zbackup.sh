@@ -11,10 +11,7 @@ MOD=/data/.mod/.zmod
 CFG_PATH="/opt/config/mod_data/backup.params.cfg"
 
 if [ ! -f $CFG_PATH ]; then
-    echo "[stepper_x] rotation_distance
-[stepper_y] rotation_distance
-[stepper_z] rotation_distance
-    " > $CFG_PATH
+    cp "/opt/config/mod/.shell/cfg/default/backup.params.cfg" "$CFG_PATH"
 fi
 
 
@@ -40,5 +37,4 @@ if [ "$2" = 1 ]; then PARAMS="$PARAMS --dry"; fi
 if [ "$3" = 1 ]; then PARAMS="$PARAMS --verbose"; fi
 
 # TODO: klipper sets LD_PRELOAD variable, idkw
-
 LD_PRELOAD="" chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py "$PARAMS"
