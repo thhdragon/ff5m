@@ -49,7 +49,6 @@ class LoadCellTareGcode:
             self._cell_tare()
 
             if self.level_pin.last_state:
-
                 gcmd.respond_info(f"Load cell tared and confirmed.")
                 ok = True
                 break
