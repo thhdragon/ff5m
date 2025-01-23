@@ -28,13 +28,14 @@ display_off() {
 }
 
 test() {
-    local is_display_on=$(< "$CFG_PATH" grep -q "display_off = 1"; echo $?)
-    return "$is_display_on"
+    local display_off=$(/opt/config/mod/.shell/zconf.sh "$CFG_PATH" --get "display_off")
+    return "$display_off"
 }
 
 
 apply_display_off() {
-    killall firmwareExe > /dev/null 2>&1 && xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
+    killall firmwareExe > /dev/null 2>&1
+    xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
     return 0
 }
 
@@ -49,20 +50,20 @@ case "$1" in
     ;;
     init)
         if test; then
-            display_off
-        else
             display_on
+        else
+            display_off
         fi
     ;;
     apply)
-        if test; then
+        if ! test; then
             echo "Turning display off"
             apply_display_off
         fi
     ;;
     test)
         test; ret=$?
-        if [ "$ret" -eq 1 ]; then echo "Display enabled"; else echo "Display disabled"; fi
+        if [ "$ret" -eq 0 ]; then echo "Display enabled"; else echo "Display disabled"; fi
         exit $ret
     ;;
     *)

@@ -36,10 +36,6 @@ class LoadCellTareGcode:
 
         gcmd.respond_info(f"Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
 
-        macro_obj = self.printer.lookup_object('gcode_macro START_PRINT')
-        value = macro_obj.variables.get('screen', "<default_value>")
-        gcmd.respond_info(f"'screen' value = {value}")
-
         # TODO: Is it okay ???
         if weight < threshold_weight:
             gcmd.respond_info(f"Current weight threshold: {weight} < {threshold_weight}. Skipping tare.")
