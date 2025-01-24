@@ -3,7 +3,9 @@
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
-from email.policy import default
+
+
+import logging
 
 
 class LoadCellTareGcode:
@@ -13,6 +15,7 @@ class LoadCellTareGcode:
         self.config = config
         self.printer = config.get_printer()
         self.gcode = self.printer.lookup_object("gcode")
+
         self.gcode.register_command("LOAD_CELL_TARE", self.cmd_LOAD_CELL_TARE)
 
     def _lazy_load_printers_objects(self):
@@ -22,11 +25,14 @@ class LoadCellTareGcode:
         self.toolhead = self.printer.lookup_object("toolhead")
         self.weight = self.printer.lookup_object("temperature_sensor weightValue")
         self.probe = self.printer.lookup_object("probe")
-        self.level_pin = self.printer.lookup_object("gcode_button check_level_pin")
         self.variables = self.printer.lookup_object("save_variables")
+        self.level_pin = self.printer.lookup_object("gcode_button check_level_pin")
 
     def _run_gcode(self, *cmds: str):
         self.gcode.run_script_from_command("\n".join(cmds))
+
+    def _tare_confirmed(self):
+        return bool(self.level_pin.last_state)
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
         self._lazy_load_printers_objects()
@@ -34,86 +40,107 @@ class LoadCellTareGcode:
         weight = self.weight.last_temp
         threshold_weight = self.variables.allVariables.get("cell_weight", 0)
 
-        gcmd.respond_info(f"Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
+        logging.info(f"LOAD_CELL_TARE: Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
 
-        # TODO: Is it okay ???
-        if weight < threshold_weight:
-            gcmd.respond_info(f"Current weight threshold: {weight} < {threshold_weight}. Skipping tare.")
-            return
+        # Check tare confirmation state reset
+        for i in range(5):
+            if not self._tare_confirmed():
+                break
 
-        self._query_probe(gcmd)
+            gcmd.respond_info(f"Attempt {i + 1}. Tare conformation is not clear. Try to reset...")
+            self._reset_tare_confirmation()
+            self._run_gcode("WAIT TIME=100")
+        else:
+            raise gcmd.error("Tare conformation did not reset.")
 
-        # Try to reset 5 times. IDK if there is any reason for this, but the original firmware does it 10 times
+        # Check bed pressure to ensure no toolhead contact
+        # Taring in that case would be incorrect
+        self._query_probe()
+
+        # Try to tare several times, as events may not be received in a single attempt
         ok = False
         for i in range(5):
             self._cell_tare()
-
-            if self.level_pin.last_state:
-                gcmd.respond_info(f"Load cell tared and confirmed.")
+            if self._tare_confirmed():
                 ok = True
                 break
 
-            gcmd.respond_info(f"Attempt {i + 1}. No confirmation from level sensor. Weight: {self.weight.last_temp}")
+            logging.info(f"LOAD_CELL_TARE: Attempt {i + 1}. No confirmation from level sensor. Weight: {self.weight.last_temp}")
 
-        self._run_gcode("G4 P100")
-        if abs(self.weight.last_temp) > threshold_weight:
-            raise gcmd.error(f"Load cell tare failed: weight {self.weight.last_temp} > threshold {threshold_weight}")
+        self._reset_tare_confirmation()
 
-        if not ok:
-            if self.weight.last_temp < threshold_weight and self.config.getint("skip_tare_error", 0):
-                gcmd.respond_info(f"Load cell tared, but no confirmation from level sensor; configured to skip.")
-            else:
-                raise gcmd.error("Load cell tare failed")
+        if ok:
+            logging.info("LOAD_CELL_TARE: Tare confirmed.")
+
+            self._run_gcode("WAIT TIME=100")
+            if abs(self.weight.last_temp) > threshold_weight:
+                raise gcmd.error(f"Load cell tare failed: weight {self.weight.last_temp} > threshold {threshold_weight}")
+
+        elif self.config.getint("skip_tare_error", 0):
+            gcmd.respond_info(f"Load cell tared, but no confirmation from level_pin; configured to skip.")
+
+        else:
+            raise gcmd.error("Load cell tare failed. No tare confirmation received")
 
         # If we are here - tare is considered successful
-        self._confirm_tare()
+        logging.info("LOAD_CELL_TARE: Load cell tare finished!")
 
-    def _query_probe(self, gcmd):
+    def _query_probe(self):
         self._run_gcode("QUERY_PROBE")
 
         if not self.probe.last_state:
-            gcmd.respond_info("Load cell sensor is not activated. OK!")
+            logging.info("LOAD_CELL_TARE: No pressure to bed detected. OK!")
             return
 
-        self._run_gcode("SAVE_GCODE_STATE NAME=CELL_TARE")
+        logging.info("LOAD_CELL_TARE: Detected bed pressure.")
+
         self.gcode.run_script_from_command("SAVE_GCODE_STATE NAME=CELL_TARE")
 
         kin_status = self.toolhead.get_kinematics().get_status(0)
         if "z" not in kin_status['homed_axes']:
-            self._run_gcode("G28 Z")
+            logging.info("LOAD_CELL_TARE: Start Z homing...")
+            self._run_gcode(
+                "G28 Z",
+                "M400"
+            )
         elif self.toolhead.get_position()[2] < 5:  # position.z
+            logging.info("LOAD_CELL_TARE: Moving bed lower...")
             self._run_gcode(
                 "G90",
                 "G1 Z10 F6000",
-                "G4 P55",
+                "M400",
             )
 
         self.gcode.run_script_from_command("RESTORE_GCODE_STATE NAME=CELL_TARE")
-        self.gcode.respond_raw("!! Load cell sensor is activated. Please ensure the bed is clean!")
+        self.gcode.respond_raw("!! Detected bed pressure. Please ensure the bed is clean!")
 
     def _cell_tare(self):
+        logging.info("LOAD_CELL_TARE: Send tare request.")
+
         # Tare is set by toggling level_h1 pin
         timeout = 250
         self._run_gcode(
             "SET_PIN PIN=level_h1 VALUE=0",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
             "SET_PIN PIN=level_h1 VALUE=1",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
             "SET_PIN PIN=level_h1 VALUE=0",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
             "SET_PIN PIN=level_h1 VALUE=1",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
         )
 
-    def _confirm_tare(self):
-        # Toggle level clear pins.
-        # Not sure what the level clear pin does. But we do the same as the stock software.
+    def _reset_tare_confirmation(self):
+        logging.info("LOAD_CELL_TARE: Reset tare confirmation.")
+
+        # Toggle level clear pins
+        # This action resets level_pin, which we read later to confirm that the tare was reset.
         timeout = 10
         self._run_gcode(
             "SET_PIN PIN=level_clear VALUE=0",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
             "SET_PIN PIN=level_clear VALUE=1",
-            f"G4 P{timeout}",
+            f"WAIT TIME={timeout}",
         )
 
 
