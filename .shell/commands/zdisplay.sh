@@ -28,7 +28,7 @@ display_off() {
 }
 
 test() {
-    local display_off=$(/opt/config/mod/.shell/zconf.sh "$CFG_PATH" --get "display_off")
+    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$CFG_PATH" --get "display_off")
     return "$display_off"
 }
 

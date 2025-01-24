@@ -18,7 +18,7 @@ if [ "$1" = "START" ]; then START='on'; fi;
 if [ "$1" = "RESTART" ]; then /etc/init.d/S98zssh restart; exit; fi
 if [ "$1" = "RELOAD" ];  then /etc/init.d/S98zssh reload;  exit; fi
 
-CFG_SCRIPT="/opt/config/mod/.shell/zconf.sh"
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/ssh.conf"
 
 # Create default configuration if needed

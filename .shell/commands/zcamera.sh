@@ -7,7 +7,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-CFG_SCRIPT="/opt/config/mod/.shell/zconf.sh"
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/camera.conf"
 
 if [ "$1" = "RELOAD" ]; then /etc/init.d/S98camera reload; exit 0; fi

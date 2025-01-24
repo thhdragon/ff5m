@@ -9,7 +9,7 @@
 
 
 if ! [ -f /opt/config/mod_data/camera.conf ]; then
-    /root/printer_data/scripts/zcamera.sh off 1280 720 20 video0 NOTRESTART
+    /root/printer_data/scripts/commands/zcamera.sh off 1280 720 20 video0 NOTRESTART
 fi
 
 VIDEO="video0"

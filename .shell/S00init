@@ -40,7 +40,7 @@ fix_config() {
     --params /opt/config/mod/.cfg/init.move.cfg
     
     # Initialize display configuration
-    /opt/config/mod/.shell/zdisplay.sh init
+    /opt/config/mod/.shell/commands/zdisplay.sh init
     
     # Init printer.base.cfg configuration
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \

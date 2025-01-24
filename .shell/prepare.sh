@@ -134,7 +134,7 @@ start_prepare() {
         /opt/config/mod/.shell/migrate_db.sh
     fi
     
-    /opt/config/mod/.shell/zshaper.sh --clear
+    /opt/config/mod/.shell/commands/zshaper.sh --clear
     
     SWAP="/root/swap"
     chroot $MOD /opt/config/mod/.root/start.sh "$SWAP" &

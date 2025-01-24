@@ -84,7 +84,7 @@ EOF
     find /opt/config -name "printer-$(date +"%Y%m%d")*.cfg" -maxdepth 1 -type f -exec rm -f {} +
 else
     echo "Unable to find FirmwareExe process. Restart using Moonraker's API"
-    /opt/config/mod/.shell/zmoon.sh "restart_klipper"
+    /opt/config/mod/.shell/commands/zmoon.sh "restart_klipper"
 fi
 
 exit $?

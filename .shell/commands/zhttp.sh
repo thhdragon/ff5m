@@ -9,7 +9,7 @@
 
 MOD=/data/.mod/.zmod
 
-CFG_SCRIPT="/opt/config/mod/.shell/zconf.sh"
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/web.conf"
 
 DEFAULT_WEB="fluidd"
