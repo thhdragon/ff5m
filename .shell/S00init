@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## Mod's configuration preparation script
 ##
@@ -14,16 +14,16 @@ set -x
 fix_config() {
     echo "START fix_config"
     date
-
+    
     TMP_CFG_PATH=/tmp/printer.tmp.cfg
-
+    
     # Create dump with parameters from printer.base.cfg
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode backup \
-        --config /opt/config/printer.base.cfg \
-        --data $TMP_CFG_PATH \
-        --params /opt/config/mod/.shell/cfg/init.move.cfg
-
+    --mode backup \
+    --config /opt/config/printer.base.cfg \
+    --data $TMP_CFG_PATH \
+    --params /opt/config/mod/.shell/cfg/init.move.cfg
+    
     # If any parameters found
     if [ $? -eq 0 ]; then
         # TODO: Merge with defaults?
@@ -31,41 +31,74 @@ fix_config() {
     else
         DATA_MOVE_CFG=/opt/config/mod/.shell/cfg/data.init.move.cfg
     fi
-
+    
     # Move params from printer.base.cfg to printer.cfg
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-            --mode restore --avoid_writes \
-            --config /opt/config/printer.cfg \
-            --data $DATA_MOVE_CFG \
-            --params /opt/config/mod/.shell/cfg/init.move.cfg
-
+    --mode restore --avoid_writes \
+    --config /opt/config/printer.cfg \
+    --data $DATA_MOVE_CFG \
+    --params /opt/config/mod/.shell/cfg/init.move.cfg
+    
     # Initialize display configuration
     /opt/config/mod/.shell/zdisplay.sh init
     
     # Init printer.base.cfg configuration
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore --avoid_writes \
-        --config /opt/config/printer.base.cfg \
-        --params /opt/config/mod/.shell/cfg/init.base.cfg \
-        --data /opt/config/mod/.shell/cfg/data.init.base.cfg
-
+    --mode restore --avoid_writes \
+    --config /opt/config/printer.base.cfg \
+    --params /opt/config/mod/.shell/cfg/init.base.cfg \
+    --data /opt/config/mod/.shell/cfg/data.init.base.cfg
+    
     # Restore printer.base.cfg if changed since backup
     if [ -f /opt/config/printer.base.cfg.bak ]; then
         chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-            --mode restore --avoid_writes \
-            --config /opt/config/printer.base.cfg \
-            --params /opt/config/mod_data/backup.params.cfg \
-            --data /opt/config/printer.base.cfg.bak
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod_data/backup.params.cfg \
+        --data /opt/config/printer.base.cfg.bak
     fi
-
+    
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
-
+    
     # TODO: remove modified variable files ?
     grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py || cp /opt/config/mod/.shell/save_variables.py /opt/klipper/klippy/extras/save_variables.py
-
+    
     echo "END fix_config"
 }
+
+apply_klipper_patches() {
+    local SRC_DIR="/opt/config/mod/.py/klipper"
+    local TARGET_DIR="/opt/klipper/klippy"
+    
+    # Klipper extensions
+    echo "Link klipper plugins: "
+    echo $SRC_DIR/plugins/*
+    echo
+    
+    ln -fs $SRC_DIR/plugins/* "$TARGET_DIR/extras/"
+    
+    # Klipper patches
+    find $SRC_DIR/patches -type f | while read -r file; do
+        local rel_file=${file#"$SRC_DIR/patches/"}
+        local rel_path=$(dirname "$rel_file")
+        local target="$TARGET_DIR/$rel_file"
+        
+        mkdir -p "$TARGET_DIR/$rel_path"
+        
+        if [ ! -L "$target" ]; then
+            echo "Create klipper file backup: $target"
+            mv "$target" "$target.bak"
+            
+            echo "Link patched klipper file: $file"
+            ln -fs "$file" "$target"
+        else
+            ln -fs "$file" "$target"
+        fi
+    done
+}
+
+apply_klipper_patches
 
 mkdir -p /opt/config/mod_data/log/
 
@@ -75,8 +108,7 @@ mv /opt/config/mod_data/log/fix_config.log.2 /opt/config/mod_data/log/fix_config
 mv /opt/config/mod_data/log/fix_config.log.1 /opt/config/mod_data/log/fix_config.log.2
 mv /opt/config/mod_data/log/fix_config.log /opt/config/mod_data/log/fix_config.log.1
 
-# Klipper extensions
-ln -s /opt/config/mod/.shell/plugins/* /opt/klipper/klippy/extras/
+apply_klipper_patches
 
 # Motd
 /opt/config/mod/.shell/motd.sh > /etc/motd
