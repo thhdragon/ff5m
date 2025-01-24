@@ -55,8 +55,8 @@ fi
 
 echo "Starting services..."
 
-/opt/config/mod/.shell/root/S65moonraker start
-/opt/config/mod/.shell/root/S70httpd start
+/opt/config/mod/.root/S65moonraker start
+/opt/config/mod/.root/S70httpd start
 
 # Wait for Moonraker to start
 for _ in $(seq 0 30); do

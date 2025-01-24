@@ -22,7 +22,7 @@ case $1 in
     ;;
     --calculate)
         cp /tmp/*.csv /opt/config/mod_data/
-        LD_PRELOAD= chroot $MOD /opt/config/mod/.shell/root/zshaper.sh
+        LD_PRELOAD= chroot $MOD /opt/config/mod/.root/zshaper.sh
     ;;
     *)
         echo "Unknow parameter value: '$1'"

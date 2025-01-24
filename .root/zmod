@@ -10,7 +10,7 @@ SKIP_REBOOT_F="/tmp/zmod_skip_reboot"
 
 restart() {
     echo "Received restart signal."
-    
+
     if [ -f "$SKIP_REBOOT_F" ]; then
         echo "Skip."
         rm -f $SKIP_REBOOT_F

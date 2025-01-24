@@ -23,7 +23,7 @@ CFG_PATH="/opt/config/mod_data/ssh.conf"
 
 # Create default configuration if needed
 if [ ! -f "$CFG_PATH" ]; then
-    cp "/opt/config/mod/.shell/cfg/default/ssh.conf" "$CFG_PATH"
+    cp "/opt/config/mod/.cfg/default/ssh.conf" "$CFG_PATH"
 fi
 
 # Update configuration

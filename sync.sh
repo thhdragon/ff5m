@@ -129,10 +129,10 @@ declare -a EXCLUDES=(
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
     EXCLUDES+=(
-        "./.shell/root/docs/"
-        "./.shell/root/config/"
-        "./.shell/root/klippy/"
-        "./.shell/root/moonraker/"
+        "./.root/docs/"
+        "./.root/config/"
+        "./.root/klippy/"
+        "./.root/moonraker/"
         "./.zsh/.oh-my-zsh/"
     )
 fi
@@ -185,13 +185,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
     run_service() {
         if [ "\$#" -lt 5 ]; then echo Missing required arguments; exit 3; fi
 
-        local name="\$1"; local status="\$2"; local check_pid="\$3"
+        local name="\$1"; local status="\$2"; local check_pid="\$3"; local skip="\$4"
         if [ "\$check_pid" -eq 1 ]; then
             if [ "\$#" -lt 6 ]; then echo Missing required arguments; exit 3; fi
-            local pid_path="\$4"; local invert="\$5"; local skip="\$6"
+            local pid_path="\$5"; local invert="\$6";
             shift 6; local command=("\$@")
         else
-            local skip="\$4"
             shift 4; local command=("\$@")
         fi
 

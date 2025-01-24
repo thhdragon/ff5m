@@ -13,16 +13,16 @@ set -x
 
 restore_base() {
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore \
-        --config /opt/config/printer.cfg \
-        --no_data \
-        --params /opt/config/mod/.shell/cfg/restore.cfg
-        
+    --mode restore \
+    --config /opt/config/printer.cfg \
+    --no_data \
+    --params /opt/config/mod/.cfg/restore.cfg
+    
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore \
-        --config /opt/config/printer.base.cfg \
-        --params /opt/config/mod/.shell/cfg/restore.base.cfg \
-        --data /opt/config/mod/.shell/cfg/data.restore.base.cfg
+    --mode restore \
+    --config /opt/config/printer.base.cfg \
+    --params /opt/config/mod/.cfg/restore.base.cfg \
+    --data /opt/config/mod/.cfg/data.restore.base.cfg
     
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
     # TODO: remove modified variable files ?
@@ -81,7 +81,7 @@ start_prepare() {
         exit
     fi
     
-    if [ ! -f /etc/init.d/S00fix ]; then
+    if [ ! -f /etc/init.d/S00init ]; then
         rm -f /etc/init.d/S00fix
         ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
         /etc/init.d/S00init
@@ -108,6 +108,9 @@ start_prepare() {
     mkdir -p $MOD/root/printer_data/comms
     mkdir -p $MOD/root/printer_data/certs
     
+    # moon
+    ln -fs /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
+    
     # oh-my-zsh
     mkdir -p /root/.oh-my-zsh
     mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
@@ -123,8 +126,8 @@ start_prepare() {
     MOD_VERSION=$(cat /opt/config/mod/version.txt)
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
     
-    chroot $MOD /opt/config/mod/.shell/root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
-
+    chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+    
     /opt/config/mod/.shell/motd.sh > /etc/motd
     
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
@@ -134,7 +137,7 @@ start_prepare() {
     /opt/config/mod/.shell/zshaper.sh --clear
     
     SWAP="/root/swap"
-    chroot $MOD /opt/config/mod/.shell/root/start.sh "$SWAP" &
+    chroot $MOD /opt/config/mod/.root/start.sh "$SWAP" &
 }
 
 if [ -f /opt/config/mod/SKIP_ZMOD ]

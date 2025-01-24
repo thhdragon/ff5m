@@ -16,7 +16,7 @@ if [ $# -ne 6 ]; then echo "Используйте $0 START WIDTH HEIGHT FPS VID
 
 # Create default configuration if needed
 if [ ! -f "$CFG_PATH" ]; then
-    cp "/opt/config/mod/.shell/cfg/default/camera.conf" "$CFG_PATH"
+    cp "/opt/config/mod/.cfg/default/camera.conf" "$CFG_PATH"
 fi
 
 # Update configuration

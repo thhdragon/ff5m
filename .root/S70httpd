@@ -18,7 +18,7 @@ CLIENT=${CLIENT}" > /opt/config/mod_data/web.conf
 source /opt/config/mod_data/web.conf
 
 WEBROOT=/root/$CLIENT
-cp -f /opt/config/mod/.shell/root/config.json /root/mainsail/
+cp -f /opt/config/mod/.root/config.json /root/mainsail/
 
 start() {
     # start busybox httpd

@@ -11,9 +11,9 @@ sed 's/psd_x/psd_Y/' "$data_path_y" | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/
 ID=$(date +"%Y%m%d_%H%M%S")
 
 echo "Подготовка изображения оси X. Ждите"
-python3 /opt/config/mod/.shell/root/zshaper/calibrate_shaper.py X -s 1.0 -o "calibration_data_${ID}_X.png"
+python3 /opt/config/mod/.root/zshaper/calibrate_shaper.py X -s 1.0 -o "calibration_data_${ID}_X.png"
 
 echo "Подготовка изображения оси Y. Ждите"
-python3 /opt/config/mod/.shell/root/zshaper/calibrate_shaper.py Y -s 1.0 -o "calibration_data_${ID}_Y.png"
+python3 /opt/config/mod/.root/zshaper/calibrate_shaper.py Y -s 1.0 -o "calibration_data_${ID}_Y.png"
 
 rm -f X Y

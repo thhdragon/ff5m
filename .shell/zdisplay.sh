@@ -16,7 +16,7 @@ display_on() {
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
-        --params /opt/config/mod/.shell/cfg/init.display_on.cfg
+        --params /opt/config/mod/.cfg/init.display_on.cfg
 }
 
 display_off() {
@@ -24,7 +24,7 @@ display_off() {
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
-        --params /opt/config/mod/.shell/cfg/init.display_off.cfg
+        --params /opt/config/mod/.cfg/init.display_off.cfg
 }
 
 test() {

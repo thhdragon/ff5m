@@ -16,7 +16,7 @@ DEFAULT_WEB="fluidd"
 
 # Create default configuration if needed
 if [ ! -f "$CFG_PATH" ]; then
-    cp "/opt/config/mod/.shell/cfg/default/web.conf" "$CFG_PATH"
+    cp "/opt/config/mod/.cfg/default/web.conf" "$CFG_PATH"
 fi
 
 # Update configuration
@@ -33,4 +33,4 @@ $CFG_SCRIPT $CFG_PATH --set CLIENT="$WEB"
 sync
 
 unset LD_PRELOAD
-chroot $MOD /opt/config/mod/.shell/root/S70httpd restart
+chroot $MOD /opt/config/mod/.root/S70httpd restart
