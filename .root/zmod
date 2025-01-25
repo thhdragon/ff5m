@@ -27,7 +27,8 @@ restart() {
         exit 0
     fi
     
-    reboot
+    sync
+    echo "REBOOT" > /tmp/printer
 }
 
 case "$1" in
