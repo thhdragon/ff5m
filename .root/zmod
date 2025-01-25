@@ -12,6 +12,7 @@ restart() {
     echo "Received restart signal."
 
     # Make sure boot scripts at it's place
+    rm -f /etc/init.d/S00fix
     ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
 
     if [ -f "$SKIP_REBOOT_F" ]; then
