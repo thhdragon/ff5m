@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## Service for zmod camera
 ##
@@ -8,9 +8,8 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if ! [ -f /opt/config/mod_data/camera.conf ]
-    then
-        /root/printer_data/scripts/zcamera.sh off 1280 720 20 video0 NOTRESTART
+if ! [ -f /opt/config/mod_data/camera.conf ]; then
+    /root/printer_data/scripts/commands/zcamera.sh off 1280 720 20 video0 NOTRESTART
 fi
 
 VIDEO="video0"
@@ -22,19 +21,18 @@ E_GAMMA=10
 E_GAIN=1
 
 PID_FILE=/run/camera.pid
-source /opt/config/mod_data/camera.conf
+source "/opt/config/mod_data/camera.conf"
 
 _VIDEO_P="/dev/${VIDEO}"
 
 start() {
-    if [ $START = "on" ]
-        then
-            /usr/bin/v4l2-ctl --set-fmt-video=width=${WIDTH},height=${HEIGHT},pixelformat=1
-            start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $((${WIDTH}*${HEIGHT}*2))"
-
-            reload
-        else
-            echo "Камера отключена"
+    if [ "$START" = "on" ]; then
+        /usr/bin/v4l2-ctl --set-fmt-video=width="${WIDTH}",height="${HEIGHT}",pixelformat=1
+        start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
+        
+        reload
+    else
+        echo "Камера отключена"
     fi
 }
 
@@ -49,32 +47,31 @@ restart() {
 }
 
 reload() {
-    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null;
-    then
+    if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
         v4l2-ctl --set-ctrl sharpness=${E_SHARPNESS} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl brightness=${E_BRIGHTNESS} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl contrast=${E_CONTRAST} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gamma=${E_GAMMA} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
-
+        
         echo "OK"
     fi
 }
 
 case "$1" in
-  start)
+    start)
         start
-        ;;
-  stop)
+    ;;
+    stop)
         stop
-        ;;
-  restart)
+    ;;
+    restart)
         restart
-        ;;
-  reload)
+    ;;
+    reload)
         reload
-        ;;
-  *)
+    ;;
+    *)
         echo "Usage: $0 {start|stop|restart|reload}"
         exit 1
 esac

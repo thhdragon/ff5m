@@ -22,7 +22,7 @@ start() {
 
 stop() {
     echo "Stopping moon..."
-    chroot $MOD /opt/config/mod/.shell/root/stop.sh
+    chroot $MOD /opt/config/mod/.root/stop.sh
     echo "OK"
 }
 
@@ -30,7 +30,7 @@ up() {
     echo "Starting moon..."
     
     rm -f $START_PROC_DONE_F
-    chroot $MOD /opt/config/mod/.shell/root/start.sh &
+    chroot $MOD /opt/config/mod/.root/start.sh &
     
     for _ in $(seq 0 15); do
         test -f $START_PROC_DONE_F && break

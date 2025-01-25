@@ -1,0 +1,222 @@
+#!/bin/bash
+
+## Mod's configuration preparation script
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+MOD=/data/.mod/.zmod
+
+set -x
+
+mount_data_partition() {
+    # mount data - this would otherwise be mounted later by flashforge
+    if ! mount | grep -q /dev/mmcblk0p7; then
+        echo "Mounting /data partition..."
+        fsck -y /dev/mmcblk0p7 || true
+        mount /dev/mmcblk0p7 /data;
+    fi
+    
+    # local timeout=60
+    # while ! mount | grep -q /dev/mmcblk0p7 && [ $timeout -gt 0 ]; do
+    #     echo "Waiting /data..."; sleep 1;
+    #     timeout=$(( timeout - 1 ))
+    # done
+    
+    if ! mount | grep -q /dev/mmcblk0p7; then
+        echo "Mounting /data failed."
+        exit 1
+    fi
+}
+
+handle_special_boot_mode() {
+    if [ -f /opt/config/mod/SKIP_ZMOD ]; then
+        echo "Skipping mod load"
+        
+        md -p /data/lost+found
+        mount --bind /data/lost+found /data/.mod
+        rm -f /opt/config/mod/SKIP_ZMOD
+
+        exit 0
+    elif [ -f /opt/config/mod/REMOVE ]; then
+        echo "Removing mod..."
+        
+        mount_data_partition
+
+        cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
+        /opt/config/mod_data/.shell/uninstall.sh
+        
+        exit 0
+    elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
+        echo "Removing mod in soft mode..."
+        
+        mount_data_partition
+        cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
+        /opt/uninstall.sh --soft
+        
+        exit 0
+    fi
+}
+
+initialize() {
+    echo "*** Start initialization"
+    
+    handle_special_boot_mode
+    
+    # If we are here: mod loading not skipped
+    mount_data_partition
+    
+    mount --bind /opt/config/mod_data/.shell/scripts /root/printer_data/scripts
+    
+    mkdir -p /opt/config/mod_data/log/
+    
+    init_chroot
+    apply_klipper_patches
+    fix_config
+    
+    # oh-my-zsh
+    mkdir -p /root/.oh-my-zsh
+    mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
+    ln -s /opt/config/mod/.zsh/.profile /root/.profile
+    ln -s /opt/config/mod/.zsh/.zshrc /root/.zshrc
+    
+    # version
+    GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
+    GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
+    
+    FIRMWARE_VERSION=$(cat /root/version)
+    MOD_VERSION=$(cat /opt/config/mod/version.txt)
+    PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
+    
+    chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+    
+    # database
+    if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
+        /opt/config/mod/.shell/migrate_db.sh
+    fi
+    
+    # misc
+    /opt/config/mod/.shell/motd.sh > /etc/motd
+    /opt/config/mod/.shell/commands/zshaper.sh --clear
+
+    # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
+    grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
+    
+    # TODO: remove modified variable files ?
+    grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py || cp /opt/config/mod/.shell/save_variables.py /opt/klipper/klippy/extras/save_variables.py
+    
+    echo "*** End initialization"
+}
+
+init_chroot() {
+    mount -t proc /proc $MOD/proc
+    mount --rbind /sys $MOD/sys
+    mount --rbind /dev $MOD/dev
+    
+    mount --bind /tmp $MOD/tmp
+    
+    mkdir -p $MOD/opt/config
+    mount --bind /opt/config $MOD/opt/config
+    
+    mkdir -p $MOD/data
+    mount --bind /data $MOD/data
+    
+    mount --bind /opt/klipper $MOD/opt/klipper
+    
+    mkdir -p $MOD/root/printer_data/misc
+    mkdir -p $MOD/root/printer_data/tmp
+    mkdir -p $MOD/root/printer_data/comms
+    mkdir -p $MOD/root/printer_data/certs
+    
+    # moon
+    ln -fs /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
+}
+
+apply_klipper_patches() {
+    local SRC_DIR="/opt/config/mod/.py/klipper"
+    local TARGET_DIR="/opt/klipper/klippy"
+    
+    # Klipper extensions
+    echo "Link klipper plugins: "
+    echo $SRC_DIR/plugins/*
+    echo
+    
+    ln -fs $SRC_DIR/plugins/* "$TARGET_DIR/extras/"
+    
+    # Klipper patches
+    find $SRC_DIR/patches -type f | while read -r file; do
+        local rel_file=${file#"$SRC_DIR/patches/"}
+        local rel_path=$(dirname "$rel_file")
+        local target="$TARGET_DIR/$rel_file"
+        
+        mkdir -p "$TARGET_DIR/$rel_path"
+        
+        if [ ! -L "$target" ]; then
+            echo "Create klipper file backup: $target"
+            mv "$target" "$target.bak"
+            
+            echo "Link patched klipper file: $file"
+            ln -fs "$file" "$target"
+        else
+            ln -fs "$file" "$target"
+        fi
+    done
+}
+
+fix_config() {
+    TMP_CFG_PATH=/tmp/printer.tmp.cfg
+    
+    # Create dump with parameters from printer.base.cfg
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode backup \
+        --config /opt/config/printer.base.cfg \
+        --data $TMP_CFG_PATH \
+        --params /opt/config/mod/.cfg/init.move.cfg
+    
+    # If any parameters found
+    if [ $? -eq 0 ]; then
+        # TODO: Merge with defaults?
+        DATA_MOVE_CFG=$TMP_CFG_PATH
+    else
+        DATA_MOVE_CFG=/opt/config/mod/.cfg/data.init.move.cfg
+    fi
+    
+    # Move params from printer.base.cfg to printer.cfg
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --data $DATA_MOVE_CFG \
+        --params /opt/config/mod/.cfg/init.move.cfg
+        
+    # Initialize display configuration
+    /opt/config/mod/.shell/commands/zdisplay.sh init
+    
+    # Init printer.base.cfg configuration
+    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod/.cfg/init.base.cfg \
+        --data /opt/config/mod/.cfg/data.init.base.cfg
+    
+    # Restore printer.base.cfg if changed since backup
+    if [ -f /opt/config/printer.base.cfg.bak ]; then
+        chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+            --mode restore --avoid_writes \
+            --config /opt/config/printer.base.cfg \
+            --params /opt/config/mod_data/backup.params.cfg \
+            --data /opt/config/printer.base.cfg.bak
+    fi
+}
+
+mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
+mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
+mv /opt/config/mod_data/log/init.log.2 /opt/config/mod_data/log/init.log.3
+mv /opt/config/mod_data/log/init.log.1 /opt/config/mod_data/log/init.log.2
+mv /opt/config/mod_data/log/init.log /opt/config/mod_data/log/init.log.1
+
+initialize &>/opt/config/mod_data/log/init.log
+
+sync
