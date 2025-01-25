@@ -11,9 +11,14 @@ SKIP_REBOOT_F="/tmp/zmod_skip_reboot"
 restart() {
     echo "Received restart signal."
 
+    
+    # Mount rootfs
+    mkdir -p /_root
+    mount /dev/mmcblk0p6 /_root
+
     # Make sure boot scripts at it's place
-    rm -f /etc/init.d/S00fix
-    ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
+    rm -f /_root/etc/init.d/S00fix
+    ln -s /opt/config/mod/.shell/S00init /_root/etc/init.d/S00init
 
     if [ -f "$SKIP_REBOOT_F" ]; then
         echo "Skip."
@@ -34,4 +39,4 @@ case "$1" in
         exit 1
 esac
 
-exit $?
+exit 0
