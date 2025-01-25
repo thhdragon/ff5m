@@ -11,6 +11,9 @@ SKIP_REBOOT_F="/tmp/zmod_skip_reboot"
 restart() {
     echo "Received restart signal."
 
+    # Make sure boot scripts at it's place
+    ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
+
     if [ -f "$SKIP_REBOOT_F" ]; then
         echo "Skip."
         rm -f $SKIP_REBOOT_F
