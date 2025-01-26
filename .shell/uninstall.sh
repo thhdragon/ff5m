@@ -10,23 +10,51 @@ MOD=/data/.mod/.zmod
 
 set -x
 
+revert_klipper_patches() {
+    local SRC_DIR="/opt/config/mod/.py/klipper"
+    local TARGET_DIR="/opt/klipper/klippy"
+    
+    # Klipper extensions
+    echo "Remove klipper plugins: "
+    echo $SRC_DIR/plugins/*
+    echo
+    
+    find $SRC_DIR/plugins/ -type f | while read -r file; do
+        local rel_file=${file#"$SRC_DIR/plugins/"}
+        
+        rm -f "$TARGET_DIR/extras/$rel_file"
+    done
+    
+    # Klipper patches
+    find $SRC_DIR/patches -type f | while read -r file; do
+        local rel_file=${file#"$SRC_DIR/patches/"}
+        local target="$TARGET_DIR/$rel_file"
+        
+        if [ -f "$target.bak" ]; then
+            echo "Restore klipper backup: $target"
+            mv -f "$target.bak" "$target"
+        fi
+    done
+}
+
 uninstall() {
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-    --mode restore \
-    --config /opt/config/printer.cfg \
-    --no_data \
-    --params /opt/config/mod/.cfg/restore.cfg
+        --mode restore \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.cfg/restore.cfg
     
     chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-    --mode restore \
-    --config /opt/config/printer.base.cfg \
-    --params /opt/config/mod/.cfg/restore.base.cfg \
-    --data /opt/config/mod/.cfg/data.restore.base.cfg
+        --mode restore \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod/.cfg/restore.base.cfg \
+        --data /opt/config/mod/.cfg/data.restore.base.cfg
     
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
     # TODO: remove modified variable files ?
     grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py && cp /opt/config/mod/.shell/save_variables.py.orig /opt/klipper/klippy/extras/save_variables.py
     
+    revert_klipper_patches
     
     rm -rf /data/.mod
     rm /etc/init.d/S00fix
@@ -61,7 +89,7 @@ uninstall() {
     
     sync
     rm -f /opt/uninstall.sh
-
+    
     sync
     reboot
     exit
