@@ -38,13 +38,13 @@ revert_klipper_patches() {
 }
 
 uninstall() {
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.cfg \
         --no_data \
         --params /opt/config/mod/.cfg/restore.cfg
     
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.base.cfg \
         --params /opt/config/mod/.cfg/restore.base.cfg \
@@ -65,6 +65,8 @@ uninstall() {
     umount /data/.mod/.zmod/opt/config
     umount /data/.mod/.zmod/data
     umount /data/.mod/.zmod/proc 
+    umount /root/printer_data/scripts
+    umount /root/printer_data/py
     umount /root/.oh-my-zsh
     
     rm -rf /data/.mod
@@ -75,6 +77,7 @@ uninstall() {
     rm /etc/init.d/S98zssh
     rm /etc/init.d/K99moon
     rm -rf /opt/config/mod/
+    rm -rf /root/printer_data
     # REMOVE zsh
     rm -rf /root/.profile
     rm -rf /root/.zshrc

@@ -12,7 +12,7 @@ MOD=/data/.mod/.zmod
 CFG_PATH=/opt/config/mod_data/variables.cfg
 
 display_on() {
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
@@ -20,7 +20,7 @@ display_on() {
 }
 
 display_off() {
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \

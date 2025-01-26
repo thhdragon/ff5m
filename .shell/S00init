@@ -38,18 +38,18 @@ handle_special_boot_mode() {
         md -p /data/lost+found
         mount --bind /data/lost+found /data/.mod
         rm -f /opt/config/mod/SKIP_ZMOD
-
+        
         exit 0
-    elif [ -f /opt/config/mod/REMOVE ]; then
+        elif [ -f /opt/config/mod/REMOVE ]; then
         echo "Removing mod..."
         
         mount_data_partition
-
+        
         cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
         /tmp/uninstall.sh
         
         exit 0
-    elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
+        elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
         echo "Removing mod in soft mode..."
         
         mount_data_partition
@@ -68,9 +68,6 @@ initialize() {
     # If we are here: mod loading not skipped
     mount_data_partition
     
-    mount --bind /opt/config/mod_data/.shell/scripts /root/printer_data/scripts
-    
-    mkdir -p /opt/config/mod_data/log/
     
     init_chroot
     apply_klipper_patches
@@ -101,7 +98,7 @@ initialize() {
     # misc
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
-
+    
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
     
@@ -115,21 +112,31 @@ init_chroot() {
     mount -t proc /proc $MOD/proc
     mount --rbind /sys $MOD/sys
     mount --rbind /dev $MOD/dev
-    
     mount --bind /tmp $MOD/tmp
     
-    mkdir -p $MOD/opt/config
-    mount --bind /opt/config $MOD/opt/config
-    
     mkdir -p $MOD/data
-    mount --bind /data $MOD/data
+    mkdir -p $MOD/opt/config
+    mkdir -p $MOD/root/printer_data
     
+    mount --bind /data $MOD/data
+    mount --bind /opt/config $MOD/opt/config
     mount --bind /opt/klipper $MOD/opt/klipper
     
-    mkdir -p $MOD/root/printer_data/misc
-    mkdir -p $MOD/root/printer_data/tmp
-    mkdir -p $MOD/root/printer_data/comms
-    mkdir -p $MOD/root/printer_data/certs
+    mkdir -p /root/printer_data
+    mkdir -p /root/printer_data/certs
+    mkdir -p /root/printer_data/comms
+    mkdir -p /root/printer_data/misc
+    mkdir -p /root/printer_data/tmp
+    
+    ln -fs /data /root/printer_data/gcodes
+    ln -fs /data/logFiles /root/printer_data/logs
+    ln -fs /opt/config/ /root/printer_data/config
+    ln -fs /opt/config/mod_data/database /root/printer_data/database
+    ln -fs /opt/config/mod/.py /root/printer_data/py
+    ln -fs /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
+    ln -fs /opt/config/mod/.shell/scripts /root/printer_data/scripts
+    
+    mount --bind /root/printer_data $MOD/root/printer_data
     
     # moon
     ln -fs /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
@@ -170,11 +177,11 @@ fix_config() {
     TMP_CFG_PATH=/tmp/printer.tmp.cfg
     
     # Create dump with parameters from printer.base.cfg
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode backup \
-        --config /opt/config/printer.base.cfg \
-        --data $TMP_CFG_PATH \
-        --params /opt/config/mod/.cfg/init.move.cfg
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    --mode backup \
+    --config /opt/config/printer.base.cfg \
+    --data $TMP_CFG_PATH \
+    --params /opt/config/mod/.cfg/init.move.cfg
     
     # If any parameters found
     if [ $? -eq 0 ]; then
@@ -185,31 +192,33 @@ fix_config() {
     fi
     
     # Move params from printer.base.cfg to printer.cfg
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore --avoid_writes \
-        --config /opt/config/printer.cfg \
-        --data $DATA_MOVE_CFG \
-        --params /opt/config/mod/.cfg/init.move.cfg
-        
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    --mode restore --avoid_writes \
+    --config /opt/config/printer.cfg \
+    --data $DATA_MOVE_CFG \
+    --params /opt/config/mod/.cfg/init.move.cfg
+    
     # Initialize display configuration
     /opt/config/mod/.shell/commands/zdisplay.sh init
     
     # Init printer.base.cfg configuration
-    chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-        --mode restore --avoid_writes \
-        --config /opt/config/printer.base.cfg \
-        --params /opt/config/mod/.cfg/init.base.cfg \
-        --data /opt/config/mod/.cfg/data.init.base.cfg
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    --mode restore --avoid_writes \
+    --config /opt/config/printer.base.cfg \
+    --params /opt/config/mod/.cfg/init.base.cfg \
+    --data /opt/config/mod/.cfg/data.init.base.cfg
     
     # Restore printer.base.cfg if changed since backup
     if [ -f /opt/config/printer.base.cfg.bak ]; then
-        chroot $MOD /bin/python3 /root/printer_data/scripts/cfg_backup.py \
-            --mode restore --avoid_writes \
-            --config /opt/config/printer.base.cfg \
-            --params /opt/config/mod_data/backup.params.cfg \
-            --data /opt/config/printer.base.cfg.bak
+        chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod_data/backup.params.cfg \
+        --data /opt/config/printer.base.cfg.bak
     fi
 }
+
+mkdir -p /opt/config/mod_data/log/
 
 mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
 mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
