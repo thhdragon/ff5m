@@ -55,6 +55,17 @@ uninstall() {
     grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py && cp /opt/config/mod/.shell/save_variables.py.orig /opt/klipper/klippy/extras/save_variables.py
     
     revert_klipper_patches
+
+    # Make sure to umount all mounted files
+    # In case of accidentally run this script after init
+    umount /data/.mod/.zmod/sys
+    umount /data/.mod/.zmod/dev
+    umount /data/.mod/.zmod/tmp
+    umount /data/.mod/.zmod/opt/klipper
+    umount /data/.mod/.zmod/opt/config
+    umount /data/.mod/.zmod/data
+    umount /data/.mod/.zmod/proc 
+    umount /root/.oh-my-zsh
     
     rm -rf /data/.mod
     rm /etc/init.d/S00fix
@@ -64,8 +75,9 @@ uninstall() {
     rm /etc/init.d/S98zssh
     rm /etc/init.d/K99moon
     rm -rf /opt/config/mod/
-    # REMOVE SCRIPTS
-    rm -rf /root/printer_data/scripts
+    # REMOVE zsh
+    rm -rf /root/.profile
+    rm -rf /root/.zshrc
     # REMOVE ENTWARE
     rm -rf /opt/bin
     rm -rf /opt/etc
@@ -80,15 +92,14 @@ uninstall() {
     rm -rf /opt/var
     
     if [ ! "$1" != "--soft" ]; then
+        rm -rf /opt/config/mod_data
+
         # Remove ROOT
         rm -rf /etc/init.d/S50sshd /etc/init.d/S55date /bin/dropbearmulti /bin/dropbear /bin/dropbearkey /bin/scp /etc/dropbear /etc/init.d/S60dropbear
         # Remove BEEP
         rm -f /usr/bin/audio /usr/lib/python3.7/site-packages/audio.py /usr/bin/audio_midi.sh /opt/klipper/klippy/extras/gcode_shell_command.py
         rm -rf /usr/lib/python3.7/site-packages/mido/
     fi
-    
-    sync
-    rm -f /opt/uninstall.sh
     
     sync
     reboot

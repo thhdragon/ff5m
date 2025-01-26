@@ -45,8 +45,8 @@ handle_special_boot_mode() {
         
         mount_data_partition
 
-        cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
-        /opt/config/mod_data/.shell/uninstall.sh
+        cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
+        /tmp/uninstall.sh
         
         exit 0
     elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
