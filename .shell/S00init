@@ -8,8 +8,7 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 MOD=/data/.mod/.zmod
-
-set -x
+INIT_FLAG=/tmp/init_finished
 
 mount_data_partition() {
     # mount data - this would otherwise be mounted later by flashforge
@@ -150,10 +149,29 @@ apply_klipper_patches() {
     echo "Link klipper plugins: "
     echo $SRC_DIR/plugins/*
     echo
+
+    # Remove old patches/extensions
+    find $TARGET_DIR -type l | while read -r file; do
+        local rel_path=${file#"$TARGET_DIR/"}
+        local file_name=${file##*/}
+
+        if [ -f "$file.bak" ]; then # Patch
+            if [ ! -f "$SRC_DIR/patches/$rel_path" ]; then
+                echo "Remove old patch: $file"
+                mv "$file.bak" "$file"
+            fi
+        else
+            if [ ! -f "$SRC_DIR/plugins/$file_name" ]; then
+                echo "Remove old plugin: $file"
+                rm -f "$file"
+            fi
+        fi
+    done
     
+    # Link new extensions
     ln -fs $SRC_DIR/plugins/* "$TARGET_DIR/extras/"
     
-    # Klipper patches
+    # Apply klipper patches
     find $SRC_DIR/patches -type f | while read -r file; do
         local rel_file=${file#"$SRC_DIR/patches/"}
         local rel_path=$(dirname "$rel_file")
@@ -178,11 +196,11 @@ fix_config() {
     
     # Create dump with parameters from printer.base.cfg
     chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-    --mode backup \
-    --config /opt/config/printer.base.cfg \
-    --data $TMP_CFG_PATH \
-    --params /opt/config/mod/.cfg/init.move.cfg
-    
+        --mode backup \
+        --config /opt/config/printer.base.cfg \
+        --data $TMP_CFG_PATH \
+        --params /opt/config/mod/.cfg/init.move.cfg
+        
     # If any parameters found
     if [ $? -eq 0 ]; then
         # TODO: Merge with defaults?
@@ -193,39 +211,61 @@ fix_config() {
     
     # Move params from printer.base.cfg to printer.cfg
     chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-    --mode restore --avoid_writes \
-    --config /opt/config/printer.cfg \
-    --data $DATA_MOVE_CFG \
-    --params /opt/config/mod/.cfg/init.move.cfg
-    
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --data $DATA_MOVE_CFG \
+        --params /opt/config/mod/.cfg/init.move.cfg
+        
     # Initialize display configuration
     /opt/config/mod/.shell/commands/zdisplay.sh init
     
     # Init printer.base.cfg configuration
     chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-    --mode restore --avoid_writes \
-    --config /opt/config/printer.base.cfg \
-    --params /opt/config/mod/.cfg/init.base.cfg \
-    --data /opt/config/mod/.cfg/data.init.base.cfg
-    
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.base.cfg \
+        --params /opt/config/mod/.cfg/init.base.cfg \
+        --data /opt/config/mod/.cfg/data.init.base.cfg
+        
     # Restore printer.base.cfg if changed since backup
     if [ -f /opt/config/printer.base.cfg.bak ]; then
         chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-        --mode restore --avoid_writes \
-        --config /opt/config/printer.base.cfg \
-        --params /opt/config/mod_data/backup.params.cfg \
-        --data /opt/config/printer.base.cfg.bak
+            --mode restore --avoid_writes \
+            --config /opt/config/printer.base.cfg \
+            --params /opt/config/mod_data/backup.params.cfg \
+            --data /opt/config/printer.base.cfg.bak
     fi
 }
 
-mkdir -p /opt/config/mod_data/log/
+case "$1" in
+    start)
+        if [ -f $INIT_FLAG ]; then
+            echo "Already initialized!"
+            exit 1
+        fi
 
-mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
-mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
-mv /opt/config/mod_data/log/init.log.2 /opt/config/mod_data/log/init.log.3
-mv /opt/config/mod_data/log/init.log.1 /opt/config/mod_data/log/init.log.2
-mv /opt/config/mod_data/log/init.log /opt/config/mod_data/log/init.log.1
+        mkdir -p /opt/config/mod_data/log/
+        
+        mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
+        mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
+        mv /opt/config/mod_data/log/init.log.2 /opt/config/mod_data/log/init.log.3
+        mv /opt/config/mod_data/log/init.log.1 /opt/config/mod_data/log/init.log.2
+        mv /opt/config/mod_data/log/init.log /opt/config/mod_data/log/init.log.1
+        
+        set -x
+        initialize &>/opt/config/mod_data/log/init.log
 
-initialize &>/opt/config/mod_data/log/init.log
-
-sync
+        touch $INIT_FLAG
+        
+        sync
+    ;;
+    reload)
+        apply_klipper_patches
+    ;;
+    log)
+        cat /opt/config/mod_data/log/init.log
+    ;;
+    *)
+        echo "Usage: $0 (start|reload|log)"
+        exit 1
+    ;;
+esac

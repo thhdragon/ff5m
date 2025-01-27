@@ -24,6 +24,7 @@ SKIP_RESTART=0
 SKIP_MOON_RESTART=0
 SKIP_KLIPPER_RESTART=0
 SKIP_MIGRATE=0
+SKIP_PLUGIN_RELOAD=0
 
 KLIPPER_HARD_RESTART=0
 
@@ -67,6 +68,10 @@ while [ "$#" -gt 0 ]; do
             SKIP_HEAVY=1
             print_label "-" "Heavy files will be skipped."
         ;;
+        --skip-plugins)
+            SKIP_PLUGIN_RELOAD=1
+            print_label "-" "Plugin reloading will be skipped."
+        ;;
         --hard-klipper-restart)
             KLIPPER_HARD_RESTART=1
             print_label "+" "Klipper hard restart mode enabled."
@@ -95,6 +100,7 @@ if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
     echo -e "    --skip-database          Skip database migration."
     echo -e "    --skip-moon-restart      Skip restarting Moonraker."
     echo -e "    --skip-klipper-restart   Skip restarting Klipper."
+    echo -e "    --skip-plugins           Skip Klipper pluggins reloading."
     echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
     echo -e "    --verbose, -v            Enable verbose mode for detailed output."
     echo -e "    --help, -h               Display this help message."
@@ -288,6 +294,8 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
 
         run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
         run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
+
+        run_service "Plugins"   "Reloading"     0   "$SKIP_PLUGIN_RELOAD"     /etc/init.d/S00init reload
 
         if [ "$KLIPPER_HARD_RESTART" -ne 1 ]; then
         run_service "Klipper"   "Reloading"     0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh
