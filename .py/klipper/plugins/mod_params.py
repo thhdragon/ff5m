@@ -126,7 +126,7 @@ PARAMS = [
         key="stop_motor",
         type=bool, default=1,
         label="Моторы",
-        options=["Выключать автоматически", "Не выключать"]
+        options=["Не выключать", "Выключать автоматически"]
     ),
     Parameter(
         key="use_kamp",
@@ -210,6 +210,9 @@ class ModParamManagement:
         if issubclass(param.type, Enum):
             return param.type[value.strip()].value if value is not None else param.default.value
 
+        if param.type == bool:
+            return param.type(int(value)) if value is not None else param.default
+
         return param.type(value) if value is not None else param.default
 
     def _transform(self, param: Parameter, value: Optional[Any]):
@@ -284,10 +287,9 @@ class ModParamManagement:
         except:
             raise gcmd.error(f'Failed to update parameter "{key}" with value: "{value}"')
 
-        if new_value == self.variables[key]: return
-
-        self.variables[key] = new_value
-        self._save_all()
+        if new_value != self.variables[key]:
+            self.variables[key] = new_value
+            self._save_all()
 
         transformed = self._transform(param, self.variables[key])
         gcmd.respond_raw("SET: " + self._format_label(param, transformed))
