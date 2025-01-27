@@ -16,10 +16,11 @@ TARGET_FILE_SIZE = 256 * 1024 * 1024
 
 NO_PROGRESS = int(os.environ.get('NO_PROGRESS', "0"))
 
+
 def print_progress_bar(label, current_iteration, total_iterations):
     if NO_PROGRESS:
         return
-    
+
     filled_length = PROGRESS_BAR_LENGTH * current_iteration // total_iterations
     percentage = current_iteration * 100 // total_iterations
 
@@ -124,17 +125,27 @@ try:
 
         if not NO_PROGRESS: sys.stdout.write("\033[1K\r")
         sys.stdout.write(
-            f"File of {(TARGET_FILE_SIZE / 1024 / 1024):0.1f}MB "
-            f"created with speed {(TARGET_FILE_SIZE / 1024 / 1024 / (time.time() - create_start_time)):0.2f}MB/S\n\n"
+            f"Sequential write speed: "
+            f"{(TARGET_FILE_SIZE / 1024 / 1024 / (time.time() - create_start_time)):0.2f}MB/S\n\n"
         )
 
-    test_disk_speed(file_path, block_size=512, num_operations=10000)
-    test_disk_speed(file_path, block_size=1 * 1024, num_operations=5000)
-    test_disk_speed(file_path, block_size=4 * 1024, num_operations=2000)
-    test_disk_speed(file_path, block_size=16 * 1024, num_operations=1000)
-    test_disk_speed(file_path, block_size=128 * 1024, num_operations=500)
-    test_disk_speed(file_path, block_size=256 * 1024, num_operations=200)
-    test_disk_speed(file_path, block_size=512 * 1024, num_operations=200)
+    with open(file_path, 'rb') as f:
+        block_count = TARGET_FILE_SIZE // DEFAULT_FILE_BLOCK_SIZE
+        create_start_time = time.time()
+        for i in range(block_count):
+            f.read(DEFAULT_FILE_BLOCK_SIZE)
+            print_progress_bar("Reading test file", i, block_count)
+        if not NO_PROGRESS: sys.stdout.write("\033[1K\r")
+        sys.stdout.write(
+            f"Sequential read speed: "
+            f"{(TARGET_FILE_SIZE / 1024 / 1024 / (time.time() - create_start_time)):0.2f}MB/S\n\n"
+        )
+
+    test_disk_speed(file_path, block_size=1 * 1024, num_operations=4000)
+    test_disk_speed(file_path, block_size=4 * 1024, num_operations=4000)
+    test_disk_speed(file_path, block_size=16 * 1024, num_operations=2000)
+    test_disk_speed(file_path, block_size=32 * 1024, num_operations=1000)
+    test_disk_speed(file_path, block_size=1024 * 1024, num_operations=50)
 
     print("\n Done!")
 except KeyboardInterrupt:
