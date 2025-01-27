@@ -25,7 +25,7 @@ class LoadCellTareGcode:
         self.toolhead = self.printer.lookup_object("toolhead")
         self.weight = self.printer.lookup_object("temperature_sensor weightValue")
         self.probe = self.printer.lookup_object("probe")
-        self.variables = self.printer.lookup_object("save_variables")
+        self.mod_params = self.printer.lookup_object("mod_params")
         self.level_pin = self.printer.lookup_object("gcode_button check_level_pin")
 
     def _run_gcode(self, *cmds: str):
@@ -38,7 +38,7 @@ class LoadCellTareGcode:
         self._lazy_load_printers_objects()
 
         weight = self.weight.last_temp
-        threshold_weight = self.variables.allVariables.get("cell_weight", 0)
+        threshold_weight = self.mod_params.variables.get("cell_weight", 0)
 
         logging.info(f"LOAD_CELL_TARE: Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
 

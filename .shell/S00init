@@ -39,7 +39,7 @@ handle_special_boot_mode() {
         rm -f /opt/config/mod/SKIP_ZMOD
         
         exit 0
-        elif [ -f /opt/config/mod/REMOVE ]; then
+    elif [ -f /opt/config/mod/REMOVE ]; then
         echo "Removing mod..."
         
         mount_data_partition
@@ -48,7 +48,7 @@ handle_special_boot_mode() {
         /tmp/uninstall.sh
         
         exit 0
-        elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
+    elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
         echo "Removing mod in soft mode..."
         
         mount_data_partition
@@ -127,6 +127,7 @@ init_chroot() {
     mkdir -p /root/printer_data/misc
     mkdir -p /root/printer_data/tmp
     
+    # Init /root/printer_data
     ln -fs /data /root/printer_data/gcodes
     ln -fs /data/logFiles /root/printer_data/logs
     ln -fs /opt/config/ /root/printer_data/config
