@@ -152,13 +152,6 @@ PARAMS = [
         label="Экран отключен",
         options=["НЕТ", "ДА"],
         readonly=True
-    ),
-    # TODO: rewrite MD5 check
-    Parameter(
-        key="md5_check_result",
-        type=int, default=0,
-        label="Результат проверки MD5",
-        readonly=True, hidden=True
     )
 ]
 
