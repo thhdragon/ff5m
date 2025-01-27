@@ -67,7 +67,6 @@ initialize() {
     # If we are here: mod loading not skipped
     mount_data_partition
     
-    
     init_chroot
     apply_klipper_patches
     fix_config
@@ -97,6 +96,8 @@ initialize() {
     # misc
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
+
+    ln -fs /opt/config/mod_data/log /data/logFiles/mod
     
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
