@@ -6,7 +6,6 @@
 
 
 import ast, configparser, logging
-import json
 
 from dataclasses import dataclass
 from enum import Enum
@@ -21,6 +20,7 @@ class Parameter:
     label: str
     options: Union[List[str], Dict[Any, str], None] = None
     readonly: bool = False
+    hidden: bool = False
 
 
 class LinePurgeEnum(Enum):
@@ -152,6 +152,13 @@ PARAMS = [
         label="Экран отключен",
         options=["НЕТ", "ДА"],
         readonly=True
+    ),
+    # TODO: rewrite MD5 check
+    Parameter(
+        key="md5_check_result",
+        type=int, default=0,
+        label="Результат проверки MD5",
+        readonly=True, hidden=True
     )
 ]
 
@@ -250,6 +257,8 @@ class ModParamManagement:
 
     def cmd_LIST_MOD_PARAMS(self, gcmd):
         for param in PARAMS:
+            if param.hidden: continue
+
             value = self._transform(param, self.variables[param.key])
             gcmd.respond_raw(self._format_label(param, value))
             if not param.readonly:
@@ -257,7 +266,6 @@ class ModParamManagement:
 
     def cmd_RELOAD_MOD_PARAMS(self, gcmd):
         self._reload()
-        gcmd.respond_raw("ok")
 
     def cmd_GET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
@@ -267,8 +275,6 @@ class ModParamManagement:
         param = PARAMS_DICT[key]
         transformed = self._transform(param, self.variables[key])
         gcmd.respond_raw(self._format_label(param, transformed))
-
-        gcmd.ack(transformed)
 
     def cmd_SET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
@@ -291,8 +297,9 @@ class ModParamManagement:
             self.variables[key] = new_value
             self._save_all()
 
-        transformed = self._transform(param, self.variables[key])
-        gcmd.respond_raw("SET: " + self._format_label(param, transformed))
+        if not param.hidden:
+            transformed = self._transform(param, self.variables[key])
+            gcmd.respond_raw("SET: " + self._format_label(param, transformed))
 
     def get_status(self, _):
         return {'variables': self.variables}

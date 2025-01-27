@@ -1,9 +1,11 @@
 #!/bin/sh
 
-send_klipper()
-{
-    sed -i "s/^check_md5.*/check_md5 = $1/" /opt/config/mod_data/variables.cfg
-    sleep
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+CFG_PATH="/opt/config/mod_data/variables.cfg"
+
+send_klipper() {
+    $CFG_SCRIPT $CFG_PATH --set "md5_check_result=$1"
+    echo "Done."
 }
 
 FILE_NAME=${1}
