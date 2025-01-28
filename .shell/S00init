@@ -220,6 +220,13 @@ fix_config() {
         
     # Initialize display configuration
     /opt/config/mod/.shell/commands/zdisplay.sh init
+
+    # Init printer.cfg configuration
+    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --params /opt/config/mod/.cfg/init.cfg \
+        --data /opt/config/mod/.cfg/data.init.cfg
     
     # Init printer.base.cfg configuration
     chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
@@ -262,6 +269,7 @@ case "$1" in
     ;;
     reload)
         apply_klipper_patches
+        fix_config
     ;;
     log)
         cat /opt/config/mod_data/log/init.log

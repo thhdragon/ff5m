@@ -51,6 +51,12 @@ PARAMS = [
         options=["ДА", "НЕТ"]
     ),
     Parameter(
+        key="disable_screen_led",
+        type=bool, default=0,
+        label="Разрешать экрану управлять LED",
+        options=["ДА", "НЕТ"]
+    ),
+    Parameter(
         key="disable_skew",
         type=bool, default=1,
         label="SKEW коррекция",
@@ -72,11 +78,6 @@ PARAMS = [
         key="cell_weight",
         type=int, default=0,
         label="Разрешенный пороговый вес на тензодатчиках",
-    ),
-    Parameter(
-        key="led",
-        type=int, default=50,
-        label="Яркость LED при включении"
     ),
     Parameter(
         key="load_zoffset",
