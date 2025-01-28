@@ -107,6 +107,7 @@ class ShellCommand:
         if not complete:
             proc.terminate()
 
+        self.running = False
         if self.verbose:
             if self.partial_output:
                 self.gcode.respond_info(self.partial_output)
