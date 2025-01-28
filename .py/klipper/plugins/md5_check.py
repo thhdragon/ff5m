@@ -78,11 +78,6 @@ class MD5Checker:
                     'CANCEL_PRINT'
                 )
 
-            # Resetting selected file
-            self.gcode.run_script_from_command(
-                'SDCARD_RESET_FILE'
-            )
-
             raise gcmd.error("MD5 check failed. Print cancelled!")
 
 
