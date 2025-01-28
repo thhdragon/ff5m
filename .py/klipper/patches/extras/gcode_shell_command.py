@@ -1,8 +1,14 @@
 # Run a shell command via gcode
 #
+# Changes:
+# - Added background and exclusive parameters
+#
+# Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+#
 # Copyright (C) 2019  Eric Callahan <arksine.code@gmail.com>
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
+
 import os
 import shlex
 import subprocess

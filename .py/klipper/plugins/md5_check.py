@@ -1,4 +1,4 @@
-# MD5 checking support for gcode
+## MD5 checking support for gcode
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ##
