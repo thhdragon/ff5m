@@ -51,8 +51,6 @@ uninstall() {
         --data /opt/config/mod/.cfg/data.restore.base.cfg
     
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
-    # TODO: remove modified variable files ?
-    grep -q ZLOAD_VARIABLE /opt/klipper/klippy/extras/save_variables.py && cp /opt/config/mod/.shell/save_variables.py.orig /opt/klipper/klippy/extras/save_variables.py
     
     revert_klipper_patches
 
