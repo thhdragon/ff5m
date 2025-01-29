@@ -49,6 +49,8 @@ class PrinterSensorGeneric:
             self.measured_max = max(self.measured_max, temp)
 
             if self.exceed_gcode_present and (temp < self.min_temp or temp > self.max_temp):
+                logging.info(f"[temperature_sensor {self.name}]: Out of range ({temp})")
+
                 template = self.exceed_template.render()
                 # Run M112 immediately if present
                 if self.m112_r.search(template):
@@ -56,7 +58,6 @@ class PrinterSensorGeneric:
                     return
 
                 self.reactor.register_callback(lambda _: self._exceed_cb(template))
-                logging.info(f"[temperature_sensor {self.name}]: Out of range ({temp})")
 
     def _exceed_cb(self, template):
         try:
