@@ -741,6 +741,10 @@ class FileManager:
         self.check_reserved_path(path, False)
         flist: Dict[str, Any] = {'dirs': [], 'files': []}
         for fname in os.listdir(path):
+            # Skip hidden files in /gcodes since it halts Mainsail
+            if root == "gcodes" and fname[0] == '.':
+                continue
+
             full_path = os.path.join(path, fname)
             if not os.path.exists(full_path):
                 continue
