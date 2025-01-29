@@ -69,6 +69,7 @@ initialize() {
     
     init_chroot
     apply_klipper_patches
+    apply_other_patches
     fix_config
     
     # oh-my-zsh
@@ -138,6 +139,13 @@ init_chroot() {
     
     # moon
     ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
+
+    # web
+    mkdir -p $MOD/root/www
+    [ -d $MOD/root/fluidd ] && mv $MOD/root/fluidd $MOD/root/www/
+    [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
+
+    ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
 }
 
 apply_klipper_patches() {
@@ -188,6 +196,41 @@ apply_klipper_patches() {
             ln -fs "$file" "$target"
         fi
     done
+}
+
+_apply_patch() {
+    if [ $# -lt 4 ]; then
+        echo "Required arguments missing"
+        return 1
+    fi
+
+    local patch_file=$1
+    local target_file=$2
+    local start_block=$3
+    local end_block=$4
+    local paste_after="${5:-$4}"
+
+    local temp_file="/tmp/$(basename "$target_file").bak"
+
+    sed "/$start_block/,/$end_block/d" "$target_file" > "$temp_file"
+    sed -i "/$paste_after/r $patch_file" "$temp_file"
+
+    if ! cmp -s "$target_file" "$temp_file"; then
+        echo "Apply patch to $target_file"
+        mv "$temp_file" "$target_file"
+    else
+        rm -f "$temp_file"
+    fi
+}
+
+apply_other_patches() {
+    # Mainsail baseurl fix
+    _apply_patch                                            \
+        "/opt/config/mod/.root/patches/mainsail.patch"      \
+        "$MOD/root/www/mainsail/index.html"                 \
+        "<!--__PATCH_START__-->"                            \
+        "<!--__PATCH_END__-->"                              \
+        "<html.*>"
 }
 
 fix_config() {
@@ -266,6 +309,7 @@ case "$1" in
     ;;
     reload)
         apply_klipper_patches
+        apply_other_patches
         fix_config
     ;;
     log)

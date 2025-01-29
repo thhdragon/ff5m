@@ -14,23 +14,70 @@ CFG_PATH="/opt/config/mod_data/web.conf"
 
 DEFAULT_WEB="fluidd"
 
-# Create default configuration if needed
-if [ ! -f "$CFG_PATH" ]; then
-    cp "/opt/config/mod/.cfg/default/web.conf" "$CFG_PATH"
-fi
 
-# Update configuration
+load() {
+    # Create default configuration if needed
+    if [ ! -f "$CFG_PATH" ]; then
+        cp "/opt/config/mod/.cfg/default/web.conf" "$CFG_PATH"
+    fi
+    
+    WEB=$($CFG_SCRIPT $CFG_PATH --get "CLIENT" "$DEFAULT_WEB")
+}
 
-WEB=$($CFG_SCRIPT $CFG_PATH --get "CLIENT" "$DEFAULT_WEB")
-if [ "$WEB" = "$DEFAULT_WEB" ]; then
-    WEB="mainsail"
-else
-    WEB="$DEFAULT_WEB"
-fi
+switch() {
+    if [ "$WEB" = "$DEFAULT_WEB" ]; then
+        WEB="mainsail"
+    else
+        WEB="$DEFAULT_WEB"
+    fi
+    
+    $CFG_SCRIPT $CFG_PATH --set CLIENT="$WEB"
+    
+    sync
+}
 
-$CFG_SCRIPT $CFG_PATH --set CLIENT="$WEB"
+apply() {
+    cat > $MOD/root/www/index.html <<EOF
+<html>
+<body>
+    <script>window.location.href = './$WEB';</script>
+    <p>If you are not redirected automatically, follow this <a href="./$WEB">link</a>.</p>
+</body>
+</html>
+EOF
+    
+    sync
+}
 
-sync
+restart() {
+    unset LD_PRELOAD
+    chroot $MOD /opt/config/mod/.root/S70httpd restart
+}
 
-unset LD_PRELOAD
-chroot $MOD /opt/config/mod/.root/S70httpd restart
+
+case "$1" in
+    switch)
+        load
+        switch
+        apply
+        
+        restart
+    ;;
+    apply)
+        load
+        apply
+    ;;
+    restart)
+        restart
+    ;;
+    status)
+        load
+        echo "Current WebUI selected: $WEB"
+    ;;
+    *)
+        echo "Usage: $0 (apply|switch|restart|status)"
+        exit 1
+    ;;
+esac
+
+exit $?
