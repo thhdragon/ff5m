@@ -150,7 +150,7 @@ class ShellCommand:
 
     def _read_stdout(self, fd):
         result = ""
-        while True:
+        while os.path.exists(fd):
             data = os.read(fd, 4096)
             if not data: break
 
@@ -159,6 +159,8 @@ class ShellCommand:
         return result
 
     def _async_response(self, reactor, message):
+        if not message: return
+
         def _callback(s):
             self.gcode.respond_raw(s)
 
