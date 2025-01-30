@@ -7,7 +7,6 @@
 
 import ast, configparser, logging
 import json
-import subprocess
 
 from dataclasses import dataclass
 from enum import Enum
@@ -193,7 +192,7 @@ class ModParamManagement:
             if not param.readonly:
                 gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
 
-    def cmd_RELOAD_MOD_PARAMS(self, gcmd):
+    def cmd_RELOAD_MOD_PARAMS(self, _):
         self._reload()
 
     def cmd_GET_MOD_PARAM(self, gcmd):
@@ -235,9 +234,14 @@ class ModParamManagement:
 
     def _notify_changed(self, param: Parameter):
         context = self.changes_template.create_template_context()
+
+        key = param.key
+        value = self.variables[key]
+
         context["changes"] = {
-            "key": param.key,
-            "value": self._transform(param, self.variables[param.key])
+            "key": key,
+            "value": value,
+            "raw": self._transform(param, self.variables[key]),
         }
 
         template = self.changes_template.render(context)
