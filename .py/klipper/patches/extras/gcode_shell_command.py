@@ -28,6 +28,7 @@ class ShellCommand:
         self.background = config.getboolean('background', False)
         self.exclusive = config.getboolean('exclusive', True)
         self.verbose = config.getboolean('verbose', True)
+        self.debug = config.getboolean('debug', False)
         self.proc_fd = None
         self.partial_output = ""
         self.running = False
@@ -85,7 +86,7 @@ class ShellCommand:
                 f"[gcode_shell_command {self.name}]: daemon mode configured. "
                 f"Detach from process \"{proc.pid}\".")
 
-            if self.verbose: self.gcode.respond_info(f"Process {self.name} ran in daemon mode.")
+            if self.debug: self.gcode.respond_info(f"Process {self.name} ran in daemon mode.")
             return
 
         self.running = True
@@ -97,7 +98,7 @@ class ShellCommand:
             thread = threading.Thread(target=lambda: self._wait_bg_process(proc, reactor), daemon=True)
             thread.start()
 
-            if self.verbose: self.gcode.respond_info(f"Process {self.name} ran in background mode.")
+            if self.debug: self.gcode.respond_info(f"Process {self.name} ran in background mode.")
             return
 
         eventtime = reactor.monotonic()
@@ -144,7 +145,8 @@ class ShellCommand:
 
             if self.verbose:
                 self._async_response(reactor, self._read_stdout(proc_fd))
-                self._async_response(reactor, f"// Process {self.name} done.")
+                if self.debug:
+                    self._async_response(reactor, f"// Process {self.name} done.")
 
         self.running = False
 
