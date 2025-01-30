@@ -6,6 +6,7 @@
 
 
 import ast, configparser, logging
+import subprocess
 
 from dataclasses import dataclass
 from enum import Enum
@@ -170,6 +171,12 @@ class ModParamManagement:
         self.filename = self.config.get("filename")
         self.variables = dict()
 
+        self.reactor = self.printer.get_reactor()
+        gcode_macro = self.printer.load_object(config, "gcode_macro")
+        self.changes_gcode_present = config.get("changes_gcode", None) is not None
+        if self.changes_gcode_present:
+            self.changes_template = gcode_macro.load_template(config, "changes_gcode")
+
         self._reload()
 
         self.gcode.register_command("LIST_MOD_PARAMS", self.cmd_LIST_MOD_PARAMS)
@@ -291,9 +298,26 @@ class ModParamManagement:
             self.variables[key] = new_value
             self._save_all()
 
+            if self.changes_gcode_present:
+                self.reactor.register_callback(lambda _, __param=param: self._notify_changed(__param))
+
         if not param.hidden:
             transformed = self._transform(param, self.variables[key])
             gcmd.respond_raw("SET: " + self._format_label(param, transformed))
+
+    def _notify_changed(self, param: Parameter):
+        context = self.changes_template.create_template_context()
+        context["changes"] = {
+            "key": param.key,
+            "value": self._transform(param, self.variables[param.key])
+        }
+
+        template = self.changes_template.render(context)
+
+        try:
+            self.gcode.run_script(template)
+        except:
+            logging.exception(f"mod_params: Script running error:\n{template}")
 
     def get_status(self, _):
         return {'variables': self.variables}
