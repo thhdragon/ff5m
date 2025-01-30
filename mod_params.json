@@ -1,0 +1,166 @@
+{
+  "enums": {
+    "LinePurgeEnum": {
+      "type": "str",
+      "values": {
+        "ORCA": "_CLEAR1",
+        "FF1": "_CLEAR2",
+        "FF2": "_CLEAR3",
+        "SCHREIDER": "_CLEAR4",
+        "LINE_PURGE": "LINE_PURGE"
+      }
+    }
+  },
+  "parameters": [
+    {
+      "key": "auto_reboot",
+      "type": "bool",
+      "default": 0,
+      "label": "Автоперезапуск",
+      "options": ["отключен", "через 1.5 минуты", "прошивки через 1.5 минуты"]
+    },
+    {
+      "key": "close_dialogs",
+      "type": "int",
+      "default": 0,
+      "label": "Диалоги",
+      "options": [
+        "не закрывать",
+        "закрывать через 20 секунд (медленно)",
+        "закрывать через 20 секунд (быстро)"
+      ]
+    },
+    {
+      "key": "disable_priming",
+      "type": "bool",
+      "default": 0,
+      "label": "Очистка сопла",
+      "options": ["ДА", "НЕТ"]
+    },
+    {
+      "key": "disable_screen_led",
+      "type": "bool",
+      "default": 0,
+      "label": "Разрешать экрану управлять LED",
+      "options": ["ДА", "НЕТ"]
+    },
+    {
+      "key": "disable_skew",
+      "type": "bool",
+      "default": 1,
+      "label": "SKEW коррекция",
+      "options": ["ДА", "НЕТ"]
+    },
+    {
+      "key": "fix_e0017",
+      "type": "bool",
+      "default": 1,
+      "label": "Исправлять ошибку E0017",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "check_md5",
+      "type": "bool",
+      "default": 1,
+      "label": "Проверка MD5",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "cell_weight",
+      "type": "int",
+      "default": 0,
+      "label": "Разрешенный пороговый вес на тензодатчиках"
+    },
+    {
+      "key": "load_zoffset",
+      "type": "bool",
+      "default": 0,
+      "label": "Загрузка Z-OFFSET",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "z_offset",
+      "type": "float",
+      "default": 0,
+      "label": "Z-OFFSET"
+    },
+    {
+      "key": "midi_on",
+      "type": "str",
+      "default": "",
+      "label": "MIDI при включении"
+    },
+    {
+      "key": "midi_start",
+      "type": "str",
+      "default": "",
+      "label": "MIDI при запуске печати"
+    },
+    {
+      "key": "midi_end",
+      "type": "str",
+      "default": "",
+      "label": "MIDI при завершении печати"
+    },
+    {
+      "key": "new_save_config",
+      "type": "bool",
+      "default": 0,
+      "label": "Использовать альт. SAVE_CONFIG",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "preclear",
+      "type": "bool",
+      "default": 0,
+      "label": "Предочистка сопла",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "print_leveling",
+      "type": "bool",
+      "default": 0,
+      "label": "Строить карту стола",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "stop_motor",
+      "type": "bool",
+      "default": 1,
+      "label": "Моторы",
+      "options": ["Не выключать", "Выключать автоматически"]
+    },
+    {
+      "key": "use_kamp",
+      "type": "bool",
+      "default": 0,
+      "label": "Использование KAMP",
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "use_swap",
+      "type": "int",
+      "default": 1,
+      "label": "SWAP",
+      "options": [
+        "не используется",
+        "используется на eMMC",
+        "используется на USB"
+      ]
+    },
+    {
+      "key": "zclear",
+      "type": "LinePurgeEnum",
+      "default": "ORCA",
+      "label": "Алгоритм очистки"
+    },
+    {
+      "key": "display_off",
+      "type": "bool",
+      "default": 0,
+      "label": "Экран отключен",
+      "options": ["НЕТ", "ДА"],
+      "readonly": true
+    }
+  ]
+}

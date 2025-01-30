@@ -6,6 +6,7 @@
 
 
 import ast, configparser, logging
+import json
 import subprocess
 
 from dataclasses import dataclass
@@ -24,142 +25,6 @@ class Parameter:
     hidden: bool = False
 
 
-class LinePurgeEnum(Enum):
-    ORCA = "_CLEAR1"
-    FF1 = "_CLEAR2"
-    FF2 = "_CLEAR3"
-    SCHREIDER = "_CLEAR4"
-    LINE_PURGE = "LINE_PURGE"
-
-
-PARAMS = [
-    Parameter(
-        key="auto_reboot",
-        type=bool, default=0,
-        label="Автоперезапуск",
-        options=["отключен", "через 1.5 минуты", "прошивки через 1.5 минуты"]
-    ),
-    Parameter(
-        key="close_dialogs",
-        type=int, default=0,
-        label="Диалоги",
-        options=["не закрывать", "закрывать через 20 секунд (медленно)", "закрывать через 20 секунд (быстро)"]
-    ),
-    Parameter(
-        key="disable_priming",
-        type=bool, default=0,
-        label="Очистка сопла",
-        options=["ДА", "НЕТ"]
-    ),
-    Parameter(
-        key="disable_screen_led",
-        type=bool, default=0,
-        label="Разрешать экрану управлять LED",
-        options=["ДА", "НЕТ"]
-    ),
-    Parameter(
-        key="disable_skew",
-        type=bool, default=1,
-        label="SKEW коррекция",
-        options=["ДА", "НЕТ"]
-    ),
-    Parameter(
-        key="fix_e0017",
-        type=bool, default=1,
-        label="Исправлять ошибку E0017",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="check_md5",
-        type=bool, default=1,
-        label="Проверка MD5",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="cell_weight",
-        type=int, default=0,
-        label="Разрешенный пороговый вес на тензодатчиках",
-    ),
-    Parameter(
-        key="load_zoffset",
-        type=bool, default=0,
-        label="Загрузка Z-OFFSET",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="z_offset",
-        type=float, default=0,
-        label="Z-OFFSET"
-    ),
-    Parameter(
-        key="midi_on",
-        type=str, default="",
-        label="MIDI при вкючении",
-    ),
-    Parameter(
-        key="midi_start",
-        type=str, default="",
-        label="MIDI при запуске печати",
-    ),
-    Parameter(
-        key="midi_end",
-        type=str, default="",
-        label="MIDI при завершении печати",
-    ),
-    Parameter(
-        key="new_save_config",
-        type=bool, default=0,
-        label="Использовать альт. SAVE_CONFIG",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="preclear",
-        type=bool, default=0,
-        label="Предочистка сопла",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="print_leveling",
-        type=bool, default=0,
-        label="Строить карту стола",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="stop_motor",
-        type=bool, default=1,
-        label="Моторы",
-        options=["Не выключать", "Выключать автоматически"]
-    ),
-    Parameter(
-        key="use_kamp",
-        type=bool, default=0,
-        label="Использование KAMP",
-        options=["НЕТ", "ДА"]
-    ),
-    Parameter(
-        key="use_swap",
-        type=int, default=1,
-        label="SWAP",
-        options=["не используется", "используется на eMMC", "используется на USB"]
-    ),
-    Parameter(
-        key="zclear",
-        type=LinePurgeEnum, default=LinePurgeEnum.ORCA,
-        label="Алгоритм очистки",
-    ),
-
-    Parameter(
-        key="display_off",
-        type=bool, default=0,
-        label="Экран отключен",
-        options=["НЕТ", "ДА"],
-        readonly=True
-    )
-]
-
-PARAMS_DICT = {p.key: p for p in PARAMS}
-
-
 class ModParamManagement:
     def __init__(self, config):
         self.loaded = False
@@ -168,6 +33,7 @@ class ModParamManagement:
         self.printer = config.get_printer()
         self.gcode = self.printer.lookup_object("gcode")
 
+        self.declaration = self.config.get("declaration")
         self.filename = self.config.get("filename")
         self.variables = dict()
 
@@ -177,6 +43,11 @@ class ModParamManagement:
         if self.changes_gcode_present:
             self.changes_template = gcode_macro.load_template(config, "changes_gcode")
 
+        self.params = list()
+        self.params_map = dict()
+        self.type_mapping = dict()
+
+        self._load_declaration()
         self._reload()
 
         self.gcode.register_command("LIST_MOD_PARAMS", self.cmd_LIST_MOD_PARAMS)
@@ -186,6 +57,63 @@ class ModParamManagement:
 
     def _run_gcode(self, *cmds: str):
         self.gcode.run_script_from_command("\n".join(cmds))
+
+    def _load_declaration(self):
+        try:
+            with open(self.declaration, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+        except:
+            msg = "Unable to load declaration file."
+            logging.exception(msg)
+            raise self.printer.command_error(msg)
+
+        self.type_mapping = {
+            "bool": bool,
+            "int": int,
+            "float": float,
+            "str": str
+        }
+
+        for enum_name, enum_data in data.get("enums", {}).items():
+            if enum_name in self.type_mapping:
+                logging.error(f'[mod_params]: Type "{enum_name}" already exists!')
+                continue
+
+            new_enum = self._create_enum_from_json(enum_name, enum_data)
+            self.type_mapping[enum_name] = new_enum
+
+        params = []
+        for param_data in data['parameters']:
+            param_type = self.type_mapping.get(param_data['type'])
+            if not param_type:
+                logging.error(f'[mod_params]: Parameter "{param_data["key"]}" has wrong type "{param_data["type"]}"!')
+                continue
+
+            # Handle enum default values
+            if issubclass(param_type, Enum):
+                param_data['default'] = param_type[param_data['default']]
+
+            param = Parameter(
+                key=param_data['key'],
+                type=param_type,
+                default=param_data['default'],
+                label=param_data['label'],
+                options=param_data.get('options'),
+                readonly=param_data.get('readonly', False),
+                hidden=param_data.get('hidden', False)
+            )
+            params.append(param)
+
+        self.params = params
+        self.params_map = {p.key: p for p in params}
+
+    def _create_enum_from_json(self, enum_name: str, enum_data: Dict[str, Any]) -> Type[Enum]:
+        try:
+            return Enum(enum_name, enum_data["values"])
+        except:
+            msg = f'Unable to build enum {enum_name} from declaration file.'
+            logging.exception(msg)
+            raise self.printer.command_error(msg)
 
     def _reload(self):
         result = dict()
@@ -197,18 +125,18 @@ class ModParamManagement:
 
             parsed = dict()
             for key, value in parser.items("Variables"):
-                if key not in PARAMS_DICT:
-                    logging.error(f'Read unknown parameter while parsing: "{key}"')
+                if key not in self.params_map:
+                    logging.error(f'[mod_params]: Read unknown parameter while parsing: "{key}"')
                     continue
 
                 parsed[key] = ast.literal_eval(value)
 
-            for param in PARAMS:
+            for param in self.params:
                 key = param.key
                 result[key] = self._load_param(param, parsed.get(key))
 
         except Exception:
-            msg = "Unable to parse existing variable file:"
+            msg = "Unable to parse existing variable file."
             logging.exception(msg)
             raise self.printer.command_error(msg)
 
@@ -236,7 +164,7 @@ class ModParamManagement:
         parser = configparser.ConfigParser()
         parser.add_section("Variables")
 
-        for param in PARAMS:
+        for param in self.params:
             value = self.variables.get(param.key)
             value_to_save = self._transform(param, value)
             parser.set("Variables", param.key, repr(value_to_save))
@@ -257,7 +185,7 @@ class ModParamManagement:
         return f'{param.label}: {value}'
 
     def cmd_LIST_MOD_PARAMS(self, gcmd):
-        for param in PARAMS:
+        for param in self.params:
             if param.hidden: continue
 
             value = self._transform(param, self.variables[param.key])
@@ -270,10 +198,10 @@ class ModParamManagement:
 
     def cmd_GET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
-        if key not in PARAMS_DICT:
+        if key not in self.params_map:
             raise gcmd.error(f'Unknown parameter: "{key}"')
 
-        param = PARAMS_DICT[key]
+        param = self.params_map[key]
         transformed = self._transform(param, self.variables[key])
         gcmd.respond_raw(self._format_label(param, transformed))
 
@@ -282,10 +210,10 @@ class ModParamManagement:
         value = gcmd.get('VALUE')
         force = gcmd.get('FORCE', 0)
 
-        if key not in PARAMS_DICT:
+        if key not in self.params_map:
             raise gcmd.error(f'Unknown parameter: "{key}"')
 
-        param = PARAMS_DICT[key]
+        param = self.params_map[key]
         if param.readonly and not force:
             raise gcmd.error(f'Updating readonly parameter "{key}" is forbidden.')
 
