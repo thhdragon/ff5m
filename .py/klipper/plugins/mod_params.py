@@ -82,7 +82,7 @@ class ModParamManagement:
             self.type_mapping[enum_name] = new_enum
 
         params = []
-        for param_data in data['parameters']:
+        for param_data in sorted(data['parameters'], key=lambda p: p.get("order", p.get("name", ""))):
             param_type = self.type_mapping.get(param_data['type'])
             if not param_type:
                 logging.error(f'[mod_params]: Parameter "{param_data["key"]}" has wrong type "{param_data["type"]}"!')
@@ -189,6 +189,8 @@ class ModParamManagement:
 
             value = self._transform(param, self.variables[param.key])
             gcmd.respond_raw(self._format_label(param, value))
+            if issubclass(param.type, Enum):
+                gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
             if not param.readonly:
                 gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
 
@@ -240,8 +242,8 @@ class ModParamManagement:
 
         context["changes"] = {
             "key": key,
-            "value": value,
-            "raw": self._transform(param, self.variables[key]),
+            "value": self._transform(param, self.variables[key]),
+            "raw": value,
         }
 
         template = self.changes_template.render(context)
