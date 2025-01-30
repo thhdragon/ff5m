@@ -68,7 +68,7 @@ initialize() {
     mount_data_partition
     
     # Init Swap
-    /opt/config/mod/.shell/init_swap.sh "64M"
+    /opt/config/mod/.shell/init_swap.sh
 
     init_chroot
     apply_klipper_patches

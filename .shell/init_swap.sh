@@ -12,7 +12,7 @@ CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/variables.cfg"
 
 
-SWAP_SIZE="$1"
+SWAP_SIZE="${1-"64M"}"
 
 if [ -z "$SWAP_SIZE" ]; then
     echo "Usage: $0 <swap_size>"

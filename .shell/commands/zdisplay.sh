@@ -42,7 +42,7 @@ apply_display_off() {
 case "$1" in
     on)
         display_on
-        reboot
+        #reboot
     ;;
     off)
         display_off

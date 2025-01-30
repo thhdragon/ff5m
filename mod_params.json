@@ -159,8 +159,21 @@
       "type": "bool",
       "default": 0,
       "label": "Экран отключен",
-      "options": ["НЕТ", "ДА"],
-      "readonly": true
+      "options": ["НЕТ", "ДА"]
+    },
+    {
+      "key": "camera",
+      "type": "bool",
+      "default": 0,
+      "label": "Альт. камера",
+      "options": ["не используется", "включена"]
+    },
+    {
+      "key": "zssh",
+      "type": "bool",
+      "default": 0,
+      "label": "SSH-туннель",
+      "options": ["не используется", "включен"]
     }
   ]
 }
