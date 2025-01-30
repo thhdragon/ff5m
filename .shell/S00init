@@ -67,6 +67,9 @@ initialize() {
     # If we are here: mod loading not skipped
     mount_data_partition
     
+    # Init Swap
+    /opt/config/mod/.shell/init_swap.sh "128M"
+
     init_chroot
     apply_klipper_patches
     apply_other_patches
@@ -110,6 +113,7 @@ init_chroot() {
     mount -t proc /proc $MOD/proc
     mount --rbind /sys $MOD/sys
     mount --rbind /dev $MOD/dev
+    mount --bind /run $MOD/run
     mount --bind /tmp $MOD/tmp
     
     mkdir -p $MOD/data
