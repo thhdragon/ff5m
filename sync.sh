@@ -36,6 +36,7 @@ PROFILES_VALUES=(
     ""
     "
         SKIP_HEAVY=1
+        SKIP_RESTART=1
     "
     "
         SKIP_RESTART=1
@@ -391,10 +392,10 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
         echo; echo -e "${GREEN}Restarting services...${NC}\n"
 
         run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
-            "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99moon stop
+            "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99root stop
 
         run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
-        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
+        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99root up
 
         run_service "Plugins"   "Reloading"     0   "$SKIP_PLUGIN_RELOAD"     /etc/init.d/S00init reload
 

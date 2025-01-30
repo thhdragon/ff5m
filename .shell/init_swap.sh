@@ -31,16 +31,48 @@ is_usb_disk() {
     fi
 }
 
+size_convert() {
+    size=$1
+    case $size in
+        *K) bytes=$((${size%K} * 1024)) ;;
+        *M) bytes=$((${size%M} * 1024 * 1024)) ;;
+        *G) bytes=$((${size%G} * 1024 * 1024 * 1024)) ;;
+        *)  bytes=$size ;;  # Assume bytes if no suffix
+    esac
+
+    echo "$bytes"
+}
+
 make_swap() {
     swap_file=$1
     
     swapoff -a
     
-    rm -f "$swap_file"
-    fallocate -l "$SWAP_SIZE" "$swap_file"  \
-        && chmod 600 "$swap_file"           \
-        && mkswap "$swap_file"              \
-        && swapon "$swap_file"              \
+    ret=0
+    if [ -f "$swap_file" ]; then
+        current_size=$(ls -l "$swap_file" | awk '{print $5}')
+        desired_size=$(size_convert "$SWAP_SIZE")
+
+        if [ ! "$current_size" -eq "$desired_size" ]; then
+            echo "Recreating existing swap file..."
+            rm -f "$swap_file"
+            fallocate -l "$SWAP_SIZE" "$swap_file"
+            ret=$?
+        fi
+    else
+        echo "Generating swap file..."
+        fallocate -l "$SWAP_SIZE" "$swap_file"
+        ret=$?
+    fi
+
+    if [ $ret -ne 0 ]; then
+        echo "Unable to create swap file"
+        return 1
+    fi
+
+    chmod 600 "$swap_file"           \
+        && mkswap "$swap_file"       \
+        && swapon "$swap_file"       \
     
     return $?
 }
@@ -81,6 +113,14 @@ activate_usb_swap() {
                 fi
                 
                 echo "USB disk mounted at $mount_point; Size: $size"
+
+                disk_size=$(size_convert "$size")
+                desired_size=$(size_convert "$SWAP_SIZE")
+
+                if [ "$disk_size" -lt "$desired_size" ]; then
+                    echo "Partition not big enough!"
+                    continue
+                fi
                 
                 echo "Creating SWAP on USB..."
                 make_swap "$mount_point/swap"
