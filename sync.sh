@@ -31,9 +31,12 @@ KLIPPER_HARD_RESTART=0
 HELP=0
 VERBOSE=0
 
-PROFILES_KEYS=("all" "none" "macros" "config" "scripts" "klipper" "moonraker")
+PROFILES_KEYS=("all" "light" "none" "macros" "config" "scripts" "klipper" "moonraker")
 PROFILES_VALUES=(   
     ""
+    "
+        SKIP_HEAVY=1
+    "
     "
         SKIP_RESTART=1
     "

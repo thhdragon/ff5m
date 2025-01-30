@@ -74,6 +74,15 @@ initialize() {
     apply_klipper_patches
     apply_other_patches
     fix_config
+
+    # Services
+    rm -f /etc/init.d/S99moon
+    rm -f /etc/init.d/K99moon
+
+    ln -fs /opt/config/mod/.shell/S98camera /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S98zssh /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S99root /etc/init.d/
+    ln -fs /opt/config/mod/.shell/K99root /etc/init.d/
     
     # oh-my-zsh
     mkdir -p /root/.oh-my-zsh

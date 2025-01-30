@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Mod's preparationc script
+## Mod's preparation script
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
@@ -22,8 +22,7 @@ start_prepare() {
     
     echo "System start" > /data/logFiles/ssh.log
     
-    SWAP="/root/swap"
-    chroot $MOD /opt/config/mod/.root/start.sh "$SWAP" &
+    chroot $MOD /opt/config/mod/.root/start.sh &
 }
 
 mv /data/logFiles/prepare.log.4 /data/logFiles/prepare.log.5
