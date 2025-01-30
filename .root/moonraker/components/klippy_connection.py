@@ -47,6 +47,7 @@ RESERVED_ENDPOINTS = [
     "list_endpoints",
     "gcode/subscribe_output",
     "register_remote_method",
+    "objects/list"
 ]
 
 # Items to exclude from the subscription cache.  They never change and can be
@@ -389,6 +390,7 @@ class KlippyConnection:
         if result is None:
             return
         endpoints = result.get('endpoints', [])
+        logging.info(f"*** {endpoints}")
         for ep in endpoints:
             if ep not in RESERVED_ENDPOINTS:
                 self.server.register_endpoint(
