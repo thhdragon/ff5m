@@ -125,7 +125,7 @@ load_profile() {
     return 1
 }
 
-echo -e "${GREEN}Flashforge zmod-lite synchronization script${NC}\n"
+echo -e "${GREEN}Flashforge zmod+ synchronization script${NC}\n"
 
 while [ "$#" -gt 0 ]; do
     param=$1; shift
