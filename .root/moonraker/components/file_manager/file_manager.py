@@ -103,6 +103,7 @@ class FileManager:
         self.fixed_path_args: Dict[str, Any] = {}
         self.queue_gcodes: bool = config.getboolean('queue_gcode_uploads', False)
         self.check_klipper_path = config.getboolean("check_klipper_config_path", True)
+        self.excludes: Set[str] = set(config.getlist("excludes", []))
 
         # Register file management endpoints
         self.server.register_endpoint(
@@ -739,13 +740,13 @@ class FileManager:
             raise self.server.error(
                 f"Directory does not exist ({path})")
         self.check_reserved_path(path, False)
+        root_path = self.file_paths.get(root)
         flist: Dict[str, Any] = {'dirs': [], 'files': []}
         for fname in os.listdir(path):
-            # Skip hidden files in /gcodes since it halts Mainsail
-            if root == "gcodes" and fname[0] == '.':
-                continue
-
             full_path = os.path.join(path, fname)
+            relative_fname = full_path[len(root_path) + 1:]
+            if f"{root}/{relative_fname}" in self.excludes:
+                continue
             if not os.path.exists(full_path):
                 continue
             path_info = self.get_path_info(full_path, root)
@@ -993,8 +994,13 @@ class FileManager:
             # prevents infinite recrusion "followlinks" is set to True
             for dname in dir_names:
                 full_path = os.path.join(dir_path, dname)
+                root_dname = full_path[len(path) + 1:]
+                if f"{root}/{root_dname}" in self.excludes:
+                    continue
+
                 if not os.path.exists(full_path):
                     continue
+
                 st = os.stat(full_path)
                 key = (st.st_dev, st.st_ino)
                 if key not in visited_dirs:
@@ -1009,7 +1015,11 @@ class FileManager:
                 full_path = os.path.join(dir_path, name)
                 if not os.path.exists(full_path):
                     continue
+
                 fname = full_path[len(path) + 1:]
+                if f"{root}/{fname}" in self.excludes:
+                    continue
+
                 finfo = self.get_path_info(full_path, root)
                 filelist[fname] = finfo
         if list_format:
