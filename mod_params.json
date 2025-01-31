@@ -17,7 +17,8 @@
       "type": "bool",
       "default": 0,
       "label": "Автоперезапуск",
-      "options": ["отключен", "через 1.5 минуты", "прошивки через 1.5 минуты"]
+      "options": ["отключен", "через 1.5 минуты", "прошивки через 1.5 минуты"],
+      "order": 30000
     },
     {
       "key": "close_dialogs",
@@ -28,28 +29,32 @@
         "не закрывать",
         "закрывать через 20 секунд (медленно)",
         "закрывать через 20 секунд (быстро)"
-      ]
+      ],
+      "order": 30000
     },
     {
       "key": "disable_priming",
       "type": "bool",
       "default": 0,
       "label": "Очистка сопла",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 20000
     },
     {
       "key": "disable_screen_led",
       "type": "bool",
       "default": 0,
       "label": "Разрешать экрану управлять LED",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 100
     },
     {
       "key": "disable_skew",
       "type": "bool",
       "default": 1,
       "label": "SKEW коррекция",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 20000
     },
     {
       "key": "fix_e0017",
@@ -69,73 +74,84 @@
       "key": "cell_weight",
       "type": "int",
       "default": 0,
-      "label": "Разрешенный пороговый вес на тензодатчиках"
+      "label": "Разрешенный пороговый вес на тензодатчиках",
+      "order": 100
     },
     {
       "key": "load_zoffset",
       "type": "bool",
       "default": 0,
       "label": "Загрузка Z-OFFSET",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 10000
     },
     {
       "key": "z_offset",
       "type": "float",
       "default": 0,
-      "label": "Z-OFFSET"
+      "label": "Z-OFFSET",
+      "order": 10002
     },
     {
       "key": "midi_on",
       "type": "str",
       "default": "",
-      "label": "MIDI при включении"
+      "label": "MIDI при включении",
+      "order": 50000
     },
     {
       "key": "midi_start",
       "type": "str",
       "default": "",
-      "label": "MIDI при запуске печати"
+      "label": "MIDI при запуске печати",
+      "order": 50000
     },
     {
       "key": "midi_end",
       "type": "str",
       "default": "",
-      "label": "MIDI при завершении печати"
+      "label": "MIDI при завершении печати",
+      "order": 50000
     },
     {
       "key": "new_save_config",
       "type": "bool",
       "default": 0,
       "label": "Использовать альт. SAVE_CONFIG",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 100
     },
     {
       "key": "preclear",
       "type": "bool",
       "default": 0,
       "label": "Предочистка сопла",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 20000
     },
     {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,
-      "label": "Строить карту стола",
-      "options": ["НЕТ", "ДА"]
+      "label": "Строить карту стола перед печатью",
+      "options": ["НЕТ", "ДА"],
+      "order": 100
     },
     {
       "key": "stop_motor",
       "type": "bool",
       "default": 1,
       "label": "Моторы",
-      "options": ["Не выключать", "Выключать автоматически"]
+      "options": ["Не выключать", "Выключать автоматически"],
+      "order": 30000
     },
     {
       "key": "use_kamp",
       "type": "bool",
       "default": 0,
       "label": "Использование KAMP",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 20000
     },
     {
       "key": "use_swap",
@@ -152,7 +168,8 @@
       "key": "zclear",
       "type": "LinePurgeEnum",
       "default": "ORCA",
-      "label": "Алгоритм очистки"
+      "label": "Алгоритм очистки",
+      "order": 20000
     },
     {
       "key": "display_off",
@@ -166,27 +183,31 @@
       "type": "bool",
       "default": 0,
       "label": "Альт. камера",
-      "options": ["не используется", "включена"]
+      "options": ["не используется", "включена"],
+      "order": 100
     },
     {
       "key": "zssh",
       "type": "bool",
       "default": 0,
       "label": "SSH-туннель",
-      "options": ["не используется", "включен"]
+      "options": ["не используется", "включен"],
+      "order": 100
     },
     {
       "key": "weight_check",
       "type": "bool",
       "default": 1,
       "label": "Защита стола от ударов",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 10
     },
     {
       "key": "weight_check_max",
       "type": "int",
       "default": 1000,
-      "label": "Защита стола от ударов, вес"
+      "label": "Защита стола от ударов, вес",
+      "order": 11
     }
   ]
 }
