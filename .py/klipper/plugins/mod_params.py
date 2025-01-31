@@ -91,7 +91,7 @@ class ModParamManagement:
 
             # Handle enum default values
             if issubclass(param_type, Enum):
-                param_data["default"] = param_type[param_data["default"]]
+                param_data["default"] = param_type[param_data["default"]].name
 
             param = Parameter(
                 key=param_data["key"],
@@ -134,10 +134,16 @@ class ModParamManagement:
 
             for param in self.params:
                 key = param.key
-                result[key] = self._load_param(param, parsed.get(key))
+                value = parsed.get(key)
+
+                try:
+                    result[key] = self._load_param(param, value)
+                except:
+                    logging.error(f'[mod_params]: Unable to parse {key} value: "{value}"; Expected type: {param.type}')
+                    result[key] = self._load_param(param, param.default)
 
         except Exception:
-            msg = "Unable to parse existing variable file."
+            msg = "[mod_params] Unable to parse variable file."
             logging.exception(msg)
             raise self.printer.command_error(msg)
 
