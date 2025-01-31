@@ -54,6 +54,7 @@ class KlippyAPI(APITransport):
         # we do not want to overwrite them
         self.host_subscription: Subscription = {}
         self.subscription_callbacks: List[SubCallback] = []
+        self.hidden_objects = set(config.getlist("hidden_objects", []))
 
         # Register GCode Aliases
         self.server.register_endpoint(
@@ -73,6 +74,10 @@ class KlippyAPI(APITransport):
         )
         self.server.register_endpoint(
             "/printer/firmware_restart", RequestType.POST, self._gcode_firmware_restart
+        )
+        self.server.register_endpoint(
+            OBJ_LIST_ENDPOINT, RequestType.GET | RequestType.POST, self._list_objects,
+            is_remote=True
         )
         self.server.register_event_handler(
             "server:klippy_disconnect", self._on_klippy_disconnect
@@ -101,6 +106,15 @@ class KlippyAPI(APITransport):
 
     async def _gcode_firmware_restart(self, web_request: WebRequest) -> str:
         return await self.do_restart("FIRMWARE_RESTART")
+
+    async def _list_objects(self, web_request: WebRequest) -> dict:
+        objects = await self.get_object_list()
+        return {
+            "objects": [
+                obj for obj in objects
+                if obj not in self.hidden_objects
+            ]
+        }
 
     async def _send_klippy_request(
         self,

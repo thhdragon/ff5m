@@ -579,7 +579,7 @@ def restore(file_path, saved_data, dry=False):
                 out_f.write("\n")
 
             if should_write_src_line:
-                out_f.write(line + "\n")
+                out_f.write(line.rstrip() + "\n")
 
         # Add includes at the beginning
         for path, action in PARAMETERS.includes:

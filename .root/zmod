@@ -20,6 +20,8 @@ restart() {
     rm -f /_root/etc/init.d/S00fix
     ln -s /opt/config/mod/.shell/S00init /_root/etc/init.d/S00init
 
+    umount /_root
+
     if [ -f "$SKIP_REBOOT_F" ]; then
         echo "Skip."
         rm -f $SKIP_REBOOT_F
@@ -27,7 +29,8 @@ restart() {
         exit 0
     fi
     
-    reboot
+    sync
+    echo "REBOOT" > /tmp/printer
 }
 
 case "$1" in

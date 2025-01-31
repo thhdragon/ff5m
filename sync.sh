@@ -24,11 +24,54 @@ SKIP_RESTART=0
 SKIP_MOON_RESTART=0
 SKIP_KLIPPER_RESTART=0
 SKIP_MIGRATE=0
+SKIP_PLUGIN_RELOAD=0
 
 KLIPPER_HARD_RESTART=0
 
 HELP=0
 VERBOSE=0
+
+PROFILES_KEYS=("all" "light" "none" "macros" "config" "scripts" "klipper" "moonraker")
+PROFILES_VALUES=(   
+    ""
+    "
+        SKIP_HEAVY=1
+        SKIP_RESTART=1
+    "
+    "
+        SKIP_RESTART=1
+    "
+    "
+        SKIP_MOON_RESTART=1
+        SKIP_PLUGIN_RELOAD=1
+        SKIP_HEAVY=1
+    "
+    "
+        SKIP_RESTART=0
+        SKIP_MOON_RESTART=1
+        SKIP_PLUGIN_RELOAD=1
+        SKIP_MIGRATE=1
+        SKIP_HEAVY=1
+    "
+    "
+        SKIP_MOON_RESTART=1
+        SKIP_KLIPPER_RESTART=1
+        SKIP_MIGRATE=1
+        SKIP_HEAVY=1
+    "
+    "
+        SKIP_MOON_RESTART=1
+        SKIP_MIGRATE=1
+        SKIP_PLUGIN_RELOAD=1
+        KLIPPER_HARD_RESTART=1
+        SKIP_HEAVY=1
+    "
+    "
+        SKIP_KLIPPER_RESTART=1
+        SKIP_MIGRATE=1
+        SKIP_PLUGIN_RELOAD=1
+    "
+)
 
 print_label() {
     if [ $# -eq 2 ]; then
@@ -38,7 +81,51 @@ print_label() {
     fi
 }
 
-echo -e "${GREEN}Flashforge zmod-lite synchronization script${NC}\n"
+usage() {
+    echo
+    echo -e "${RED}Usage:${NC} $0 --host <printer_ip> [options]"
+    echo -e ""
+    echo -e "${BLUE}Options:${NC}"
+    echo -e "    --host, -h               Specify the remote printer's IP address."
+    echo -e "    --profile, -p            Specify profile with preconfigured parameters."
+    echo -e "                             (all|none|macros|config|scripts|klipper|moonraker)"
+    echo -e "    --skip-heavy, -sh        Skip transferring heavy files."
+    echo -e "    --skip-restart, -sr      Skip restarting the services."
+    echo -e "    --skip-database          Skip database migration."
+    echo -e "    --skip-moon-restart      Skip restarting Moonraker."
+    echo -e "    --skip-klipper-restart   Skip restarting Klipper."
+    echo -e "    --skip-plugins           Skip Klipper pluggins reloading."
+    echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
+    echo -e "    --verbose, -v            Enable verbose mode for detailed output."
+    echo -e "    --help, -h               Display this help message."
+    echo -e ""
+    echo -e "${RED}Example:${NC} $0 --host 192.168.1.100 --skip-restart --verbose"
+}
+
+load_profile() {
+    local key=$1
+
+    for i in "${!PROFILES_KEYS[@]}"; do
+        if [[ "${PROFILES_KEYS[i]}" == "$key" ]]; then
+            while IFS= read -r line; do
+                line=$(echo "$line" | xargs)
+                [ -z "$line" ] && continue
+                
+                eval "$line"
+            done <<< "${PROFILES_VALUES[i]}"
+
+            PROFILE="$key"
+            return 0
+        fi
+    done
+
+    echo -e "${RED}Unknow profile: \"${key}\"${NC}\n"
+    HELP=1
+
+    return 1
+}
+
+echo -e "${GREEN}Flashforge zmod+ synchronization script${NC}\n"
 
 while [ "$#" -gt 0 ]; do
     param=$1; shift
@@ -47,29 +134,29 @@ while [ "$#" -gt 0 ]; do
             REMOTE_HOST="$1"; shift
             print_label "!" "Remote host: ${REMOTE_HOST}."
         ;;
+        --profile|-p)
+            load_profile "$1"; shift
+        ;;
         --skip-restart|-sr)
             SKIP_RESTART=1
-            print_label "-" "Services restart will be skipped."
         ;;
         --skip-moon-restart)
             SKIP_MOON_RESTART=1
-            print_label "-" "Moonraker restart will be skipped."
         ;;
         --skip-klipper-restart)
             SKIP_KLIPPER_RESTART=1
-            print_label "-" "Klipper restart will be skipped."
         ;;
         --skip-database)
             SKIP_MIGRATE=1
-            print_label "-" "Database migration will be skipped."
         ;;
         --skip-heavy|-sh)
             SKIP_HEAVY=1
-            print_label "-" "Heavy files will be skipped."
+        ;;
+        --skip-plugins)
+            SKIP_PLUGIN_RELOAD=1
         ;;
         --hard-klipper-restart)
             KLIPPER_HARD_RESTART=1
-            print_label "+" "Klipper hard restart mode enabled."
         ;;
         --verbose|-v)
             print_label "*" "Vebose mode enabled."
@@ -85,23 +172,43 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
+if [ -n "$PROFILE" ]; then
+    print_label "!" "Selected profile: ${PROFILE}"
+fi
+
+if [ "$SKIP_RESTART" -eq 1 ]; then
+    print_label "-" "Services restart will be skipped."
+fi
+
+if [ "$SKIP_MOON_RESTART" -eq 1 ]; then
+    print_label "-" "Moonraker restart will be skipped."
+fi
+
+if [ "$SKIP_KLIPPER_RESTART" -eq 1 ]; then
+    print_label "-" "Klipper restart will be skipped."
+fi
+
+if [ "$SKIP_MIGRATE" -eq 1 ]; then
+    print_label "-" "Database migration will be skipped."
+fi
+
+if [ "$SKIP_HEAVY" -eq 1 ]; then
+    print_label "-" "Heavy files will be skipped."
+fi
+
+if [ "$SKIP_PLUGIN_RELOAD" -eq 1 ]; then
+    print_label "-" "Plugin reloading will be skipped."
+fi
+
+if [ "$KLIPPER_HARD_RESTART" -eq 1 ]; then
+    print_label "+" "Klipper hard restart mode enabled."
+fi
+
 if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
-    echo -e "${RED}Usage:${NC} $0 --host <printer_ip> [options]"
-    echo -e ""
-    echo -e "${BLUE}Options:${NC}"
-    echo -e "    --host, -h               Specify the remote printer's IP address."
-    echo -e "    --skip-heavy, -sh        Skip transferring heavy files."
-    echo -e "    --skip-restart, -sr      Skip restarting the services."
-    echo -e "    --skip-database          Skip database migration."
-    echo -e "    --skip-moon-restart      Skip restarting Moonraker."
-    echo -e "    --skip-klipper-restart   Skip restarting Klipper."
-    echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
-    echo -e "    --verbose, -v            Enable verbose mode for detailed output."
-    echo -e "    --help, -h               Display this help message."
-    echo -e ""
-    echo -e "${RED}Example:${NC} $0 --host 192.168.1.100 --skip-restart --verbose"
+    usage
     exit 1
 fi
+
 
 cleanup() {
     rm "./${ARCHIVE_NAME}"
@@ -137,7 +244,8 @@ if [ "$SKIP_HEAVY" -eq 1 ]; then
     )
 fi
 
-echo; print_label "Creating archive..."
+echo
+print_label "Creating archive..."
 
 EXCLUDE_STR=""
 for e in "${EXCLUDES[@]}"; do
@@ -284,10 +392,12 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
         echo; echo -e "${GREEN}Restarting services...${NC}\n"
 
         run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
-            "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99moon stop
+            "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99root stop
 
         run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
-        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99moon up
+        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99root up
+
+        run_service "Plugins"   "Reloading"     0   "$SKIP_PLUGIN_RELOAD"     /etc/init.d/S00init reload
 
         if [ "$KLIPPER_HARD_RESTART" -ne 1 ]; then
         run_service "Klipper"   "Reloading"     0   "$SKIP_KLIPPER_RESTART"   /opt/config/mod/.shell/restart_klipper.sh

@@ -1,88 +1,127 @@
-#!/bin/sh
-#
-# Start TelegramBot
-#
+#!/bin/bash
 
-if ! [ -f /opt/config/mod_data/ssh.key ]
-    then
-        dropbearkey -t ed25519 -f /opt/config/mod_data/ssh.key
-        dropbearkey -y -t ed25519 -f /opt/config/mod_data/ssh.key |grep root@kunos >/opt/config/mod_data/ssh.pub.txt
+## Tunnel to remote server
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+CFG_PATH="/opt/config/mod_data/ssh.conf"
+VAR_PATH="/opt/config/mod_data/variables.cfg"
+
+if ! [ -f /opt/config/mod_data/ssh.key ]; then
+    dropbearkey -t ed25519 -f /opt/config/mod_data/ssh.key
+    dropbearkey -y -t ed25519 -f /opt/config/mod_data/ssh.key |grep root@kunos >/opt/config/mod_data/ssh.pub.txt
 fi
 
-if ! [ -f /opt/config/mod_data/ssh.conf ]
-    then
-        /root/printer_data/scripts/commands/zssh.sh STOP 127.0.0.1 22 user 8080 7125 NONE NOTRESTART
+# Create default configuration if needed
+if [ ! -f "$CFG_PATH" ]; then
+    cp "/opt/config/mod/.cfg/default/ssh.conf" "$CFG_PATH"
 fi
 
-REMOTE_RUN="NONE"
+
 source /opt/config/mod_data/ssh.conf
+
 
 PID_FILE=/run/zssh.pid
 LOG_FILE=/data/logFiles/ssh.log
 
+
 start() {
-    if [ $START = "on" ]
-        then
-            if ! test_running
-                then
-                    date >> ${LOG_FILE}
-                    /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} -R ${VIDEO_PORT}:127.0.0.1:8080 -R ${MOON_PORT}:127.0.0.1:7125 ${SSH_USER}@${SSH_SERVER} -o ExitOnForwardFailure=yes -N -T -f -y >> ${LOG_FILE} 2>&1
-                    ps axf|grep '\-N \-T \-f \-y'| head -1| awk '{print $1}' >${PID_FILE}
-                    cat ${LOG_FILE}
-                    [ "${REMOTE_RUN}" != "NONE" ] && \
-                        test_running && \
-                        /bin/dropbearmulti dbclient -i /opt/config/mod_data/ssh.key -p${SSH_PORT} ${SSH_USER}@${SSH_SERVER} -T -f -y ${REMOTE_RUN} >> ${LOG_FILE} 2>&1
-            fi
-        else
-            echo "SSH отключен"
+    enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
+    if [ "$enabled" -eq 0 ]; then
+        echo "SSH is disabled"
+        return
+    fi
+    
+    if ! is_running; then
+        date >> "${LOG_FILE}"
+        
+        echo "Starting ssh tunnel..."
+
+        /bin/dropbearmulti dbclient                     \
+            -NTfy                                       \
+            -i /opt/config/mod_data/ssh.key             \
+            -p "${SSH_PORT}"                            \
+            -R "${VIDEO_PORT}:127.0.0.1:8080"           \
+            -R "${MOON_PORT}:127.0.0.1:7125"            \
+            -o ExitOnForwardFailure=yes                 \
+            "${SSH_USER}@${SSH_SERVER}"                 \
+            >> "${LOG_FILE}" 2>&1
+        
+        ps axf | grep '\-NTf[y]' | head -1 | awk '{print $1}' > "$PID_FILE"
+        
+        cat "${LOG_FILE}"
+        
+        if [ -n "${REMOTE_RUN}" ] && is_running; then
+            echo "Sending remote command..."
+            /bin/dropbearmulti dbclient                 \
+                -Tfy                                    \
+                -i /opt/config/mod_data/ssh.key         \
+                -p "${SSH_PORT}"                        \
+                "${SSH_USER}@${SSH_SERVER}"             \
+                "${REMOTE_RUN}"                         \
+            >> "${LOG_FILE}" 2>&1
+        fi
+
+        echo "Done!"
     fi
 }
 
 stop() {
-    kill $( ps |grep -v grep |grep dropbearmulti| awk '{print $1}' ) 2>/dev/null >/dev/null
+    kill $( ps | grep "\-NTf[y]" | awk '{print $1}' ) > /dev/null 2>&1
     rm -f $PID_FILE
 }
 
 restart() {
     stop
-    sleep 2
+    while is_running; do sleep 1; done
+
     start
 }
 
-test_running() {
-    if [ -f $PID_FILE ] && kill -0 $(cat $PID_FILE) 2>/dev/null
-        then
-            return 0
-        else
-            return 1
+is_running() {
+    if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
+        return 0
     fi
+    
+    return 1
 }
 
 reload() {
-    if [ $START = "on" ]
-        then
-            if ! test_running; then restart; fi
+    enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
+    if [ "$enabled" -eq 1 ]; then
+        if ! is_running; then restart; fi
     fi
 }
 
 case "$1" in
-  zstart)
+    zstart)
         start
-        ;;
-  start)
-        echo "Start ignore/ Use zstart"
-        ;;
-  stop)
+    ;;
+    start)
+        echo "Service starting not allowed. Use: $0 zstart"
+    ;;
+    stop)
         stop
-        ;;
-  restart)
+    ;;
+    restart)
         restart
-        ;;
-  reload)
+    ;;
+    reload)
         reload
-        ;;
-  *)
-        echo "Usage: $0 {zstart|start|stop|restart|reload}"
+    ;;
+    test)
+        if is_running; then
+            echo "SSH Tunnel is running"
+        else
+            echo "SSH Tunnel is not running"
+        fi
+    ;;
+    *)
+        echo "Usage: $0 {zstart|stop|restart|reload|test}"
         exit 1
 esac
 

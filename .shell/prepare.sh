@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Mod's preparationc script
+## Mod's preparation script
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
@@ -12,18 +12,15 @@ MOD=/data/.mod/.zmod
 set -x
 
 start_prepare() {
-    renice -16 $(ps | grep klippy.py | grep -v grep | awk '{print $1}')
-    
     if [ ! -f /etc/init.d/S00init ]; then
         rm -f /etc/init.d/S00fix
         ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
-        /etc/init.d/S00init
+        /etc/init.d/S00init start
     fi
     
     echo "System start" > /data/logFiles/ssh.log
     
-    SWAP="/root/swap"
-    chroot $MOD /opt/config/mod/.root/start.sh "$SWAP" &
+    chroot $MOD /opt/config/mod/.root/start.sh &
 }
 
 mv /data/logFiles/prepare.log.4 /data/logFiles/prepare.log.5

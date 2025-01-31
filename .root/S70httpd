@@ -5,46 +5,30 @@
 
 PID_FILE=/run/httpd.pid
 
-CLIENT="fluidd"
-
-[ -f /opt/config/mod_data/web.conf ] || echo "# Не редактируйте этот файл
-# Используйте макрос
-#
-# WEB
-#
-
-CLIENT=${CLIENT}" > /opt/config/mod_data/web.conf
-
-source /opt/config/mod_data/web.conf
-
-WEBROOT=/root/$CLIENT
-cp -f /opt/config/mod/.root/config.json /root/mainsail/
 
 start() {
     # start busybox httpd
-    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h $WEBROOT
+    start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h "/root/www"
 }
 
 stop() {
     start-stop-daemon -K -p $PID_FILE
 }
-restart() {
-    stop
-    sleep 1
-    start
-}
+
 
 case "$1" in
-  start)
+    start)
         start
-        ;;
-  stop)
+    ;;
+    stop)
         stop
-        ;;
-  restart|reload)
-        restart
-        ;;
-  *)
+    ;;
+    restart|reload)
+        stop
+        sleep 1
+        start
+    ;;
+    *)
         echo "Usage: $0 {start|stop|restart}"
         exit 1
 esac

@@ -7,10 +7,10 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+CFG_PATH="/opt/config/mod_data/camera.conf"
+VAR_PATH="/opt/config/mod_data/variables.cfg"
 
-if ! [ -f /opt/config/mod_data/camera.conf ]; then
-    /root/printer_data/scripts/commands/zcamera.sh off 1280 720 20 video0 NOTRESTART
-fi
 
 VIDEO="video0"
 
@@ -25,8 +25,10 @@ source "/opt/config/mod_data/camera.conf"
 
 _VIDEO_P="/dev/${VIDEO}"
 
+
 start() {
-    if [ "$START" = "on" ]; then
+    enabled=$($CFG_SCRIPT $VAR_PATH --get "camera" "0")
+    if [ "$enabled" -eq 1 ]; then
         /usr/bin/v4l2-ctl --set-fmt-video=width="${WIDTH}",height="${HEIGHT}",pixelformat=1
         start-stop-daemon -S -b -m -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
         
@@ -53,10 +55,14 @@ reload() {
         v4l2-ctl --set-ctrl contrast=${E_CONTRAST} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gamma=${E_GAMMA} --device=${_VIDEO_P}
         v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
-        
-        echo "OK"
     fi
 }
+
+# Create default configuration if needed
+if [ ! -f "$CFG_PATH" ]; then
+    cp "/opt/config/mod/.cfg/default/camera.conf" "$CFG_PATH"
+fi
+
 
 case "$1" in
     start)
@@ -70,6 +76,7 @@ case "$1" in
     ;;
     reload)
         reload
+        echo "OK"
     ;;
     *)
         echo "Usage: $0 {start|stop|restart|reload}"

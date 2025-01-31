@@ -13,4 +13,4 @@ fi
 
 # TODO: klipper sets strange variable which breaks python, idkw
 
-env -i NO_PROGRESS=$NP nice -n 16 /usr/bin/python3 /root/printer_data/scripts/speed_test_rand.py "$1" "$2"
+env -i NO_PROGRESS=$NP nice -n 16 /usr/bin/python3 /root/printer_data/py/speed_test_rand.py "$1" "$2"

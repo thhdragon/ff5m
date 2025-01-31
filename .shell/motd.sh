@@ -25,7 +25,7 @@ centered() {
 _S="🔥"
 _OFFSET=$(( ${#_S} - 1 ))
 
-MOD_TEXT=$(centered "🔥 \033[36mZMOD-LITE v${MOD_VERSION}" 35 $_OFFSET)
+MOD_TEXT=$(centered "🔥 \033[36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
 FF_TEXT=$(centered "\033[1;33m⚡ \033[36mAD5M v${FIRMWARE_VERSION}" 35 $_OFFSET)
 
 echo -e "\033[35m

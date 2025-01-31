@@ -1,0 +1,100 @@
+<!--__PATCH_START__-->
+<!-- 
+	Specify custom base url form Mainsail WebUI
+
+	Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+
+	This file may be distributed under the terms of the GNU GPLv3 license
+-->
+
+<script>
+  const base = '/mainsail';
+
+  const urlRe = /url\(['"]?(\/.*?)['"]?\)/g
+  
+  const rewrite = (url) => {
+    if (url.startsWith('/') && !url.startsWith(base)) {
+      const newUrl = base + url
+      console.log(`- Rewrite ${url} -> ${newUrl}`)
+      return newUrl;
+    }
+    return url;
+  };
+
+  const rewriteContent = (data) => {
+  	return data.replace(
+		urlRe, (_, url) => {
+		console.log(`- Rewrite content: ${url}`)
+			return `url(${rewrite(url)})`
+		}
+    );
+  }
+
+  const origFetch = fetch;
+  fetch = (url, ...args) => {
+    console.log("*** Hijacked fetch:", url)
+    return origFetch(rewrite(url), ...args)
+  }
+
+  const origOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url, ...args) { 
+    console.log("*** Hijacked XMLHttp:", url)
+    origOpen.call(this, method, rewrite(url), ...args); 
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(({ addedNodes }) => {
+      addedNodes.forEach((node) => {
+
+        // Handle <link>, <script>, <img>, <iframe> tags
+        if (node.tagName) {
+          const attributesToRewrite = ['href', 'src'];
+          attributesToRewrite.forEach((attr) => {
+            if (node.hasAttribute(attr)) {
+              const oldAttrValue = node.getAttribute(attr);
+              console.log(`*** Hijacked node ${node.tagName}`)
+              const url = rewrite(oldAttrValue)
+
+              if (url.endsWith(".css")) {
+                (function(_node, _attr, _url) {
+                  _node.parentNode.removeChild(_node)
+                  
+                  origFetch(_url).then(async data => {
+                    let body = await data.text();
+                    console.log(`*** Hijacked CSS content: ${_url}`)
+                   
+                    const style = document.createElement("style")
+                    style.type = 'text/css';
+                    style.textContent = rewriteContent(body);
+                    style.__hijacked = true;
+
+                    document.head.appendChild(style);
+                  });
+                })(node, attr, url);
+              } else {
+                node.setAttribute(attr, url)
+              }
+            }
+          });
+        }
+
+        // Handle inline <style> tags
+        if (node.tagName === 'STYLE' && !node.__hijacked) {
+          console.log("*** Hijacked style tag")
+          node.textContent = rewriteContent(node.textContent)
+      	}
+
+        // Handle CSS in the `style` attribute
+        if (node.hasAttribute && node.hasAttribute('style')) {
+          console.log("*** Hijacked style attribute")
+          const oldStyle = node.getAttribute('style');
+          node.setAttribute('style', rewriteContent(oldStyle));
+        } 
+      });
+    });
+  });
+
+  // Start observing the DOM for changes
+  observer.observe(document, { childList: true, subtree: true });
+</script>
+<!--__PATCH_END__-->
