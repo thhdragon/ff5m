@@ -12,12 +12,10 @@ MOD=/data/.mod/.zmod
 set -x
 
 start_prepare() {
-    renice -16 $(ps | grep klippy.py | grep -v grep | awk '{print $1}')
-    
     if [ ! -f /etc/init.d/S00init ]; then
         rm -f /etc/init.d/S00fix
         ln -s /opt/config/mod/.shell/S00init /etc/init.d/S00init
-        /etc/init.d/S00init
+        /etc/init.d/S00init start
     fi
     
     echo "System start" > /data/logFiles/ssh.log
