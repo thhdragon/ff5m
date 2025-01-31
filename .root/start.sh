@@ -15,12 +15,14 @@ touch "/tmp/not_first_launch"
 /opt/config/mod/.root/S70httpd start
 /opt/config/mod/.root/S45ntpd start
 
-# Wait for Moonraker to start
+started=0
+printf "Waiting moonraker to start..."
 for _ in $(seq 0 30); do
-    curl http://localhost:7125 > /dev/null 2>&1 && break
+    curl http://localhost:7125 > /dev/null 2>&1 && started=1 && break
     sleep 1
+    printf "."
 done
 
-echo "Services started"
+[ $started = 1 ] && echo "OK" || echo "FAIL"
 
-echo "Done"
+echo "Services started"

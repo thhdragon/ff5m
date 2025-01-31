@@ -21,13 +21,13 @@ start() {
 stop() {
     echo "Stop Buildroot env..."
     chroot $MOD /opt/config/mod/.root/stop.sh
-    echo "OK"
+    echo "Done"
 }
 
 up() {
     echo "Starting Buildroot env..."
     chroot $MOD /opt/config/mod/.root/start.sh
-    echo "OK"
+    echo "Done"
 }
 
 case "$1" in
