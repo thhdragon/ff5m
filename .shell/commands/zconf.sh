@@ -18,6 +18,12 @@ read_param() {
     
     if grep -qE "^${key}\s*=\s*" "$CONFIG_FILE"; then
         value=$(sed -n -E "s/^$key\s*=\s*(.*)/\1/p" "$CONFIG_FILE")
+        
+        # Check if the value starts and ends with a single quote
+        if [[ "$value" =~ ^\'.*\'$ ]]; then
+            value="${value:1:-1}"
+        fi
+
         echo "$value"
     else
         echo "$default"
