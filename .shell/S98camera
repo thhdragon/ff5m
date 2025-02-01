@@ -7,6 +7,13 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+
+if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
+    echo "Custom camera disabled due to SKIP_ZMOD mode"
+    exit 0
+fi
+
+
 CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/camera.conf"
 VAR_PATH="/opt/config/mod_data/variables.cfg"

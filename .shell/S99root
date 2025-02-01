@@ -7,6 +7,13 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+
+if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
+    echo "Buildroot services disabled due to SKIP_ZMOD mode"
+    exit 0
+fi
+
+
 MOD=/data/.mod/.zmod
 
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"

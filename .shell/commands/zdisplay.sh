@@ -34,8 +34,14 @@ test() {
 
 
 apply_display_off() {
-    killall firmwareExe > /dev/null 2>&1
-    xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
+    killall "ffstartup-arm" > /dev/null 2>&1
+    killall "firmwareExe" > /dev/null 2>&1
+    xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+
+    if ! ps | grep -q "[w]pac_cli"; then
+        wpa_cli -a /bin/wifi_reconnect -i wlan0 &
+    fi
+    
     return 0
 }
 

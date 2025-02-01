@@ -6,8 +6,8 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD_VERSION=$(cat /opt/config/mod/version.txt)
-FIRMWARE_VERSION=$(cat /root/version)
+MOD_VERSION=${1-$(cat /opt/config/mod/version.txt)}
+FIRMWARE_VERSION=${2-$(cat /root/version)}
 
 centered() {
     local text="$1"; local width=$2; local offset=${3:-0}
@@ -25,7 +25,7 @@ centered() {
 _S="🔥"
 _OFFSET=$(( ${#_S} - 1 ))
 
-MOD_TEXT=$(centered "🔥 \033[36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
+MOD_TEXT=$(centered "🔥 \033[1;36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
 FF_TEXT=$(centered "\033[1;33m⚡ \033[36mAD5M v${FIRMWARE_VERSION}" 35 $_OFFSET)
 
 echo -e "\033[35m

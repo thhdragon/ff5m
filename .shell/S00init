@@ -11,7 +11,7 @@ MOD=/data/.mod/.zmod
 INIT_FLAG=/tmp/init_finished
 
 mount_data_partition() {
-    # mount data - this would otherwise be mounted later by flashforge
+    # mount data - this would otherwise be mounted later by Flashforge's firmware
     if ! mount | grep -q /dev/mmcblk0p7; then
         echo "Mounting /data partition..."
         fsck -y /dev/mmcblk0p7 || true
@@ -31,32 +31,7 @@ mount_data_partition() {
 }
 
 handle_special_boot_mode() {
-    if [ -f /opt/config/mod/SKIP_ZMOD ]; then
-        echo "Skipping mod load"
-        
-        md -p /data/lost+found
-        mount --bind /data/lost+found /data/.mod
-        rm -f /opt/config/mod/SKIP_ZMOD
-        
-        exit 0
-    elif [ -f /opt/config/mod/REMOVE ]; then
-        echo "Removing mod..."
-        
-        mount_data_partition
-        
-        cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
-        /tmp/uninstall.sh
-        
-        exit 0
-    elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
-        echo "Removing mod in soft mode..."
-        
-        mount_data_partition
-        cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
-        /opt/uninstall.sh --soft
-        
-        exit 0
-    fi
+    /opt/config/mod/.shell/init_boot_flag.sh apply
 }
 
 initialize() {
@@ -79,6 +54,7 @@ initialize() {
     rm -f /etc/init.d/S99moon
     rm -f /etc/init.d/K99moon
 
+    ln -fs /opt/config/mod/.shell/S60dropbear /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98camera /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98zssh /etc/init.d/
     ln -fs /opt/config/mod/.shell/S99root /etc/init.d/

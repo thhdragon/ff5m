@@ -20,6 +20,15 @@ start_prepare() {
     
     echo "System start" > /data/logFiles/ssh.log
     
+    # Run Wi-Fi
+    if [ -f "/etc/wpa_supplicant.conf" ]; then
+        if ! ps | grep -q "[n]l80211"; then
+            wpa_supplicant -d -D nl80211 -i wlan0 -c /etc/wpa_supplicant.conf -B &
+        fi
+
+        #/opt/config/mod/.shell/commands/zdisplay.sh apply
+    fi
+    
     chroot $MOD /opt/config/mod/.root/start.sh &
 }
 
