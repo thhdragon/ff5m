@@ -191,16 +191,19 @@ class ModParamManagement:
 
         return f'{param.label}: {value}'
 
+    def _print_param(self, gcmd, param: Parameter):
+        value = self._transform(param, self.variables[param.key])
+        gcmd.respond_raw(self._format_label(param, value))
+        if issubclass(param.type, Enum):
+            gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
+        if not param.readonly:
+            gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
+
     def cmd_LIST_MOD_PARAMS(self, gcmd):
         for param in self.params:
             if param.hidden: continue
 
-            value = self._transform(param, self.variables[param.key])
-            gcmd.respond_raw(self._format_label(param, value))
-            if issubclass(param.type, Enum):
-                gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
-            if not param.readonly:
-                gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
+            self._print_param(gcmd, param)
 
     def cmd_RELOAD_MOD_PARAMS(self, _):
         self._reload()
@@ -211,8 +214,7 @@ class ModParamManagement:
             raise gcmd.error(f'Unknown parameter: "{key}"')
 
         param = self.params_map[key]
-        transformed = self._transform(param, self.variables[key])
-        gcmd.respond_raw(self._format_label(param, transformed))
+        self._print_param(gcmd, param)
 
     def cmd_SET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
