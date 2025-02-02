@@ -6,8 +6,8 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+s
 FLAGS=("SKIP_ZMOD" "SKIP_ZMOD_SOFT" "REMOVE_ZMOD" "SOFT_REMOVE_ZMOD")
-
 
 check_special_boot_flag() {
     local path=$1

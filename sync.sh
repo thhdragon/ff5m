@@ -386,6 +386,8 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
         touch "\$SKIP_REBOOT_F"
     fi
 
+    sync
+
     if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
 
     if [ "\$CHANGED" -eq 1 ]; then

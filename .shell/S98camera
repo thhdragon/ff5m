@@ -13,10 +13,13 @@ if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
     exit 0
 fi
 
-
-CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+source /opt/config/mod/.shell/common.sh
 CFG_PATH="/opt/config/mod_data/camera.conf"
-VAR_PATH="/opt/config/mod_data/variables.cfg"
+
+# Create default configuration if needed
+if [ ! -f "$CFG_PATH" ]; then
+    cp "/opt/config/mod/.cfg/default/camera.conf" "$CFG_PATH"
+fi
 
 
 VIDEO="video0"
@@ -64,11 +67,6 @@ reload() {
         v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
     fi
 }
-
-# Create default configuration if needed
-if [ ! -f "$CFG_PATH" ]; then
-    cp "/opt/config/mod/.cfg/default/camera.conf" "$CFG_PATH"
-fi
 
 
 case "$1" in

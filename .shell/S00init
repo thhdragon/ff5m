@@ -1,14 +1,14 @@
 #!/bin/bash
 
-## Mod's configuration preparation script
+## Mod's initialization script
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
-## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
 INIT_FLAG=/tmp/init_finished
+
+source /opt/config/mod/.shell/common.sh
 
 mount_data_partition() {
     # mount data - this would otherwise be mounted later by Flashforge's firmware
@@ -31,7 +31,10 @@ mount_data_partition() {
 }
 
 handle_special_boot_mode() {
-    /opt/config/mod/.shell/init_boot_flag.sh apply
+    if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
+        echo "Mod skipped."
+        exit 0
+    fi
 }
 
 initialize() {
@@ -40,10 +43,17 @@ initialize() {
     handle_special_boot_mode
     
     # If we are here: mod loading not skipped
+
+    xzcat /opt/config/mod/load.img.xz > /dev/fb0
+
     mount_data_partition
+
+    rotate_logs "/data/logFiles/boot.log"
+    rotate_logs "/data/logFiles/ssh.log"
+    rotate_logs "/data/logFiles/wifi.log"
     
     # Init Swap
-    /opt/config/mod/.shell/init_swap.sh
+    /opt/config/mod/.shell/boot/init_swap.sh
 
     init_chroot
     apply_klipper_patches
@@ -54,6 +64,7 @@ initialize() {
     rm -f /etc/init.d/S99moon
     rm -f /etc/init.d/K99moon
 
+    ln -fs /opt/config/mod/.shell/S55boot /etc/init.d/
     ln -fs /opt/config/mod/.shell/S60dropbear /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98camera /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98zssh /etc/init.d/
@@ -125,6 +136,9 @@ init_chroot() {
     ln -fns /opt/config/mod/.shell /root/printer_data/scripts
     
     mount --bind /root/printer_data $MOD/root/printer_data
+
+    # hwclock
+    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
     
     # moon
     ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
@@ -135,6 +149,9 @@ init_chroot() {
     [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
 
     ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
+
+    # load date
+    chroot $MOD fake-hwclock load
 }
 
 apply_klipper_patches() {
@@ -274,6 +291,19 @@ fix_config() {
     fi
 }
 
+rotate_logs() {
+    path="$1"
+
+    echo "Rotating logs: $path"
+    mv -f "$path.4"  "$path.5"
+    mv -f "$path.3"  "$path.4"
+    mv -f "$path.2"  "$path.3"
+    mv -f "$path.1"  "$path.2"
+    mv -f "$path"    "$path.1"
+
+    echo "Created" | add_date_prefix > "$path"
+}
+
 case "$1" in
     start)
         if [ -f $INIT_FLAG ]; then
@@ -282,28 +312,25 @@ case "$1" in
         fi
 
         mkdir -p /opt/config/mod_data/log/
+        rotate_logs "/opt/config/mod_data/log/init.log"
         
-        mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
-        mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
-        mv /opt/config/mod_data/log/init.log.2 /opt/config/mod_data/log/init.log.3
-        mv /opt/config/mod_data/log/init.log.1 /opt/config/mod_data/log/init.log.2
-        mv /opt/config/mod_data/log/init.log /opt/config/mod_data/log/init.log.1
-        
-        set -x
-        initialize &>/opt/config/mod_data/log/init.log
+        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log"
 
         touch $INIT_FLAG
         
         sync
     ;;
+    
     reload)
         apply_klipper_patches
         apply_other_patches
         fix_config
     ;;
+
     log)
         cat /opt/config/mod_data/log/init.log
     ;;
+
     *)
         echo "Usage: $0 (start|reload|log)"
         exit 1

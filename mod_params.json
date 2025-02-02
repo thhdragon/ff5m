@@ -132,14 +132,14 @@
       "type": "str",
       "default": "",
       "label": "MIDI при запуске печати",
-      "order": 50000
+      "order": 50001
     },
     {
       "key": "midi_end",
       "type": "str",
       "default": "",
       "label": "MIDI при завершении печати",
-      "order": 50000
+      "order": 50002
     },
     {
       "key": "new_save_config",

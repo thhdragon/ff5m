@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## General service to control zmod services
 ##
@@ -14,26 +14,34 @@ if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
 fi
 
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/common.sh
 
-NOT_FIRST_LAUNCH_F="/tmp/not_first_launch"
-
-unset LD_PRELOAD
 
 start() {
-    if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 1; fi
-    /etc/init.d/prepare.sh &
+    if [ ! -f "$NOT_FIRST_LAUNCH_F" ] &&  [ -f "$CUSTOM_BOOT_F" ]; then
+        {
+            echo "Goodby Flashforge :)"
+            kill -9 "$PPID"
+        } 2>&1 | logged "/data/logFiles/boot.log"
+        
+        xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+        
+        midi_file=$($CFG_SCRIPT $VAR_PATH --get "midi_start" "BattleCity.mid")
+        if [ -n "$midi_file" ]; then
+            audio midi -m /opt/config/mod_data/midi/$midi_file &
+        fi
+    fi
+    
+    echo "Starting Buildroot env..."
+    chroot "$MOD" /opt/config/mod/.root/start.sh
+    echo "Done"
+    
+    touch "$NOT_FIRST_LAUNCH_F"
 }
 
 stop() {
     echo "Stop Buildroot env..."
-    chroot $MOD /opt/config/mod/.root/stop.sh
-    echo "Done"
-}
-
-up() {
-    echo "Starting Buildroot env..."
-    chroot $MOD /opt/config/mod/.root/start.sh
+    chroot "$MOD" /opt/config/mod/.root/stop.sh
     echo "Done"
 }
 
@@ -49,11 +57,11 @@ case "$1" in
     ;;
     restart|reload)
         stop
-
+        
         while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
         while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
         while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
-
+        
         up
     ;;
     *)

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+## Mod's boot script
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
+
+source /opt/config/mod/.shell/common.sh
+
+if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
+    echo "Boot disabled due to SKIP_ZMOD mode"
+    exit 0
+fi
+
+start() {
+    /opt/config/mod/.shell/boot/boot.sh
+}
+
+wait_for_internet() {
+    for _ in $(seq 30); do
+        if ping -c4 8.8.8.8; then
+            audio freq -f 880 &
+            break
+        fi
+        sleep 3
+    done
+}
+
+case "$1" in
+    start)
+        if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 0; fi
+        
+        start 2>&1 | logged "/data/logFiles/boot.log"
+        wait_for_internet &
+    ;;
+    *)
+        echo "Usage $0 start"
+    ;;
+esac
