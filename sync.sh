@@ -397,7 +397,7 @@ ssh "${REMOTE_USER}@${REMOTE_HOST}" bash -l << EOF
             "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99root stop
 
         run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
-        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99root up
+        run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99root start
 
         run_service "Plugins"   "Reloading"     0   "$SKIP_PLUGIN_RELOAD"     /etc/init.d/S00init reload
 
