@@ -25,7 +25,7 @@ print_hex() {
 echo "Setting up serial port: $TTY"
 
 if [ ! -e "$TTY" ]; then
-    echo "Serial: $TTY does not exist."
+    echo "@@ Serial: $TTY does not exist."
     exit 1
 fi
 
@@ -36,7 +36,7 @@ stty -F "$TTY" $BAUD raw \
     && stty -F $TTY -icanon -iexten -echo -echoe -echok -echoctl -echoke
 
 if [ "$?" -ne 0 ]; then
-    echo "Serial: Failed to configure $TTY"
+    echo "@@ Serial: Failed to configure $TTY"
     exit 1
 fi
 
@@ -46,7 +46,7 @@ for _ in $(seq $RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
     
     if [ -z "$buf" ]; then
-        echo "No data received."
+        echo "@@ No data received."
         exit 1
     fi
     
@@ -70,7 +70,7 @@ for _ in $(seq $RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
     
     if [ -z "$buf" ]; then
-        echo "No response received."
+        echo "@@ No response received."
         exit 2
     fi
     
@@ -83,4 +83,4 @@ for _ in $(seq $RETRIES); do
     fi
 done
 
-echo "Didn't receive boot confirmation"
+echo ?? Didn't receive boot confirmation"

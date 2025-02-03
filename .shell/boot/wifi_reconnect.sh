@@ -15,7 +15,7 @@ handle() {
             echo "Connection Established";
         ;;
         DISCONNECTED)
-            echo "Connection Lost";
+            echo "?? Connection Lost";
             
             # TODO: Find a way to just reconnect
             "$SCRIPTS/boot/wifi_connect.sh"

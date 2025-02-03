@@ -18,22 +18,22 @@ start() {
     /opt/config/mod/.shell/boot/boot.sh
 }
 
-wait_for_internet() {
-    for _ in $(seq 30); do
-        if ping -c4 8.8.8.8; then
-            audio freq -f 880 &
-            break
-        fi
-        sleep 3
-    done
-}
+# wait_for_internet() {
+#     for _ in $(seq 30); do
+#         if ping -c4 8.8.8.8; then
+#             audio freq -f 880 &
+#             break
+#         fi
+#         sleep 3
+#     done
+# }
 
 case "$1" in
     start)
         if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 0; fi
         
         start 2>&1 | logged "/data/logFiles/boot.log"
-        wait_for_internet &
+        # wait_for_internet &
     ;;
     *)
         echo "Usage $0 start"

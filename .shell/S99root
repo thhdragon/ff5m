@@ -20,7 +20,7 @@ source /opt/config/mod/.shell/common.sh
 start() {
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ] &&  [ -f "$CUSTOM_BOOT_F" ]; then
         {
-            echo "Goodby Flashforge :)"
+            echo "// Goodby Flashforge :)"
             kill -9 "$PPID"
         } 2>&1 | logged "/data/logFiles/boot.log"
         
@@ -32,17 +32,17 @@ start() {
         fi
     fi
     
-    echo "Starting Buildroot env..."
+    echo "// Starting Buildroot env..."
     chroot "$MOD" /opt/config/mod/.root/start.sh
-    echo "Done"
+    echo "// Done"
     
     touch "$NOT_FIRST_LAUNCH_F"
 }
 
 stop() {
-    echo "Stop Buildroot env..."
+    echo "// Stop Buildroot env..."
     chroot "$MOD" /opt/config/mod/.root/stop.sh
-    echo "Done"
+    echo "// Done"
 }
 
 case "$1" in

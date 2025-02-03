@@ -13,7 +13,7 @@ source /opt/config/mod/.shell/common.sh
 mount_data_partition() {
     # mount data - this would otherwise be mounted later by Flashforge's firmware
     if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "Mounting /data partition..."
+        echo "// Mounting /data partition..."
         fsck -y /dev/mmcblk0p7 || true
         mount /dev/mmcblk0p7 /data;
     fi
@@ -25,21 +25,22 @@ mount_data_partition() {
     # done
     
     if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "Mounting /data failed."
+        echo "@@ Mounting /data failed."
         exit 1
     fi
 }
 
 handle_special_boot_mode() {
     if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
-        echo "Mod skipped."
+        echo "?? Mod skipped."
         exit 0
     fi
 }
 
 initialize() {
-    echo "*** Start initialization"
+    echo "// *** Start initialization"
     
+    echo "// Checking special boot mode"
     handle_special_boot_mode
     
     # If we are here: mod loading not skipped
@@ -52,13 +53,22 @@ initialize() {
     rotate_logs "/data/logFiles/ssh.log"
     rotate_logs "/data/logFiles/wifi.log"
     
-    # Init Swap
+    echo "// Init Swap"
     /opt/config/mod/.shell/boot/init_swap.sh
 
+    echo "// Init Buildroot"
     init_chroot
+
+    echo "// Apply Klipper patches"
     apply_klipper_patches
+    
+    echo "// Apply other patches"
     apply_other_patches
+
+    echo "// Restore config"
     fix_config
+
+    echo "// Init mod's files"
 
     # Services
     rm -f /etc/init.d/S99moon
@@ -74,8 +84,10 @@ initialize() {
     # oh-my-zsh
     mkdir -p /root/.oh-my-zsh
     mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
-    ln -s /opt/config/mod/.zsh/.profile /root/.profile
-    ln -s /opt/config/mod/.zsh/.zshrc /root/.zshrc
+    ln -fs /opt/config/mod/.zsh/.profile /root/
+    ln -fs /opt/config/mod/.zsh/.zshrc /root/
+
+    echo "// Init version"
     
     # version
     GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
@@ -87,13 +99,16 @@ initialize() {
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+
+    echo "// Apply database migrations"
     
     # database
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
     fi
+
+    echo "// Misc initialization step"
     
-    # misc
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
 
@@ -102,7 +117,7 @@ initialize() {
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
     
-    echo "*** End initialization"
+    echo "// *** End initialization"
 }
 
 init_chroot() {
@@ -159,7 +174,7 @@ apply_klipper_patches() {
     local TARGET_DIR="/opt/klipper/klippy"
     
     # Klipper extensions
-    echo "Link klipper plugins: "
+    echo "// Link klipper plugins: "
     echo $SRC_DIR/plugins/*
     echo
 
@@ -170,12 +185,12 @@ apply_klipper_patches() {
 
         if [ -f "$file.bak" ]; then # Patch
             if [ ! -f "$SRC_DIR/patches/$rel_path" ]; then
-                echo "Remove old patch: $file"
+                echo "// Remove old patch: $file"
                 mv "$file.bak" "$file"
             fi
         else
             if [ ! -f "$SRC_DIR/plugins/$file_name" ]; then
-                echo "Remove old plugin: $file"
+                echo "// Remove old plugin: $file"
                 rm -f "$file"
             fi
         fi
@@ -193,10 +208,10 @@ apply_klipper_patches() {
         mkdir -p "$TARGET_DIR/$rel_path"
         
         if [ ! -L "$target" ]; then
-            echo "Create klipper file backup: $target"
+            echo "// Create klipper file backup: $target"
             mv "$target" "$target.bak"
             
-            echo "Link patched klipper file: $file"
+            echo "// Link patched klipper file: $file"
             ln -fs "$file" "$target"
         else
             ln -fs "$file" "$target"
@@ -222,7 +237,7 @@ _apply_patch() {
     sed -i "/$paste_after/r $patch_file" "$temp_file"
 
     if ! cmp -s "$target_file" "$temp_file"; then
-        echo "Apply patch to $target_file"
+        echo "// Apply patch to $target_file"
         mv "$temp_file" "$target_file"
     else
         rm -f "$temp_file"
@@ -294,20 +309,20 @@ fix_config() {
 rotate_logs() {
     path="$1"
 
-    echo "Rotating logs: $path"
+    echo "// Rotating logs: $path"
     mv -f "$path.4"  "$path.5"
     mv -f "$path.3"  "$path.4"
     mv -f "$path.2"  "$path.3"
     mv -f "$path.1"  "$path.2"
     mv -f "$path"    "$path.1"
 
-    echo "Created" | add_date_prefix > "$path"
+    echo "// Created" | logged "$path" --no-print
 }
 
 case "$1" in
     start)
         if [ -f $INIT_FLAG ]; then
-            echo "Already initialized!"
+            echo "?? Already initialized!"
             exit 1
         fi
 

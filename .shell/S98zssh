@@ -36,13 +36,14 @@ PID_FILE=/run/zssh.pid
 start() {
     enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
     if [ "$enabled" -eq 0 ]; then
-        echo "SSH is disabled"
+        echo "@@ SSH is disabled"
         return
     fi
     
     if ! is_running; then
-        echo "Starting ssh tunnel..."
-        
+        echo "// Starting ssh tunnel..."
+
+        sync
         /bin/dropbearmulti dbclient                     \
             -NTfy                                       \
             -i /opt/config/mod_data/ssh.key             \
@@ -51,53 +52,55 @@ start() {
             -R "${MOON_PORT}:127.0.0.1:7125"            \
             -o ExitOnForwardFailure=yes                 \
             "${SSH_USER}@${SSH_SERVER}"                 \
-            &>> "/data/logFiles/ssh.log"
+        &>> "/data/logFiles/ssh.log"
         
         ret=$?
         sync
 
         if [ "$ret" -ne 0 ]; then
-            echo "Unable to create SSH tunnel. Returned: $ret"
+            echo "@@ Unable to create SSH tunnel. Returned: $ret"
             exit 1
         fi
 
-        echo "OK"
+        echo "// OK"
         
         ps | grep '\-NTf[y]' | head -1 | awk '{print $1}' > "$PID_FILE"
         
         if [ -n "${REMOTE_RUN}" ] && is_running; then
-            echo "Sending remote command..."
+            echo "// Sending remote command..."
+            
+            sync
             /bin/dropbearmulti dbclient                 \
                 -Tfy                                    \
                 -i /opt/config/mod_data/ssh.key         \
                 -p "${SSH_PORT}"                        \
                 "${SSH_USER}@${SSH_SERVER}"             \
                 "${REMOTE_RUN}"                         \
-                &>> "/data/logFiles/ssh.log"
+            &>> "/data/logFiles/ssh.log"
             
             ret=$?
             sync
 
             if [ "$ret" -ne 0 ]; then
-                echo "Unable to run remote command over SSH. Returned: $ret"
+                echo "@@ Unable to run remote command over SSH. Returned: $ret"
                 exit 2
             fi
 
-            echo "OK"
+            echo "// OK"
         fi
         
-        echo "All done!"
+        echo "// All done!"
     fi
 }
 
 stop() {
-    echo "Stopping SSH tunnel..."
+    echo "// Stopping SSH tunnel..."
     kill $( ps | grep "\-NTf[y]" | awk '{print $1}' ) > /dev/null 2>&1
     rm -f "$PID_FILE"
 }
 
 restart() {
-    echo "Restarting SSH tunnel"
+    echo "// Restarting SSH tunnel"
     
     stop
     while is_running; do sleep 1; done
@@ -116,20 +119,18 @@ is_running() {
 reload() {
     enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
     if [ "$enabled" -eq 1 ]; then
-        if ! is_running; then 
-            echo "SSH connection lost."
-            restart 
+        if ! is_running; then
+            echo "?? SSH connection lost."
+            restart
         fi
     fi
 }
 
 switch() {
     case "$1" in
-        zstart)
-            start
-        ;;
         start)
-            echo "Service starting not allowed. Use: $0 zstart"
+            [ ! -f "$NOT_FIRST_LAUNCH_F" ] && exit 0
+            start
         ;;
         stop)
             stop
@@ -148,10 +149,10 @@ switch() {
             fi
         ;;
         *)
-            echo "Usage: $0 {zstart|stop|restart|reload|test}"
+            echo "Usage: $0 {start|stop|restart|reload|test}"
             exit 1
     esac
 }
 
-switch "$@" | logged "/data/logFiles/ssh.log"
+switch "$@" 2>&1 | logged "/data/logFiles/ssh.log"
 exit $?

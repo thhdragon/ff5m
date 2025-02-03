@@ -26,7 +26,7 @@ ip link set "$INTERFACE" up
 
 echo "Restarting wpa_supplicant service..."
 if ! wpa_supplicant -B -i "$INTERFACE" -c "$WPA_SUPPLICANT_CONF"; then
-    echo "Failed to restart wpa_supplicant." >&2
+    echo "@@ Failed to restart wpa_supplicant." >&2
     exit 1
 fi
 
@@ -47,7 +47,7 @@ for _ in $(seq 15); do
         elif [[ "$STATUS" == "SCANNING" ]]; then
         echo "Connecting..."
     else
-        echo "Failed to connect. Current status: $STATUS"
+        echo "@@ Failed to connect. Current status: $STATUS"
         echo "Try to reconfigure..."
         wpa_cli -i "$INTERFACE" reconfigure
     fi

@@ -12,7 +12,7 @@ MOD_CUSTOM_BOOT=0
 source /opt/config/mod/.shell/common.sh
 
 if [ ! -f /etc/init.d/S00init ]; then
-    echo "Missing initialization script. Initialize now."
+    echo "@@ Missing initialization script. Initialize now."
     
     rm -f /etc/init.d/S00fix
     ln -s "$SCRIPTS/S00init" /etc/init.d/S00init
@@ -43,7 +43,7 @@ if ! "$CMDS/zdisplay.sh" test; then
                     break
                 fi
                 
-                echo "WPA start failed. Retry..."
+                echo "@@ WPA start failed. Retry..."
                 sleep 1
             done
         fi
