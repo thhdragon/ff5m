@@ -70,7 +70,7 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     mount -t debugfs none /sys/kernel/debug -o rw,relatime
     
     echo "Boot MCU."
-    /opt/config/mod/.shell/boot_mcu.sh
+    /opt/config/mod/.shell/boot/boot_mcu.sh
     
     echo "Start klipper."
     /opt/klipper/start.sh &> /dev/null

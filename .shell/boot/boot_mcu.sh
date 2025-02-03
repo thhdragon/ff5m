@@ -83,4 +83,4 @@ for _ in $(seq $RETRIES); do
     fi
 done
 
-echo ?? Didn't receive boot confirmation"
+echo "?? Didn't receive boot confirmation"
