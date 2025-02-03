@@ -9,16 +9,15 @@
 source /opt/config/mod/.shell/common.sh
 
 handle() {
-    echo "Received Wi-Fi signal: " "$@"
     case "$2" in
         CONNECTED)
             echo "Connection Established";
         ;;
         DISCONNECTED)
             echo "?? Connection Lost";
-            
-            # TODO: Find a way to just reconnect
-            "$SCRIPTS/boot/wifi_connect.sh"
+        ;;
+        *)
+            echo "Received Wi-Fi signal: " "$@"
         ;;
     esac
 }
