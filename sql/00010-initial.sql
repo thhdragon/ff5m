@@ -659,7 +659,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "camera_reload"
         },
         {
-            "alias": "Проверитьконфигурацию",
+            "alias": "Проверить конфигурацию",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",

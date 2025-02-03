@@ -53,10 +53,16 @@ class PrinterSensorGeneric:
             if self.exceed_gcode_present and (temp < self.min_temp or temp > self.max_temp):
                 self._handle_exceed(temp)
 
+    def _template(self, value):
+        context = self.exceed_template.create_template_context()
+        context["value"] = value
+
+        return self.exceed_template.render(context)
+
     def _handle_exceed(self, temp):
         logging.info(f"[temperature_sensor {self.name}]: Out of range ({temp})")
 
-        template = self.exceed_template.render()
+        template = self._template(temp)
         # Run M112 immediately if present
         if self.m112_r.search(template):
             self.printer.invoke_shutdown("Shutdown due to sensor value exceeding the limit")
@@ -78,12 +84,12 @@ class PrinterSensorGeneric:
 
         # Avoid repeated calls before the callback is executed
         self._last_exceed = self.reactor.NEVER
-        self.reactor.register_callback(lambda _: self._exceed_cb(template, rescheduled), when)
+        self.reactor.register_callback(lambda _: self._exceed_cb(template, temp, rescheduled), when)
 
-    def _exceed_cb(self, template, rescheduled):
+    def _exceed_cb(self, template, value, rescheduled):
         # Re-render, as variables may change
         if rescheduled:
-            template = self.gcode.run_script(self.exceed_template.render())
+            template = self._template(value)
 
         try:
             self.gcode.run_script(template)

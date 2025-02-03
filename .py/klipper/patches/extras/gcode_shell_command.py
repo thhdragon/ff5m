@@ -129,24 +129,24 @@ class ShellCommand:
 
     def _wait_bg_process(self, proc, reactor):
         proc_fd = proc.stdout.fileno()
-        proc.wait(self.timeout)
 
-        not_finished = proc.poll() is None
-        if not_finished:
+        terminated = False
+        try:
+            proc.wait(self.timeout)
+        except subprocess.TimeoutExpired:
+            logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" not finished within timeout. Terminated.")
             proc.terminate()
-            logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" not finished within timeout. Terminate.")
-
-            if self.verbose:
-                self._async_response(reactor, self._read_stdout(proc_fd))
-                self._async_response(reactor, f"!! Process {self.name} terminated due to timeout.")
-
+            terminated = True
         else:
             logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" done.")
 
-            if self.verbose:
-                self._async_response(reactor, self._read_stdout(proc_fd))
-                if self.debug:
-                    self._async_response(reactor, f"// Process {self.name} done.")
+        if self.verbose:
+            self._async_response(reactor, self._read_stdout(proc_fd))
+
+        if terminated:
+            self._async_response(reactor, f"!! Process {self.name} terminated due to timeout.")
+        elif self.debug:
+            self._async_response(reactor, f"// Process {self.name} done.")
 
         self.running = False
 

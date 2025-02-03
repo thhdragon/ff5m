@@ -9,47 +9,80 @@
         "SCHREIDER": "_CLEAR4",
         "LINE_PURGE": "LINE_PURGE"
       }
+    },
+    "AutoRebootEnum": {
+      "type": "int",
+      "values": {
+        "OFF": 0,
+        "SIMPLE_90": 1,
+        "FIRMWARE_90": 2
+      }
+    },
+    "SwapEnum": {
+      "type": "int",
+      "values": {
+        "OFF": 0,
+        "MMC": 1,
+        "USB": 2
+      }
+    },
+    "CloseDialogsEnum": {
+      "type": "int",
+      "values": {
+        "OFF": 0,
+        "SLOW": 1,
+        "FAST": 2
+      }
     }
   },
   "parameters": [
     {
       "key": "auto_reboot",
-      "type": "bool",
-      "default": 0,
+      "type": "AutoRebootEnum",
+      "default": "OFF",
       "label": "Автоперезапуск",
-      "options": ["отключен", "через 1.5 минуты", "прошивки через 1.5 минуты"]
+      "options": {
+        "OFF": "отключен",
+        "SIMPLE_90": "через 1.5 минуты",
+        "FIRMWARE_90": "прошивки через 1.5 минуты"
+      },
+      "order": 30000
     },
     {
       "key": "close_dialogs",
-      "type": "int",
-      "default": 0,
+      "type": "CloseDialogsEnum",
+      "default": "OFF",
       "label": "Диалоги",
-      "options": [
-        "не закрывать",
-        "закрывать через 20 секунд (медленно)",
-        "закрывать через 20 секунд (быстро)"
-      ]
+      "options": {
+        "OFF": "не закрывать",
+        "SLOW": "закрывать через 20 секунд (медленно)",
+        "FAST": "закрывать через 20 секунд (быстро)"
+      },
+      "order": 30000
     },
     {
       "key": "disable_priming",
       "type": "bool",
       "default": 0,
       "label": "Очистка сопла",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 20000
     },
     {
       "key": "disable_screen_led",
       "type": "bool",
       "default": 0,
       "label": "Разрешать экрану управлять LED",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 100
     },
     {
       "key": "disable_skew",
       "type": "bool",
       "default": 1,
       "label": "SKEW коррекция",
-      "options": ["ДА", "НЕТ"]
+      "options": ["ДА", "НЕТ"],
+      "order": 20000
     },
     {
       "key": "fix_e0017",
@@ -69,90 +102,102 @@
       "key": "cell_weight",
       "type": "int",
       "default": 0,
-      "label": "Разрешенный пороговый вес на тензодатчиках"
+      "label": "Разрешенный пороговый вес на тензодатчиках",
+      "order": 100
     },
     {
       "key": "load_zoffset",
       "type": "bool",
       "default": 0,
       "label": "Загрузка Z-OFFSET",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 10000
     },
     {
       "key": "z_offset",
       "type": "float",
       "default": 0,
-      "label": "Z-OFFSET"
+      "label": "Z-OFFSET",
+      "order": 10002
     },
     {
       "key": "midi_on",
       "type": "str",
       "default": "",
-      "label": "MIDI при включении"
+      "label": "MIDI при включении",
+      "order": 50000
     },
     {
       "key": "midi_start",
       "type": "str",
       "default": "",
-      "label": "MIDI при запуске печати"
+      "label": "MIDI при запуске печати",
+      "order": 50001
     },
     {
       "key": "midi_end",
       "type": "str",
       "default": "",
-      "label": "MIDI при завершении печати"
+      "label": "MIDI при завершении печати",
+      "order": 50002
     },
     {
       "key": "new_save_config",
       "type": "bool",
       "default": 0,
       "label": "Использовать альт. SAVE_CONFIG",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 100
     },
     {
       "key": "preclear",
       "type": "bool",
       "default": 0,
       "label": "Предочистка сопла",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 20000
     },
     {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,
-      "label": "Строить карту стола",
-      "options": ["НЕТ", "ДА"]
+      "label": "Строить карту стола перед печатью",
+      "options": ["НЕТ", "ДА"],
+      "order": 100
     },
     {
       "key": "stop_motor",
       "type": "bool",
       "default": 1,
       "label": "Моторы",
-      "options": ["Не выключать", "Выключать автоматически"]
+      "options": ["Не выключать", "Выключать автоматически"],
+      "order": 30000
     },
     {
       "key": "use_kamp",
       "type": "bool",
       "default": 0,
       "label": "Использование KAMP",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 20000
     },
     {
       "key": "use_swap",
-      "type": "int",
-      "default": 1,
+      "type": "SwapEnum",
+      "default": "MMC",
       "label": "SWAP",
-      "options": [
-        "не используется",
-        "используется на eMMC",
-        "используется на USB"
-      ]
+      "options": {
+        "OFF": "не используется",
+        "MMC": "используется на eMMC",
+        "USB": "используется на USB"
+      }
     },
     {
       "key": "zclear",
       "type": "LinePurgeEnum",
       "default": "ORCA",
-      "label": "Алгоритм очистки"
+      "label": "Алгоритм очистки",
+      "order": 20000
     },
     {
       "key": "display_off",
@@ -166,21 +211,31 @@
       "type": "bool",
       "default": 0,
       "label": "Альт. камера",
-      "options": ["не используется", "включена"]
+      "options": ["не используется", "включена"],
+      "order": 100
     },
     {
       "key": "zssh",
       "type": "bool",
       "default": 0,
       "label": "SSH-туннель",
-      "options": ["не используется", "включен"]
+      "options": ["не используется", "включен"],
+      "order": 100
     },
     {
       "key": "weight_check",
       "type": "bool",
       "default": 1,
       "label": "Защита стола от ударов",
-      "options": ["НЕТ", "ДА"]
+      "options": ["НЕТ", "ДА"],
+      "order": 10
+    },
+    {
+      "key": "weight_check_max",
+      "type": "int",
+      "default": 1200,
+      "label": "Защита стола от ударов, вес",
+      "order": 11
     }
   ]
 }

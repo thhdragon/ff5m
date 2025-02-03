@@ -7,14 +7,21 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+
+if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
+    echo "SSH tunnel due to SKIP_ZMOD mode"
+    exit 0
+fi
+
+source /opt/config/mod/.shell/common.sh
 CFG_PATH="/opt/config/mod_data/ssh.conf"
-VAR_PATH="/opt/config/mod_data/variables.cfg"
+
 
 if ! [ -f /opt/config/mod_data/ssh.key ]; then
     dropbearkey -t ed25519 -f /opt/config/mod_data/ssh.key
     dropbearkey -y -t ed25519 -f /opt/config/mod_data/ssh.key |grep root@kunos >/opt/config/mod_data/ssh.pub.txt
 fi
+
 
 # Create default configuration if needed
 if [ ! -f "$CFG_PATH" ]; then
@@ -24,23 +31,19 @@ fi
 
 source /opt/config/mod_data/ssh.conf
 
-
 PID_FILE=/run/zssh.pid
-LOG_FILE=/data/logFiles/ssh.log
-
 
 start() {
     enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
     if [ "$enabled" -eq 0 ]; then
-        echo "SSH is disabled"
+        echo "@@ SSH is disabled"
         return
     fi
     
     if ! is_running; then
-        date >> "${LOG_FILE}"
-        
-        echo "Starting ssh tunnel..."
+        echo "// Starting ssh tunnel..."
 
+        sync
         /bin/dropbearmulti dbclient                     \
             -NTfy                                       \
             -i /opt/config/mod_data/ssh.key             \
@@ -49,36 +52,59 @@ start() {
             -R "${MOON_PORT}:127.0.0.1:7125"            \
             -o ExitOnForwardFailure=yes                 \
             "${SSH_USER}@${SSH_SERVER}"                 \
-            >> "${LOG_FILE}" 2>&1
+        &>> "/data/logFiles/ssh.log"
         
-        ps axf | grep '\-NTf[y]' | head -1 | awk '{print $1}' > "$PID_FILE"
+        ret=$?
+        sync
+
+        if [ "$ret" -ne 0 ]; then
+            echo "@@ Unable to create SSH tunnel. Returned: $ret"
+            exit 1
+        fi
+
+        echo "// OK"
         
-        cat "${LOG_FILE}"
+        ps | grep '\-NTf[y]' | head -1 | awk '{print $1}' > "$PID_FILE"
         
         if [ -n "${REMOTE_RUN}" ] && is_running; then
-            echo "Sending remote command..."
+            echo "// Sending remote command..."
+            
+            sync
             /bin/dropbearmulti dbclient                 \
                 -Tfy                                    \
                 -i /opt/config/mod_data/ssh.key         \
                 -p "${SSH_PORT}"                        \
                 "${SSH_USER}@${SSH_SERVER}"             \
                 "${REMOTE_RUN}"                         \
-            >> "${LOG_FILE}" 2>&1
-        fi
+            &>> "/data/logFiles/ssh.log"
+            
+            ret=$?
+            sync
 
-        echo "Done!"
+            if [ "$ret" -ne 0 ]; then
+                echo "@@ Unable to run remote command over SSH. Returned: $ret"
+                exit 2
+            fi
+
+            echo "// OK"
+        fi
+        
+        echo "// All done!"
     fi
 }
 
 stop() {
+    echo "// Stopping SSH tunnel..."
     kill $( ps | grep "\-NTf[y]" | awk '{print $1}' ) > /dev/null 2>&1
-    rm -f $PID_FILE
+    rm -f "$PID_FILE"
 }
 
 restart() {
+    echo "// Restarting SSH tunnel"
+    
     stop
     while is_running; do sleep 1; done
-
+    
     start
 }
 
@@ -93,36 +119,40 @@ is_running() {
 reload() {
     enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
     if [ "$enabled" -eq 1 ]; then
-        if ! is_running; then restart; fi
+        if ! is_running; then
+            echo "?? SSH connection lost."
+            restart
+        fi
     fi
 }
 
-case "$1" in
-    zstart)
-        start
-    ;;
-    start)
-        echo "Service starting not allowed. Use: $0 zstart"
-    ;;
-    stop)
-        stop
-    ;;
-    restart)
-        restart
-    ;;
-    reload)
-        reload
-    ;;
-    test)
-        if is_running; then
-            echo "SSH Tunnel is running"
-        else
-            echo "SSH Tunnel is not running"
-        fi
-    ;;
-    *)
-        echo "Usage: $0 {zstart|stop|restart|reload|test}"
-        exit 1
-esac
+switch() {
+    case "$1" in
+        start)
+            [ ! -f "$NOT_FIRST_LAUNCH_F" ] && exit 0
+            start
+        ;;
+        stop)
+            stop
+        ;;
+        restart)
+            restart
+        ;;
+        reload)
+            reload
+        ;;
+        test)
+            if is_running; then
+                echo "SSH Tunnel is running"
+            else
+                echo "SSH Tunnel is not running"
+            fi
+        ;;
+        *)
+            echo "Usage: $0 {start|stop|restart|reload|test}"
+            exit 1
+    esac
+}
 
+switch "$@" 2>&1 | logged "/data/logFiles/ssh.log"
 exit $?

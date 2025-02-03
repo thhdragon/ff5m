@@ -34,20 +34,30 @@ test() {
 
 
 apply_display_off() {
-    killall firmwareExe > /dev/null 2>&1
-    xzcat /opt/config/mod/.shell/screen_off.raw.xz > /dev/fb0
+    killall "ffstartup-arm" > /dev/null 2>&1
+    killall "firmwareExe" > /dev/null 2>&1
+    xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+    
     return 0
 }
 
 case "$1" in
     on)
         display_on
-        #reboot
+        echo "Printer will be rebooted in 5 seconds..."
+        echo "RESPOND prefix='//' MSG='Printer will be rebooted in 5 seconds...'" > /tmp/printer
+
+        sync
+        
+        { sleep 5 && reboot; } >/dev/null 2>&1 &
+        exit 0
     ;;
+
     off)
         display_off
         apply_display_off
     ;;
+
     init)
         if test; then
             display_on
@@ -55,17 +65,20 @@ case "$1" in
             display_off
         fi
     ;;
+
     apply)
         if ! test; then
             echo "Turning display off"
             apply_display_off
         fi
     ;;
+
     test)
         test; ret=$?
         if [ "$ret" -eq 0 ]; then echo "Display enabled"; else echo "Display disabled"; fi
         exit $ret
     ;;
+    
     *)
         echo "Usage: $0 on|off|init|test"; exit 1;
     ;;

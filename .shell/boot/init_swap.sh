@@ -164,10 +164,11 @@ cleanup_mounts() {
     done
 }
 
-swap=$($CFG_SCRIPT  $CFG_PATH --get "use_swap" "0")
+swap=$($CFG_SCRIPT  $CFG_PATH --get "use_swap" "OFF")
+echo "SWAP: \"$swap\""
 
 case "$swap" in
-    0)
+    OFF)
         echo "Swap disabled."
         
         swapoff -a
@@ -175,10 +176,10 @@ case "$swap" in
         
         exit 0
     ;;
-    1)
+    MMC)
         activate_mmc_swap
     ;;
-    2)
+    USB)
         cleanup_mounts
         if ! activate_usb_swap; then
             echo "Failed to activate USB swap. Activating MMC swap instead."

@@ -70,10 +70,13 @@ uninstall() {
     rm -rf /data/.mod
     rm /etc/init.d/S00fix
     rm /etc/init.d/S00init
+    rm /etc/init.d/S55boot
+    rm /etc/init.d/S99root
     rm /etc/init.d/S99moon
     rm /etc/init.d/S98camera
     rm /etc/init.d/S98zssh
     rm /etc/init.d/K99moon
+    rm /etc/init.d/K99root
     rm -rf /opt/config/mod/
     rm -rf /root/printer_data
     # REMOVE zsh

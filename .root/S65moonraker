@@ -10,15 +10,20 @@ PRINTER_DATA_TMP=/root/printer_data/tmp
 PID_FILE=/run/moonraker.pid
 
 start() {
+    printf "Starting Moonraker..."
     rm -rf $PRINTER_DATA_TMP && mkdir -p $PRINTER_DATA_TMP # clean temp
     export TMPDIR=$PRINTER_DATA_TMP # without TMPDIR moonraker writes to /tmp which is a ramdisk
     
     start-stop-daemon -S -b -m -p $PID_FILE --exec $PYTHON -- $MOONRAKER -d $PRINTER_DATA
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 stop() {
+    printf "Stopping Moonraker..."
     start-stop-daemon -K -p $PID_FILE
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
+
 restart() {
     stop
     sleep 2

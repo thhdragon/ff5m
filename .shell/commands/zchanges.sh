@@ -8,6 +8,8 @@
 
 SHELL="/opt/config/mod/.shell"
 
+unset LD_PRELOAD
+
 key=$1
 value=$2
 

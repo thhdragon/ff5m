@@ -1,19 +1,19 @@
 #!/bin/bash
 
-## Mod's configuration preparation script
+## Mod's initialization script
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
-## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
 INIT_FLAG=/tmp/init_finished
 
+source /opt/config/mod/.shell/common.sh
+
 mount_data_partition() {
-    # mount data - this would otherwise be mounted later by flashforge
+    # mount data - this would otherwise be mounted later by Flashforge's firmware
     if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "Mounting /data partition..."
+        echo "// Mounting /data partition..."
         fsck -y /dev/mmcblk0p7 || true
         mount /dev/mmcblk0p7 /data;
     fi
@@ -25,60 +25,57 @@ mount_data_partition() {
     # done
     
     if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "Mounting /data failed."
+        echo "@@ Mounting /data failed."
         exit 1
     fi
 }
 
 handle_special_boot_mode() {
-    if [ -f /opt/config/mod/SKIP_ZMOD ]; then
-        echo "Skipping mod load"
-        
-        md -p /data/lost+found
-        mount --bind /data/lost+found /data/.mod
-        rm -f /opt/config/mod/SKIP_ZMOD
-        
-        exit 0
-    elif [ -f /opt/config/mod/REMOVE ]; then
-        echo "Removing mod..."
-        
-        mount_data_partition
-        
-        cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
-        /tmp/uninstall.sh
-        
-        exit 0
-    elif [ -f /opt/config/mod/SOFT_REMOVE ]; then
-        echo "Removing mod in soft mode..."
-        
-        mount_data_partition
-        cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
-        /opt/uninstall.sh --soft
-        
+    if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
+        echo "?? Mod skipped."
         exit 0
     fi
 }
 
 initialize() {
-    echo "*** Start initialization"
+    echo "// *** Start initialization"
     
+    echo "// Checking special boot mode"
     handle_special_boot_mode
     
     # If we are here: mod loading not skipped
-    mount_data_partition
-    
-    # Init Swap
-    /opt/config/mod/.shell/init_swap.sh
 
+    xzcat /opt/config/mod/load.img.xz > /dev/fb0
+
+    mount_data_partition
+
+    rotate_logs "/data/logFiles/boot.log"
+    rotate_logs "/data/logFiles/ssh.log"
+    rotate_logs "/data/logFiles/wifi.log"
+    
+    echo "// Init Swap"
+    /opt/config/mod/.shell/boot/init_swap.sh
+
+    echo "// Init Buildroot"
     init_chroot
+
+    echo "// Apply Klipper patches"
     apply_klipper_patches
+    
+    echo "// Apply other patches"
     apply_other_patches
+
+    echo "// Restore config"
     fix_config
+
+    echo "// Init mod's files"
 
     # Services
     rm -f /etc/init.d/S99moon
     rm -f /etc/init.d/K99moon
 
+    ln -fs /opt/config/mod/.shell/S55boot /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S60dropbear /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98camera /etc/init.d/
     ln -fs /opt/config/mod/.shell/S98zssh /etc/init.d/
     ln -fs /opt/config/mod/.shell/S99root /etc/init.d/
@@ -87,8 +84,10 @@ initialize() {
     # oh-my-zsh
     mkdir -p /root/.oh-my-zsh
     mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
-    ln -s /opt/config/mod/.zsh/.profile /root/.profile
-    ln -s /opt/config/mod/.zsh/.zshrc /root/.zshrc
+    ln -fs /opt/config/mod/.zsh/.profile /root/
+    ln -fs /opt/config/mod/.zsh/.zshrc /root/
+
+    echo "// Init version"
     
     # version
     GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
@@ -100,13 +99,16 @@ initialize() {
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+
+    echo "// Apply database migrations"
     
     # database
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
     fi
+
+    echo "// Misc initialization step"
     
-    # misc
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
 
@@ -115,7 +117,7 @@ initialize() {
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
     
-    echo "*** End initialization"
+    echo "// *** End initialization"
 }
 
 init_chroot() {
@@ -149,6 +151,9 @@ init_chroot() {
     ln -fns /opt/config/mod/.shell /root/printer_data/scripts
     
     mount --bind /root/printer_data $MOD/root/printer_data
+
+    # hwclock
+    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
     
     # moon
     ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
@@ -159,6 +164,9 @@ init_chroot() {
     [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
 
     ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
+
+    # load date
+    chroot $MOD fake-hwclock load
 }
 
 apply_klipper_patches() {
@@ -166,7 +174,7 @@ apply_klipper_patches() {
     local TARGET_DIR="/opt/klipper/klippy"
     
     # Klipper extensions
-    echo "Link klipper plugins: "
+    echo "// Link klipper plugins: "
     echo $SRC_DIR/plugins/*
     echo
 
@@ -177,12 +185,12 @@ apply_klipper_patches() {
 
         if [ -f "$file.bak" ]; then # Patch
             if [ ! -f "$SRC_DIR/patches/$rel_path" ]; then
-                echo "Remove old patch: $file"
+                echo "// Remove old patch: $file"
                 mv "$file.bak" "$file"
             fi
         else
             if [ ! -f "$SRC_DIR/plugins/$file_name" ]; then
-                echo "Remove old plugin: $file"
+                echo "// Remove old plugin: $file"
                 rm -f "$file"
             fi
         fi
@@ -200,10 +208,10 @@ apply_klipper_patches() {
         mkdir -p "$TARGET_DIR/$rel_path"
         
         if [ ! -L "$target" ]; then
-            echo "Create klipper file backup: $target"
+            echo "// Create klipper file backup: $target"
             mv "$target" "$target.bak"
             
-            echo "Link patched klipper file: $file"
+            echo "// Link patched klipper file: $file"
             ln -fs "$file" "$target"
         else
             ln -fs "$file" "$target"
@@ -229,7 +237,7 @@ _apply_patch() {
     sed -i "/$paste_after/r $patch_file" "$temp_file"
 
     if ! cmp -s "$target_file" "$temp_file"; then
-        echo "Apply patch to $target_file"
+        echo "// Apply patch to $target_file"
         mv "$temp_file" "$target_file"
     else
         rm -f "$temp_file"
@@ -298,36 +306,46 @@ fix_config() {
     fi
 }
 
+rotate_logs() {
+    path="$1"
+
+    echo "// Rotating logs: $path"
+    mv -f "$path.4"  "$path.5"
+    mv -f "$path.3"  "$path.4"
+    mv -f "$path.2"  "$path.3"
+    mv -f "$path.1"  "$path.2"
+    mv -f "$path"    "$path.1"
+
+    echo "// Created" | logged "$path" --no-print
+}
+
 case "$1" in
     start)
         if [ -f $INIT_FLAG ]; then
-            echo "Already initialized!"
+            echo "?? Already initialized!"
             exit 1
         fi
 
         mkdir -p /opt/config/mod_data/log/
+        rotate_logs "/opt/config/mod_data/log/init.log"
         
-        mv /opt/config/mod_data/log/init.log.4 /opt/config/mod_data/log/init.log.5
-        mv /opt/config/mod_data/log/init.log.3 /opt/config/mod_data/log/init.log.4
-        mv /opt/config/mod_data/log/init.log.2 /opt/config/mod_data/log/init.log.3
-        mv /opt/config/mod_data/log/init.log.1 /opt/config/mod_data/log/init.log.2
-        mv /opt/config/mod_data/log/init.log /opt/config/mod_data/log/init.log.1
-        
-        set -x
-        initialize &>/opt/config/mod_data/log/init.log
+        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log"
 
         touch $INIT_FLAG
         
         sync
     ;;
+    
     reload)
         apply_klipper_patches
         apply_other_patches
         fix_config
     ;;
+
     log)
         cat /opt/config/mod_data/log/init.log
     ;;
+
     *)
         echo "Usage: $0 (start|reload|log)"
         exit 1

@@ -22,6 +22,7 @@ class Parameter:
     options: Union[List[str], Dict[Any, str], None] = None
     readonly: bool = False
     hidden: bool = False
+    order: int = 0
 
 
 class ModParamManagement:
@@ -42,9 +43,9 @@ class ModParamManagement:
         if self.changes_gcode_present:
             self.changes_template = gcode_macro.load_template(config, "changes_gcode")
 
-        self.params = list()
-        self.params_map = dict()
-        self.type_mapping = dict()
+        self.params: List[Parameter] = list()
+        self.params_map: Dict[str, Parameter] = dict()
+        self.type_mapping: Dict[str, Type] = dict()
 
         self._load_declaration()
         self._reload()
@@ -59,7 +60,7 @@ class ModParamManagement:
 
     def _load_declaration(self):
         try:
-            with open(self.declaration, 'r', encoding='utf-8') as file:
+            with open(self.declaration, 'r', encoding="utf-8") as file:
                 data = json.load(file)
         except:
             msg = "Unable to load declaration file."
@@ -82,7 +83,7 @@ class ModParamManagement:
             self.type_mapping[enum_name] = new_enum
 
         params = []
-        for param_data in sorted(data['parameters'], key=lambda p: p.get("order", p.get("name", ""))):
+        for param_data in sorted(data["parameters"], key=lambda p: [p.get("order", 0), p.get("label", "")]):
             param_type = self.type_mapping.get(param_data['type'])
             if not param_type:
                 logging.error(f'[mod_params]: Parameter "{param_data["key"]}" has wrong type "{param_data["type"]}"!')
@@ -90,16 +91,17 @@ class ModParamManagement:
 
             # Handle enum default values
             if issubclass(param_type, Enum):
-                param_data['default'] = param_type[param_data['default']]
+                param_data["default"] = param_type[param_data["default"]].name
 
             param = Parameter(
-                key=param_data['key'],
+                key=param_data["key"],
                 type=param_type,
-                default=param_data['default'],
-                label=param_data['label'],
-                options=param_data.get('options'),
-                readonly=param_data.get('readonly', False),
-                hidden=param_data.get('hidden', False)
+                default=param_data["default"],
+                label=param_data["label"],
+                options=param_data.get("options"),
+                readonly=param_data.get("readonly", False),
+                hidden=param_data.get("hidden", False),
+                order=param_data.get("order", 0)
             )
             params.append(param)
 
@@ -132,10 +134,16 @@ class ModParamManagement:
 
             for param in self.params:
                 key = param.key
-                result[key] = self._load_param(param, parsed.get(key))
+                value = parsed.get(key)
+
+                try:
+                    result[key] = self._load_param(param, value)
+                except:
+                    logging.error(f'[mod_params]: Unable to parse {key} value: "{value}"; Expected type: {param.type}')
+                    result[key] = self._load_param(param, param.default)
 
         except Exception:
-            msg = "Unable to parse existing variable file."
+            msg = "[mod_params] Unable to parse variable file."
             logging.exception(msg)
             raise self.printer.command_error(msg)
 
@@ -183,16 +191,19 @@ class ModParamManagement:
 
         return f'{param.label}: {value}'
 
+    def _print_param(self, gcmd, param: Parameter):
+        value = self._transform(param, self.variables[param.key])
+        gcmd.respond_raw(self._format_label(param, value))
+        if issubclass(param.type, Enum):
+            gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
+        if not param.readonly:
+            gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
+
     def cmd_LIST_MOD_PARAMS(self, gcmd):
         for param in self.params:
             if param.hidden: continue
 
-            value = self._transform(param, self.variables[param.key])
-            gcmd.respond_raw(self._format_label(param, value))
-            if issubclass(param.type, Enum):
-                gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
-            if not param.readonly:
-                gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
+            self._print_param(gcmd, param)
 
     def cmd_RELOAD_MOD_PARAMS(self, _):
         self._reload()
@@ -203,8 +214,7 @@ class ModParamManagement:
             raise gcmd.error(f'Unknown parameter: "{key}"')
 
         param = self.params_map[key]
-        transformed = self._transform(param, self.variables[key])
-        gcmd.respond_raw(self._format_label(param, transformed))
+        self._print_param(gcmd, param)
 
     def cmd_SET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
