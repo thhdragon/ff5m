@@ -22,7 +22,7 @@ start() {
         {
             echo "// Goodby Flashforge :)"
             kill -9 "$PPID"
-        } 2>&1 | logged "/data/logFiles/boot.log"
+        } 2>&1
         
         xzcat /opt/config/mod/splash.img.xz > /dev/fb0
         
@@ -45,25 +45,29 @@ stop() {
     echo "// Done"
 }
 
-case "$1" in
-    start)
-        start
-    ;;
-    stop)
-        stop
-    ;;
-    restart|reload)
-        stop
-        
-        while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
-        while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
-        while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
-        
-        start
-    ;;
-    *)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
-esac
+switch() {
+    case "$1" in
+        start)
+            start
+        ;;
+        stop)
+            stop
+        ;;
+        restart|reload)
+            stop
+            
+            while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
+            while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
+            while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
+            
+            start
+        ;;
+        *)
+            echo "Usage: $0 {start|stop|restart}"
+            exit 1
+    esac
+}
+
+switch "$@" | logged "/data/logFiles/boot.log"
 
 exit $?
