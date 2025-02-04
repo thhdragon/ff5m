@@ -21,8 +21,13 @@ case $1 in
         echo -e "${images_x}\n${images_y}" | xargs -r -I{} -- rm {}
     ;;
     --calculate)
+        SCV=5
+        if [ "$2" = "--scv" ]; then
+            SCV="$3"
+        fi
+
         cp /tmp/*.csv /opt/config/mod_data/
-        LD_PRELOAD= chroot $MOD /opt/config/mod/.root/zshaper.sh
+        LD_PRELOAD= chroot $MOD /opt/config/mod/.root/zshaper.sh "$SCV"
     ;;
     *)
         echo "Unknow parameter value: '$1'"

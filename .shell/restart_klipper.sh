@@ -18,8 +18,12 @@ unset LD_PRELOAD
 export PATH="$PATH:/opt/bin:/opt/sbin"
 
 if [ "$1" = "--hard" ]; then
-  pid=$(ps | grep "[k]lippy.py" | awk '{print $1}')
-  kill "$pid" && /opt/klipper/start.sh 
+  pids=$(ps | grep "[k]lippy.py" | awk '{print $1}')
+  for pid in $pids; do
+    kill "$pid"
+  done
+
+  /opt/klipper/start.sh 
   exit $?
 fi
 
