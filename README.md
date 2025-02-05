@@ -37,6 +37,29 @@ The mod uses the same installation mechanism as the stock software:
 The mod installer currently requires that printers were updated to at least version 2.4.5 of the stock Flashforge firmware. Please check the release page for versions that are known to work.
 After installation the printer will by default start the Modified stock system.
 
+### (Temporary) Instsall dependencies
+As mod in developement it not has firmware's image yet.
+So you need to install depenencies to the printer:
+
+Donwload patched `mjpeg-streamer` ***.ipk** files: [link](https://github.com/DrA1ex/mjpg-streamer/releases)
+Upload them to the printer and install other dependencies:
+```bash
+PRINTER_IP=<your printer IP>
+
+# Transfer streamer files
+scp -O ./mjpg-streamer-* root@$PRINTER_IP:/opt/packages/
+
+# Login via ssh
+ssh root@$PRINTER_IP
+
+# Install streamer packages
+cd /opt/packages/
+opkg install mjpg-streamer_1.0.1-1_armv7-3.2.ipk mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
+
+# Install other packages
+opkg install busybox htop nano zsh
+```
+
 ### Run the Switching Script
 
 The mod itself comes with a pre-installed **root** accesss, allowing you to connect via SSH using the _root/root_ credentials.  
@@ -56,7 +79,7 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
-After running the script, the mod will either download the update automatically, or you may need to update the firmware manually under Fluidd's **Configuration -> Software Update -> zmod (Update)**.  
+After running the script, the mod will either download the update automatically, or you may need to update the firmware manually under Fluidd's **Configuration -> Software Update -> zmod (Update)**.
 
 Finally, reboot your printer. The mod should now be installed.
 From now on, you will receive OTA updates from this repository.
