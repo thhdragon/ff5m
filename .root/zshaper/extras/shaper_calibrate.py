@@ -315,9 +315,9 @@ class ShaperCalibrate:
                        "(vibrations = %.1f%%, smoothing ~= %.3f)" % (
                            shaper.name, shaper.freq, shaper.vibrs * 100.,
                            shaper.smoothing))
-                logger("To avoid too much smoothing with '%s' (scv: %.0f), suggested "
+                logger("To avoid too much smoothing with '%s', suggested "
                        "max_accel <= %.0f mm/sec^2" % (
-                           shaper.name, scv, round(shaper.max_accel / 100.) * 100.))
+                           shaper.name, round(shaper.max_accel / 100.) * 100.))
             all_shapers.append(shaper)
             if (best_shaper is None or shaper.score * 1.2 < best_shaper.score or
                     (shaper.score * 1.05 < best_shaper.score and

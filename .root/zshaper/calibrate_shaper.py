@@ -74,7 +74,7 @@ def calibrate_shaper(datas, csv_output, *, shapers, damping_ratio, scv,
 ######################################################################
 
 def plot_freq_response(lognames, calibration_data, shapers,
-                       selected_shaper, max_freq):
+                       selected_shaper, max_freq, scv):
     freqs = calibration_data.freq_bins
     psd = calibration_data.psd_sum[freqs <= max_freq]
     px = calibration_data.psd_x[freqs <= max_freq]
@@ -95,7 +95,7 @@ def plot_freq_response(lognames, calibration_data, shapers,
     ax.plot(freqs, py, label='Y', color='green')
     ax.plot(freqs, pz, label='Z', color='blue')
 
-    title = "Frequency response and shapers (%s)" % (', '.join(lognames))
+    title = "Frequency response and shapers (%s, scv: %0.f)" % (', '.join(lognames), scv)
     ax.set_title("\n".join(wrap(title, MAX_TITLE_LENGTH)))
     ax.xaxis.set_minor_locator(matplotlib.ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator())
@@ -236,7 +236,7 @@ def main():
         setup_matplotlib(options.output is not None)
 
         fig = plot_freq_response(args, calibration_data, shapers,
-                                 selected_shaper, max_freq)
+                                 selected_shaper, max_freq, options.scv)
 
         # Show graph
         if options.output is None:
