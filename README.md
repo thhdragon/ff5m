@@ -19,6 +19,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - **Timelapse** support via [Moonraker Telegram bot](https://github.com/nlef/moonraker-telegram-bot) installed on external host
 - Adaptive bed meshing with **KAMP**.
 - Built-in **MD5** checks for gcode files.
+- **Backup** and **Restore** mechanizm for printer's configuration
 - Fix for the **E00017** error.
 - **Failsafe** mechanism to prevent nozzle collisions.
 - Enhanced **Shaper Calibration** with automatic plot generation.
@@ -117,6 +118,29 @@ To connect to the printer, use the following physical printer settings:
 * Host type: `moonraker`, `klipper` or `klipper (via moonraker)`
 * Hostname, IP or URL: `<printer_ip>:7125`
 
+
+## Dual Boot
+
+The mod implements a failsafe mechanism to boot the stock firmware before executing any mod-related boot code. This ensures that if the mod encounters any issues, you can safely skip the mod's boot process and load into the stock firmware.
+
+To use this feature, you have several options:
+
+### Using USB Drive
+
+Format a USB drive to FAT32 and place an empty file in the root directory:  
+- Name the file `SKIP_ZMOD` to completely skip the mod loading..
+- Name the file `SKIP_ZMOD_SOFT` to skip additional service loading while preserving root access.
+
+Insert the USB drive before turning on the printer. The mod will automatically recognize the USB drive and load in the selected mode.
+
+### Run Macro via Fluidd/Mainsail
+
+Run the macro in Klipper's console:  
+
+- `SKIP_ZMOD` to completely skip the mod loading.
+- `SKIP_ZMOD_SOFT` to skip additional service loading while preserving root access.
+
+The mod will automatically reboot and load in the selected mode.
 
 ## Uninstall
 
