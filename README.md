@@ -1,12 +1,10 @@
 # Flashforge Adventurer 5M Firmware Mod
 
 This is an _unofficial_ mod to run Moonraker, Klipper (with essential patches), Mainsail, and Fluidd on the Flashforge AD5M (Pro) 3D printers.
-
 The mod is based on ZMod, which itself is derived from Klipper-mod.
 
 > [!CAUTION]
 > *If you want to install this mod to your AD5M (Pro) then be aware, that you risk to loose your warranty or damage the printer. Proceed at your own risk if you want to try this mod!*
-
 
 ## Features
 - **Stock** Screen with option to disable it completely to reduce resource consumption
@@ -29,7 +27,46 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - **Dual boot** with stock Flashforge software
 
 
+## Why This Mod Was Developed
+This mod was created to address several critical limitations and challenges faced by users of the Flashforge AD5M (Pro) 3D printer. Here are the key reasons behind its development:
+
+**Instability and Resource Issues in Existing Klipper Mods:**
+The previous Klipper mod for the AD5M has stopped development and is no really stable. It consumes excessive RAM, leading to issues such as "Timer too close" errors and other performance problems. And some of typical AD5M issues not fixed at all. This mod aims to resolve these issues by optimizing resource usage and ensuring a stable, reliable experience.
+
+**Closed and Inflexible Development in ZMOD:**
+While ZMOD introduced significant improvements, it is not user-friendly for further enhancements or fixes. Its closed nature and unique development approach make it difficult to modify without deep knowledge of the entire system. This mod focuses on rewriting the foundation to provide advanced users with more control, making it easier to apply patches, additions, and customizations.
+
+**Lack of Essential Functionality in Stock Firmware:**
+The stock firmware lacks many essential features that modern 3D printing enthusiasts expect. For example:
+The camera functionality is poorly optimized, consuming excessive RAM and delivering subpar performance.
+Users are unable to perform standard tasks that Klipper users typically rely on, such as advanced calibration, macros, and real-time monitoring.
+This mod addresses these shortcomings by integrating modern tools and features.
+
+**Outdated Klipper with Unresolved Bugs:**
+The existing Klipper implementation for the AD5M is outdated and plagued with bugs. This mod focuses on fixing these long-standing issues, modifying Klipper plugins, and enhancing core functionality to better suit the specific requirements of the AD5M (Pro) printer. The goal is to provide a stable, feature-rich platform tailored to this printer's unique hardware and user needs.
+
+### The Vision Behind This Mod
+
+This mod is designed to empower users by providing a stable, customizable, and feature-rich alternative to the stock firmware and existing mods. It aims to:
+Offer a reliable foundation for advanced users to build upon.
+- Fix long-standing bugs and optimize performance for the AD5M (Pro).
+- Introduce modern features and tools that enhance the 3D printing experience.
+- Ensure flexibility and openness for future improvements and community contributions.
+
+By addressing these challenges, this mod strives to unlock the full potential of the Flashforge AD5M (Pro) and provide users with a seamless, powerful, and customizable 3D printing platform.
+
 ## Installation
+
+This mod is designed to be uninstalled at any time, completely and effortlessly.
+If the mod encounters issues or you simply prefer to use the stock firmware, you can easily switch back without any complex procedures.
+Additionally, the mod includes a **dual-boot** feature as a failsafe measure. This ensures that you can restore full functionality even if any part of the mod does not work as intended.
+
+
+### Prerequisites
+- A USB flash drive formatted to FAT32.
+- A computer with SSH and SCP capabilities (e.g., Terminal on macOS/Linux or PuTTY/WinSCP on Windows).
+- Basic familiarity with command-line tools.
+
 
 ### Install ZMOD 1.0.5
 
@@ -146,6 +183,8 @@ The mod will automatically reboot and load in the selected mode.
 
 To remove the mod, you have several options:
 
+**Warning**: Uninstalling the mod will remove all custom configurations and settings. If you plan to reinstall the mod later, consider using the SOFT_REMOVE option to preserve root access and configurations.
+
 ### Run Macro via Fluidd/Mainsail
 
 Run the macro in Klipper's console:  
@@ -169,3 +208,10 @@ Log in via SSH and create an empty file in the **/opt/config/mod** directory usi
 - `touch /opt/config/mod/SOFT_REMOVE_ZMOD` to remove the mod but preserve the root, audio, and internal mod's configuration (in case you want to install it again).  
  
 After that, reboot. The mod will uninstall itself.
+
+
+
+## Credits
+
+This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
+Special thanks to the Klipper and Moonraker communities for their ongoing support and development.
