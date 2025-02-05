@@ -310,7 +310,7 @@ class ResonanceTester:
                                best_shaper.name, best_shaper.freq)
             csv_name = self.save_calibration_data(
                     'calibration_data', name_suffix, helper, axis,
-                    calibration_data[axis], all_shapers)
+                    calibration_data[axis], all_shapers, best_shaper=best_shaper, scv=scv)
             gcmd.respond_info(
                     "Shaper calibration data written to %s file" % (csv_name,))
         gcmd.respond_info(
@@ -356,10 +356,43 @@ class ResonanceTester:
 
     def save_calibration_data(self, base_name, name_suffix, shaper_calibrate,
                               axis, calibration_data,
-                              all_shapers=None, point=None):
+                              all_shapers=None, point=None, best_shaper=None, scv=5.0):
         output = self.get_filename(base_name, name_suffix, axis, point)
         shaper_calibrate.save_calibration_data(output, calibration_data,
                                                all_shapers)
+
+        # Export precalculated data to json
+        # It will be used later for plot generation
+        if all_shapers and best_shaper:
+            import json
+
+            json_filename = output.rsplit(".", maxsplit=1)[0] + ".json"
+            with open(json_filename, "w") as f:
+                dump = {
+                    "axis": axis.get_name(),
+                    "calibration_data": {
+                        "freq_bins": list(calibration_data.freq_bins),
+                        "psd_sum": list(calibration_data.psd_sum),
+                        "psd_x": list(calibration_data.psd_x),
+                        "psd_y": list(calibration_data.psd_y),
+                        "psd_z": list(calibration_data.psd_z),
+                    },
+                    "all_shapers": [
+                        {
+                            "name": shaper.name,
+                            "freq": shaper.freq,
+                            "vibrs": shaper.vibrs,
+                            "smoothing": shaper.smoothing,
+                            "max_accel": shaper.max_accel,
+                            "vals": list(shaper.vals),
+                            "score": shaper.score,
+                        } for shaper in all_shapers],
+                    "best_shaper": best_shaper.name,
+                    "scv": scv,
+                }
+
+                json.dump(dump, f)
+
         return output
 
 def load_config(config):

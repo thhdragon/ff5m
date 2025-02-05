@@ -7,7 +7,9 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
+
+source /opt/config/mod/.shell/common.sh
+
 
 clear_shaper_data() {
     local path="$1"
@@ -26,19 +28,25 @@ clear_shaper_data() {
 case $1 in
     --clear)
         clear_shaper_data "/opt/config/mod_data" "calibration_data_*.csv"
+        clear_shaper_data "/opt/config/mod_data" "calibration_data_*.json"
         clear_shaper_data "/opt/config/mod_data" "calibration_data_*.png"
     ;;
     --calculate)
+        cp -u /tmp/*.csv /opt/config/mod_data/
+        cp -u /tmp/*.json /opt/config/mod_data/
+        chroot "$MOD" /opt/config/mod/.root/zshaper.sh
+    ;;
+    --recalculate)
         SCV=5
         if [ "$2" = "--scv" ]; then
             SCV="$3"
         fi
 
-        cp /tmp/*.csv /opt/config/mod_data/
-        LD_PRELOAD= chroot $MOD /opt/config/mod/.root/zshaper.sh "$SCV"
+        # TODO:
+        chroot "$MOD" /opt/config/mod/.root/zshaper.sh "$SCV"
     ;;
     *)
-        echo "Unknow parameter value: '$1'"
+        echo "Unknown parameter value: '$1'"
         exit 1
     ;;
 esac

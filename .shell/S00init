@@ -6,7 +6,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-INIT_FLAG=/tmp/init_finished
+INIT_FLAG="/tmp/init_finished_f"
 
 source /opt/config/mod/.shell/common.sh
 
