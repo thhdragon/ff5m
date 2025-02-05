@@ -32,6 +32,7 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
-After running the script, the mod will either download the update automatically, or you may need to update the firmware manually under **Configuration -> Software Update -> zmod (Update)**.  
+After running the script, the mod will either download the update automatically, or you may need to update the firmware manually under Fluidd's **Configuration -> Software Update -> zmod (Update)**.  
 
-Finally, reboot your printer. The mod should now be installed.  
+Finally, reboot your printer. The mod should now be installed.
+From now on, you will receive OTA updates from this repository. 
