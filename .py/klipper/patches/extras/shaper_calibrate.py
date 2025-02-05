@@ -227,7 +227,7 @@ class ShaperCalibrate:
         offset_180 *= inv_D
         return max(offset_90, offset_180)
 
-    def fit_shaper(self, shaper_cfg, calibration_data, max_smoothing):
+    def fit_shaper(self, shaper_cfg, calibration_data, max_smoothing, scv):
         np = self.numpy
 
         test_freqs = np.arange(shaper_cfg.min_freq, MAX_SHAPER_FREQ, .2)
@@ -243,7 +243,7 @@ class ShaperCalibrate:
             shaper_vals = np.zeros(shape=freq_bins.shape)
             shaper = shaper_cfg.init_func(
                     test_freq, shaper_defs.DEFAULT_DAMPING_RATIO)
-            shaper_smoothing = self._get_shaper_smoothing(shaper)
+            shaper_smoothing = self._get_shaper_smoothing(shaper, scv=scv)
             if max_smoothing and shaper_smoothing > max_smoothing and best_res:
                 return best_res
             # Exact damping ratio of the printer is unknown, pessimizing
@@ -254,7 +254,7 @@ class ShaperCalibrate:
                 shaper_vals = np.maximum(shaper_vals, vals)
                 if vibrations > shaper_vibrations:
                     shaper_vibrations = vibrations
-            max_accel = self.find_shaper_max_accel(shaper)
+            max_accel = self.find_shaper_max_accel(shaper, scv)
             # The score trying to minimize vibrations, but also accounting
             # the growth of smoothing. The formula itself does not have any
             # special meaning, it simply shows good results on real user data
@@ -278,6 +278,8 @@ class ShaperCalibrate:
 
     def _bisect(self, func):
         left = right = 1.
+        if not func(1e-9):
+            return 0.
         while not func(left):
             right = left
             left *= .5
@@ -292,30 +294,30 @@ class ShaperCalibrate:
                 right = middle
         return left
 
-    def find_shaper_max_accel(self, shaper):
+    def find_shaper_max_accel(self, shaper, scv):
         # Just some empirically chosen value which produces good projections
         # for max_accel without much smoothing
         TARGET_SMOOTHING = 0.12
         max_accel = self._bisect(lambda test_accel: self._get_shaper_smoothing(
-            shaper, test_accel) <= TARGET_SMOOTHING)
+            shaper, test_accel, scv) <= TARGET_SMOOTHING)
         return max_accel
 
-    def find_best_shaper(self, calibration_data, max_smoothing, logger=None):
+    def find_best_shaper(self, calibration_data, max_smoothing, logger=None, scv=5.0):
         best_shaper = None
         all_shapers = []
         for shaper_cfg in shaper_defs.INPUT_SHAPERS:
             if shaper_cfg.name not in AUTOTUNE_SHAPERS:
                 continue
             shaper = self.background_process_exec(self.fit_shaper, (
-                shaper_cfg, calibration_data, max_smoothing))
+                shaper_cfg, calibration_data, max_smoothing, scv))
             if logger is not None:
                 logger("Fitted shaper '%s' frequency = %.1f Hz "
                        "(vibrations = %.1f%%, smoothing ~= %.3f)" % (
                            shaper.name, shaper.freq, shaper.vibrs * 100.,
                            shaper.smoothing))
-                logger("To avoid too much smoothing with '%s', suggested "
+                logger("To avoid too much smoothing with '%s' (scv: %.0f), suggested "
                        "max_accel <= %.0f mm/sec^2" % (
-                           shaper.name, round(shaper.max_accel / 100.) * 100.))
+                           shaper.name, scv, round(shaper.max_accel / 100.) * 100.))
             all_shapers.append(shaper)
             if (best_shaper is None or shaper.score * 1.2 < best_shaper.score or
                     (shaper.score * 1.05 < best_shaper.score and
@@ -333,18 +335,6 @@ class ShaperCalibrate:
             configfile.set('input_shaper', 'shaper_type_'+axis, shaper_name)
             configfile.set('input_shaper', 'shaper_freq_'+axis,
                            '%.1f' % (shaper_freq,))
-
-    def apply_params(self, input_shaper, axis, shaper_name, shaper_freq):
-        if axis == 'xy':
-            self.apply_params(input_shaper, 'x', shaper_name, shaper_freq)
-            self.apply_params(input_shaper, 'y', shaper_name, shaper_freq)
-            return
-        gcode = self.printer.lookup_object("gcode")
-        axis = axis.upper()
-        input_shaper.cmd_SET_INPUT_SHAPER(gcode.create_gcode_command(
-                "SET_INPUT_SHAPER", "SET_INPUT_SHAPER", {
-                    "SHAPER_TYPE_" + axis: shaper_name,
-                    "SHAPER_FREQ_" + axis: shaper_freq}))
 
     def save_calibration_data(self, output, calibration_data, shapers=None):
         try:

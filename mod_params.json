@@ -121,25 +121,33 @@
       "order": 10002
     },
     {
+      "key": "sound",
+      "type": "bool",
+      "default": 1,
+      "label": "Звуковое сопровождение",
+      "options": ["НЕТ", "ДА"],
+      "order": 50000
+    },
+    {
       "key": "midi_on",
       "type": "str",
       "default": "",
       "label": "MIDI при включении",
-      "order": 50000
+      "order": 50010
     },
     {
       "key": "midi_start",
       "type": "str",
       "default": "",
       "label": "MIDI при запуске печати",
-      "order": 50001
+      "order": 50011
     },
     {
       "key": "midi_end",
       "type": "str",
       "default": "",
       "label": "MIDI при завершении печати",
-      "order": 50002
+      "order": 50012
     },
     {
       "key": "new_save_config",
