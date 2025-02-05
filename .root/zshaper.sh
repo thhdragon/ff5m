@@ -6,9 +6,6 @@ cd /opt/config/mod_data/
 data_path_x=$(ls -1 calibration_data_x_*.json | sort | tail -n 1)
 data_path_y=$(ls -1 calibration_data_y_*.json | sort | tail -n 1)
 
-#sed 's/psd_x/psd_Y/' "$data_path_x" | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5","$6","$7","$8","$9","$10}' >X
-#sed 's/psd_x/psd_Y/' "$data_path_y" | sed 's/psd_y/psd_x/' | sed 's/psd_Y/psd_y/' | awk -F ',' '{print $1","$3","$2","$4","$5","$6","$7","$8","$9","$10}' >Y
-
 ID=$(date +"%Y%m%d_%H%M%S")
 
 echo "Подготовка изображения оси X. Ждите"
