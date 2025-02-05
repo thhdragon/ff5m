@@ -37,26 +37,28 @@ The mod uses the same installation mechanism as the stock software:
 The mod installer currently requires that printers were updated to at least version 2.4.5 of the stock Flashforge firmware. Please check the release page for versions that are known to work.
 After installation the printer will by default start the Modified stock system.
 
-### (Temporary) Instsall dependencies
-As mod in developement it not has firmware's image yet.
-So you need to install depenencies to the printer:
+### (Temporary) Install dependencies
 
-Donwload patched `mjpeg-streamer` ***.ipk** files: [link](https://github.com/DrA1ex/mjpg-streamer/releases)
-Upload them to the printer and install other dependencies:
+As the mod is still in development, it does not have a firmware image yet.
+Therefore, you need to install the necessary dependencies on the printer:
+
+1. Download the patched `mjpeg-streamer` ***.ipk** files: [link](https://github.com/DrA1ex/mjpg-streamer/releases)
+2. Upload the files to the printer and install the dependencies as follows:
+
 ```bash
 PRINTER_IP=<your printer IP>
 
-# Transfer streamer files
+# Transfer the streamer files
 scp -O ./mjpg-streamer-* root@$PRINTER_IP:/opt/packages/
 
-# Login via ssh
+# Log in via SSH
 ssh root@$PRINTER_IP
 
-# Install streamer packages
+# Install the streamer packages
 cd /opt/packages/
 opkg install mjpg-streamer_1.0.1-1_armv7-3.2.ipk mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
 
-# Install other packages
+# Install additional packages
 opkg install busybox htop nano zsh
 ```
 
