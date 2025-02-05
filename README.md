@@ -4,7 +4,7 @@ This is an *unofficial* mod to run Moonraker, Klipper with essential patches, Ma
 
 The mod is based on ZMod, which itself is based on Klipper-mod.
 
- [!CAUTION]
+> [!CAUTION]
 > *If you want to install this mod to your AD5M (Pro) then be aware, that you risk to loose your warranty or damage the printer. Proceed at your own risk if you want to try this mod!*
 
 ## Features
@@ -14,7 +14,7 @@ The mod is based on ZMod, which itself is based on Klipper-mod.
 - **Fluidd** & **Mainsail**
 - **Buzzer** with ability to play monotonic melodies (midi / notes)
 - Patched **mjpg-streamer** with dramatically reduced memory usage
-- **Timelapse** support via (Moonraker Telegram bod)[https://github.com/nlef/moonraker-telegram-bot] installed on external host
+- **Timelapse** support via [Moonraker Telegram bot](https://github.com/nlef/moonraker-telegram-bot) installed on external host
 - Adaptive bed meshing - **KAMP**
 - Built-in gcode **MD5** checking
 - Fix for **E00017** error
