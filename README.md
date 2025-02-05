@@ -1,11 +1,12 @@
 # Flashforge Adventurer 5M Firmware Mod
 
-This is an *unofficial* mod to run Moonraker, Klipper with essential patches, Mainsail & Fluidd on the Flashforge AD5M (Pro) 3D printers.
+This is an _unofficial_ mod to run Moonraker, Klipper (with essential patches), Mainsail, and Fluidd on the Flashforge AD5M (Pro) 3D printers.
 
-The mod is based on ZMod, which itself is based on Klipper-mod.
+The mod is based on ZMod, which itself is derived from Klipper-mod.
 
 > [!CAUTION]
 > *If you want to install this mod to your AD5M (Pro) then be aware, that you risk to loose your warranty or damage the printer. Proceed at your own risk if you want to try this mod!*
+
 
 ## Features
 - **Stock** Screen with option to disable it completely to reduce resource consumption
@@ -16,26 +17,28 @@ The mod is based on ZMod, which itself is based on Klipper-mod.
 - **Buzzer** with ability to play monotonic melodies (midi / notes)
 - Patched **mjpg-streamer** with dramatically reduced memory usage
 - **Timelapse** support via [Moonraker Telegram bot](https://github.com/nlef/moonraker-telegram-bot) installed on external host
-- Adaptive bed meshing - **KAMP**
-- Built-in gcode **MD5** checking
-- Fix for **E00017** error
-- **Failsafe** against nozzle hitting
-- Ecnhanced **Shaper calibration** with automatic plot generation
-- Easy Bed level **screw tunning**
+- Adaptive bed meshing with **KAMP**.
+- Built-in **MD5** checks for gcode files.
+- Fix for the **E00017** error.
+- **Failsafe** mechanism to prevent nozzle collisions.
+- Enhanced **Shaper Calibration** with automatic plot generation.
+- Easy **Bed Level Screw Tuning**.
 - Customized dedicated Linux environment based on **Buildroot**
-- **Entware** package manager
+- **Entware** package manager for additional software installation
 - **Dual boot** with stock Flashforge software
+
 
 ## Installation
 
 ### Install ZMOD 1.0.5
-The mod uses the same installation mechanism as the stock software:
+
+The mod uses the same installation mechanism as the stock firmware:
 1) Download ZMOD [1.0.5](https://github.com/ghzserg/zmod/blob/main/%D0%A1%D1%82%D0%B0%D1%80%D1%8B%D0%B5_%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8/Adventurer5MPro-zmod-1.0.5.tgz) update file onto a USB flash drive.
 2) Plug in the drive before starting the printer.
 3) Successful installation will be indicated on the display when finished.
 
-The mod installer currently requires that printers were updated to at least version 2.4.5 of the stock Flashforge firmware. Please check the release page for versions that are known to work.
-After installation the printer will by default start the Modified stock system.
+**Note**: The mod installer currently requires the printer to be updated to at least version **2.4.5** of the stock Flashforge firmware. Please check the release page for compatible versions.
+After installation, the printer will boot into the modified stock system by default.
 
 ### (Temporary) Install dependencies
 
@@ -64,8 +67,8 @@ opkg install busybox htop nano zsh
 
 ### Run the Switching Script
 
-The mod itself comes with a pre-installed **root** accesss, allowing you to connect via SSH using the _root/root_ credentials.  
-You will need to download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
+The mod comes with pre-installed **root** access, allowing you to connect via SSH using the credentials _root/root_.
+To proceed, download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
 
 ```bash
 IP="<your_printer_IP>"
@@ -81,10 +84,10 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
-After running the script, the mod will either download the update automatically, or you may need to update the firmware manually under Fluidd's **Configuration -> Software Update -> zmod (Update)**.
+After running the script, the mod will either download the update automatically, or you may need to update the firmware manually via Fluidd's **Configuration -> Software Update -> zmod (Update)**.
 
-Finally, reboot your printer. The mod should now be installed.
-From now on, you will receive OTA updates from this repository.
+Finally, reboot your printer. The mod should now be installed. 
+From this point onward, you will receive OTA updates from this repository.
 
 You can reach services using these addresses:
 - **Moonraker**: http://<printer_ip>:7125/
@@ -94,7 +97,7 @@ You can reach services using these addresses:
 
 ## Slicing
 
-You need to completely replace original start/end gcode with folowing:
+You need to replace the original start/end gcode with the following:
 
 **For OrcaSlicer:**
 
