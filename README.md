@@ -4,7 +4,9 @@ This is an _unofficial_ mod to run Moonraker, Klipper (with essential patches), 
 The mod is based on ZMod, which itself is derived from Klipper-mod.
 
 > [!CAUTION]
-> *If you choose to install this mod on your AD5M (Pro), be aware that you risk voiding your warranty or damaging the printer. Proceed at your own risk!*
+> *If you choose to install this mod on your AD5M (Pro), be aware that you risk voiding your warranty or damaging your printer.*
+> *Before installation and after uninstallation, ensure that you check all printer parameters and perform a full recalibration. Failing to do so may result in damage to your printer.*
+> *Proceed at your own risk!*
 
 ## Features
 - **Stock** Screen with option to disable it completely to reduce resource consumption
