@@ -11,6 +11,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - **Klipper** with many patches/fixes/plugins specially adapted for AD5M
 - **Moonraker**
 - **Fluidd** & **Mainsail**
+- **OTA** updates
 - **Root** access (with zsh/.oh-my-zsh)
 - **Buzzer** with ability to play monotonic melodies (midi / notes)
 - Patched **mjpg-streamer** with dramatically reduced memory usage
