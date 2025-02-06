@@ -6,9 +6,9 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-SHELL="/opt/config/mod/.shell"
 
-unset LD_PRELOAD
+source /opt/config/mod/.shell/common.sh
+
 
 key=$1
 value=$2
@@ -37,14 +37,14 @@ case "$key" in
             message "Не отключайте экран, если вы четко не понимаете как работает карта стола, z-offset и макросы START_PRINT и END_PRINT"
             message "https://github.com/ghzserg/zmod/wiki/FAQ"
             
-            $SHELL/commands/zdisplay.sh "off"
+            $SCRIPTS/commands/zdisplay.sh "off"
         else
-            $SHELL/commands/zdisplay.sh "on"
+            $SCRIPTS/commands/zdisplay.sh "on"
         fi
     ;;
     
     use_swap)
-        $SHELL/init_swap.sh
+        $SCRIPTS/init_swap.sh
     ;;
     
     camera)
@@ -71,17 +71,17 @@ case "$key" in
     ;;
     
     fix_e0017)
-        if $SHELL/commands/zfix_e0017.sh "$value"; then
+        if $SCRIPTS/commands/zfix_e0017.sh "$value"; then
             message "Klipper был изменен. Сейчас будет перезагрузка"
             sleep 5
             #reboot
         fi
     ;;
-
+    
     zssh)
         if [ "$value" -eq 1 ]; then
             SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
-
+            
             message "Изменить параметры SSH можно здесь: Конфигурация -> mod_data -> ssh.conf"
             message "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для указанного пользователя на ssh сервере"
             message "${SSH_PUB}"
@@ -92,4 +92,16 @@ case "$key" in
             /etc/init.d/S98zssh stop
         fi
     ;;
+    tune_config)
+        if [ "$value" -eq 1 ]; then
+            chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+                --mode restore --avoid_writes --no_data                  \
+                --config /opt/config/printer.cfg                         \
+                --params /opt/config/mod/.cfg/tuning.cfg
+        else
+            chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+                --mode restore --avoid_writes --no_data                  \
+                --config /opt/config/printer.cfg                         \
+                --params /opt/config/mod/.cfg/tuning.off.cfg
+        fi
 esac
