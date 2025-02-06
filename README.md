@@ -62,6 +62,11 @@ This mod is designed to be uninstalled at any time, completely and effortlessly.
 If the mod encounters issues or you simply prefer to use the stock firmware, you can easily switch back without any complex procedures.
 Additionally, the mod includes a **dual-boot** feature as a failsafe measure. This ensures that you can restore full functionality even if any part of the mod does not work as intended.
 
+> [!CAUTION]
+> *After mod installation or uninstallation, always run all calibrations, as the mod can affect certain parameters, invalidating previous calibration settings.*
+> *Printing without recalibration may damage the printer, the bed surface, or negatively impact print quality.*
+> *Proceed at your own risk!*
+
 
 ### Prerequisites
 - A USB flash drive formatted to FAT32.
