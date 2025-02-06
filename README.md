@@ -48,7 +48,7 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 ### The Vision Behind This Mod
 
 This mod is designed to empower users by providing a stable, customizable, and feature-rich alternative to the stock firmware and existing mods. It aims to:
-Offer a reliable foundation for advanced users to build upon.
+- Offer a reliable foundation for advanced users to build upon.
 - Fix long-standing bugs and optimize performance for the AD5M (Pro).
 - Introduce modern features and tools that enhance the 3D printing experience.
 - Ensure flexibility and openness for future improvements and community contributions.
@@ -75,7 +75,7 @@ The mod uses the same installation mechanism as the stock firmware:
 2) Plug in the drive before starting the printer.
 3) Successful installation will be indicated on the display when finished.
 
-**Note**: The mod installer currently requires the printer to be updated to at least version **2.4.5** of the stock Flashforge firmware. Please check the release page for compatible versions.
+**Note**: The mod installer currently requires the printer to be updated to at least version **2.4.5** of the stock Flashforge firmware.
 After installation, the printer will boot into the modified stock system by default.
 
 ### (Temporary) Install dependencies
