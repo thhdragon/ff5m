@@ -37,7 +37,9 @@ if ! "$CMDS/zdisplay.sh" test; then
             
             for _ in $(seq 5); do
                 "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print
-                if [ "$?" -eq 0 ]; then
+                ret="${PIPESTATUS[0]}"
+                
+                if [ "$ret" -eq 0 ]; then
                     MOD_CUSTOM_BOOT=1
                     echo "Connected"
                     break
@@ -49,16 +51,15 @@ if ! "$CMDS/zdisplay.sh" test; then
         fi
         
         #TODO: Create AP if no active network configuration
-        
-        echo "Start wifi reconnect daemon."
-        
-        killall "wpa_cli"
-        wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
     fi
 fi
 
 
-if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
+if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then    
+    echo "Start wifi reconnect daemon."    
+    killall "wpa_cli"
+    wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
+
     echo "Network initialized."
     touch "$CUSTOM_BOOT_F"
     

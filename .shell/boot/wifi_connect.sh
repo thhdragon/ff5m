@@ -44,7 +44,7 @@ for _ in $(seq 15); do
         
         udhcpc -i $INTERFACE
         exit $?
-        elif [[ "$STATUS" == "SCANNING" ]]; then
+    elif [[ "$STATUS" == "SCANNING" ]]; then
         echo "Connecting..."
     else
         echo "@@ Failed to connect. Current status: $STATUS"
