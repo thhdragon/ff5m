@@ -5,7 +5,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 
 > [!CAUTION]
 > *If you choose to install this mod on your AD5M (Pro), be aware that you risk voiding your warranty or damaging your printer.*
-> *Before installation and after uninstallation, ensure that you check all printer parameters and perform a full recalibration. Failing to do so may result in damage to your printer.*
+> *After installation or uninstallation, ensure that you check all printer parameters and perform a full recalibration. Failing to do so may result in damage to your printer.*
 > *Proceed at your own risk!*
 
 ## Features
