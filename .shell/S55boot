@@ -16,6 +16,9 @@ fi
 
 start() {
     /opt/config/mod/.shell/boot/boot.sh
+
+    fstrim -v /root
+    fstrim -v /data
 }
 
 # wait_for_internet() {
