@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Any, Dict, Type, Union, Optional
 
+DEFAULT_BOOL_OPTIONS = ["НЕТ", "ДА"]
+
 
 @dataclass
 class Parameter:
@@ -23,6 +25,7 @@ class Parameter:
     readonly: bool = False
     hidden: bool = False
     order: int = 0
+    warning: Optional[str] = None
 
 
 class ModParamManagement:
@@ -101,8 +104,13 @@ class ModParamManagement:
                 options=param_data.get("options"),
                 readonly=param_data.get("readonly", False),
                 hidden=param_data.get("hidden", False),
-                order=param_data.get("order", 0)
+                order=param_data.get("order", 0),
+                warning=param_data.get("warning", None)
             )
+
+            if param_type == bool and param.options is None:
+                param.options = DEFAULT_BOOL_OPTIONS
+
             params.append(param)
 
         self.params = params
@@ -215,6 +223,7 @@ class ModParamManagement:
 
         param = self.params_map[key]
         self._print_param(gcmd, param)
+        self._print_warning(param)
 
     def cmd_SET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
@@ -243,6 +252,13 @@ class ModParamManagement:
         if not param.hidden:
             transformed = self._transform(param, self.variables[key])
             gcmd.respond_raw("SET: " + self._format_label(param, transformed))
+
+        self._print_warning(param)
+
+    def _print_warning(self, param):
+        if param.warning:
+            for text in param.warning.split("\n"):
+                self.gcode.respond_raw(text.strip())
 
     def _notify_changed(self, param: Parameter):
         context = self.changes_template.create_template_context()
