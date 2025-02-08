@@ -37,15 +37,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "set_timezone"
         },
         {
-            "alias": "Включить ZSSH",
-            "visible": true,
-            "disabledWhilePrinting": false,
-            "color": "",
-            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 3,
-            "name": "zssh_on"
-        },
-        {
             "alias": "Тест скорости диска",
             "visible": true,
             "disabledWhilePrinting": false,
@@ -64,30 +55,12 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "clear_emmc"
         },
         {
-            "alias": "Выключить ZSSH",
-            "visible": true,
-            "disabledWhilePrinting": false,
-            "color": "",
-            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 4,
-            "name": "zssh_off"
-        },
-        {
-            "alias": "Рестарт ZSSH",
-            "visible": true,
-            "disabledWhilePrinting": false,
-            "color": "",
-            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 6,
-            "name": "zssh_restart"
-        },
-        {
             "alias": "",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 5,
+            "order": 3,
             "name": "zssh_reload"
         },
         {
@@ -105,7 +78,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 8,
+            "order": 4,
             "name": "stop_zmod"
         },
         {
@@ -114,7 +87,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 7,
+            "order": 5,
             "name": "start_zmod"
         },
         {
@@ -127,15 +100,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "date_get"
         },
         {
-            "alias": "Сменить веб интерфейс",
-            "visible": true,
-            "disabledWhilePrinting": false,
-            "color": "",
-            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 2,
-            "name": "web"
-        },
-        {
             "alias": "Изменить время",
             "visible": true,
             "disabledWhilePrinting": false,
@@ -143,14 +107,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "categoryId": "24e79f79-c9db-4e2b-aab3-ed7e5b568d3d",
             "order": 6,
             "name": "date_set"
-        },
-        {
-            "alias": "",
-            "categoryId": "0",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "check_md5",
-            "visible": false
         },
         {
             "alias": "",
@@ -185,12 +141,12 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "g18"
         },
         {
-            "alias": "",
-            "visible": false,
+            "alias": "Параметры Мода",
+            "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
-            "categoryId": "0",
-            "name": "g19"
+            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
+            "name": "list_mod_params"
         },
         {
             "alias": "",
@@ -247,7 +203,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 9,
+            "order": 7,
             "name": "skip_zmod"
         },
         {
@@ -256,36 +212,8 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 10,
+            "order": 8,
             "name": "soft_remove"
-        },
-        {
-            "alias": "Отключить ZMOD камеру",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "camera_off",
-            "visible": true
-        },
-        {
-            "alias": "Включить ZMOD камеру",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "camera_on",
-            "visible": true
-        },
-        {
-            "alias": "Выключить экран принтера",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "display_off",
-            "visible": true
-        },
-        {
-            "alias": "Включить экран принтера",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "display_on",
-            "visible": true
         },
         {
             "alias": "",
@@ -333,7 +261,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "order": 11,
+            "order": 9,
             "name": "remove_zmod"
         },
         {
@@ -374,14 +302,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "disabledWhilePrinting": false,
             "name": "set_gcode_offset",
-            "visible": false
-        },
-        {
-            "alias": "",
-            "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "save_gcode_offset",
             "visible": false
         },
         {
@@ -608,14 +528,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "fast_close_dialogs"
         },
         {
-            "alias": "Получить параметры ZMOD",
-            "visible": false,
-            "disabledWhilePrinting": false,
-            "color": "",
-            "categoryId": "0",
-            "name": "get_zmod_data"
-        },
-        {
             "alias": "Сохранить изменения",
             "visible": true,
             "disabledWhilePrinting": false,
@@ -623,13 +535,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 1,
             "name": "new_save_config"
-        },
-        {
-            "alias": "Сохранить параметры ZMOD",
-            "color": "",
-            "disabledWhilePrinting": false,
-            "name": "save_zmod_data",
-            "visible": true
         },
         {
             "alias": "Создать резервную копию",
@@ -715,6 +620,47 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "0",
             "name": "set_led"
+        },
+        {
+            "alias": "",
+            "visible": false,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "0",
+            "name": "alarm"
+        },
+        {
+            "alias": "",
+            "visible": true,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
+            "order": 6,
+            "name": "skip_zmod_soft"
+        },
+        {
+            "alias": "",
+            "visible": false,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "0",
+            "name": "tone"
+        },
+        {
+            "alias": "",
+            "visible": false,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "0",
+            "name": "g19"
+        },
+        {
+            "alias": "",
+            "visible": false,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "0",
+            "name": "web"
         }
     ],
     "categories":

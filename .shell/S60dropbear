@@ -5,30 +5,31 @@ if [ -f /tmp/SKIP_ZMOD ]; then
     exit 0
 fi
 
+PID_FILE=/run/dropbear.pid
+
 start() {
     printf "Starting dropbear: "
-	killall dropbear
-	/bin/dropbear -p 22
+    start-stop-daemon -Sbm -p "$PID_FILE" --exec /bin/dropbear -- -F -p 22
     [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 stop() {
     printf "Stopping dropbear: "
-    killall dropbear
-    echo "OK"
+    start-stop-daemon -K -p $PID_FILE > /dev/null 2>&1
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 case "$1" in
     start)
         start
-        ;;
+    ;;
     stop)
         stop
-        ;;
+    ;;
     restart|reload)
         stop
         start
-        ;;
+    ;;
     *)
         echo "Usage: $0 {start|stop|restart}"
         exit 1
