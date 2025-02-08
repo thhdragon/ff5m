@@ -235,8 +235,12 @@ declare -a EXCLUDES=(
     "./sync_remote.sh"
     "./.bin/src/**/bin"
     "./.bin/src/**/CMakeFiles"
+    "./.bin/src/**/Makefile"
     "./.bin/src/**/CMakeCache.txt"
     "./.bin/src/**/cmake_install.cmake"
+    "./.bin/src/**/.cmake"
+    "./.bin/src/**/Testing"
+    "./.bin/src/cmake-build-*"
 )
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
