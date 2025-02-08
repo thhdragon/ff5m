@@ -308,8 +308,10 @@ Backup your system files before making any modifications to avoid recovery scena
 
 ## Credits
 
-This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
+Thanks [Klipper Mod](https://github.com/xblax/flashforge_ad5m_klipper_mod) developers for their great work.
 
 Thanks to the Klipper and Moonraker communities for their ongoing development.
 
 Special thanks to the Russian FlashForge Adventurer 5M Telegram Community: [@FF_5M_5M_Pro](https://t.me/FF_5M_5M_Pro)
+
+This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
