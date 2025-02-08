@@ -233,6 +233,10 @@ declare -a EXCLUDES=(
     "./sync*.tar.gz"
     "./sync.sh"
     "./sync_remote.sh"
+    "./.bin/src/**/bin"
+    "./.bin/src/**/CMakeFiles"
+    "./.bin/src/**/CMakeCache.txt"
+    "./.bin/src/**/cmake_install.cmake"
 )
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
@@ -242,6 +246,7 @@ if [ "$SKIP_HEAVY" -eq 1 ]; then
         "./.root/klippy/"
         "./.root/moonraker/"
         "./.zsh/.oh-my-zsh/"
+        "./.bin/"
     )
 fi
 

@@ -87,6 +87,9 @@ initialize() {
     ln -fs /opt/config/mod/.zsh/.profile /root/
     ln -fs /opt/config/mod/.zsh/.zshrc /root/
 
+    # Runtime
+    ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
+
     echo "// Init version"
     
     # version
