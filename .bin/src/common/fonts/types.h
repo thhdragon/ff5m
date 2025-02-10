@@ -25,6 +25,7 @@ struct Glyph {
 };
 
 struct Font {
+    const char *name;
     uint8_t *buffer;
     Glyph *glyphs;
 

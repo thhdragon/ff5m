@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <ranges>
 #include <string>
 #include <unistd.h>
 #include <vector>
@@ -19,19 +20,24 @@
 #include "../../lib/argparse/argparse.hpp"
 
 #include "../common/text.h"
-#include "../common/fonts/FreeMono_24.h"
+
+#include "../common/fonts/FreeMono_9.h"
+#include "../common/fonts/FreeMono_12.h"
+#include "../common/fonts/FreeMono_18.h"
+#include "../common/fonts/FreeSans_9.h"
+#include "../common/fonts/FreeSans_12.h"
+#include "../common/fonts/FreeSans_18.h"
 
 #define WIDTH 800
 #define HEIGHT 480
 
-struct Parameters {
-    int x = 0;
-    int y = 0;
-
-    std::string text;
-    uint32_t color = ~0;
-
-    bool background = false;
+std::unordered_map<std::string, const Font *> fonts{
+    {FreeMono9pt.name, &FreeMono9pt},
+    {FreeMono12pt.name, &FreeMono12pt},
+    {FreeMono18pt.name, &FreeMono18pt},
+    {FreeSans9pt.name, &FreeSans9pt},
+    {FreeSans12pt.name, &FreeSans12pt},
+    {FreeSans18pt.name, &FreeSans18pt},
 };
 
 void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
@@ -39,12 +45,18 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     auto color = 0xff000000 | opts.get<uint32_t>("--color");
     auto text = opts.get<std::string>("--text");
     auto scale = (uint8_t) opts.get<int>("--scale");
+    auto fontName = opts.get("--font");
 
+    if (!fonts.contains(fontName)) {
+        throw std::invalid_argument("Unknown font name: " + fontName);
+    }
+
+    const Font *font = fonts[fontName];
 
     TextDrawer drawer(buffer,WIDTH, HEIGHT);
     drawer.setPosition(pos[0], pos[1]);
     drawer.setColor(color);
-    drawer.setFont(&FreeMono24pt);
+    drawer.setFont(font);
     drawer.setFontScale(scale, scale);
 
     drawer.print(text.c_str());
@@ -78,6 +90,8 @@ int main(int argc, char *argv[]) {
     program.add_description("Flashforge AD5M screen drawing utility");
     program.add_epilog("Copyright (C) 2025, Alexander K <https://github.com/drA1ex>");
 
+    program.add_argument("--list-fonts").help("List loaded fonts and exit.").flag();
+
     argparse::ArgumentParser text_command("text");
     text_command.add_description("Prints text at position");
 
@@ -89,6 +103,9 @@ int main(int argc, char *argv[]) {
     text_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
         .required();
+
+    text_command.add_argument("--font", "-f")
+        .default_value(FreeMono12pt.name);
 
     text_command.add_argument("--scale", "-s")
         .scan<'d', int>()
@@ -133,6 +150,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    if (program.get<bool>("--list-fonts")) {
+        std::cout << "Loaded fonts: " << std::endl;
+        for (const auto &key: std::ranges::views::keys(fonts)) {
+            std::cout << "- " << key << std::endl;
+        }
+
+        return 1;
+    }
+
     int fbfd = open("/dev/fb0", O_RDWR);
     if (fbfd == -1) {
         std::cerr << "Error: cannot open framebuffer device." << std::endl;
@@ -157,7 +183,6 @@ int main(int argc, char *argv[]) {
         std::cout << program << std::endl;
         return 1;
     }
-
 
     munmap(fbp, WIDTH * HEIGHT * 4);
     close(fbfd);
