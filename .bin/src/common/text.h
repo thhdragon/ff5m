@@ -8,6 +8,13 @@
 
 #include "./fonts/types.h"
 
+struct Boundary {
+    int32_t left;
+    int32_t top;
+    int32_t right;
+    int32_t bottom;
+};
+
 class TextDrawer {
     uint32_t *_screen;
     uint32_t _width;
@@ -40,9 +47,12 @@ public:
     void print(const char *text);
     void breakLine();
 
+    Boundary calcTextBoundaries(const char *text) const;
+
 private:
     void _drawChar(char symbol);
 
     void _setPixel(int32_t x, int32_t y, uint32_t color);
+    void _fillRect(const Boundary &b, uint32_t color);
     void _fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color);
 };

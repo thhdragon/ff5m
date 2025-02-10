@@ -42,7 +42,8 @@ std::unordered_map<std::string, const Font *> fonts{
 
 void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     auto pos = opts.get<std::vector<int>>("--pos");
-    auto color = 0xff000000 | opts.get<uint32_t>("--color");
+    auto color = opts.get<uint32_t>("--color");
+    auto bgColor = opts.get<uint32_t>("--bg-color");
     auto text = opts.get<std::string>("--text");
     auto scale = (uint8_t) opts.get<int>("--scale");
     auto fontName = opts.get("--font");
@@ -55,7 +56,8 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
 
     TextDrawer drawer(buffer,WIDTH, HEIGHT);
     drawer.setPosition(pos[0], pos[1]);
-    drawer.setColor(color);
+    drawer.setColor(color | 0xff000000);
+    drawer.setBackgroundColor(opts.is_used("--bg-color") ? 0xff000000 | bgColor : 0);
     drawer.setFont(font);
     drawer.setFontScale(scale, scale);
 
@@ -103,6 +105,10 @@ int main(int argc, char *argv[]) {
     text_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
         .required();
+
+    text_command.add_argument("--bg-color", "-b")
+        .scan<'X', uint32_t>()
+        .default_value(0u);
 
     text_command.add_argument("--font", "-f")
         .default_value(FreeMono12pt.name);

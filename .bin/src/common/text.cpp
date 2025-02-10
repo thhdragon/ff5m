@@ -8,6 +8,7 @@
 #include "text.h"
 
 #include <algorithm>
+#include <limits>
 #include <stdexcept>
 
 
@@ -33,12 +34,18 @@ void TextDrawer::setPosition(int32_t x, int32_t y) {
     _cursorX = _positionX = x;
     _cursorY = y;
 }
+
 void TextDrawer::setFontScale(int32_t scaleX, int32_t scaleY) {
     _scaleX = std::max(1, scaleX);
     _scaleY = std::max(1, scaleY);
 }
 
 void TextDrawer::print(const char *text) {
+    if (_backgroundColor & 0xff000000) {
+        auto b = calcTextBoundaries(text);
+        _fillRect(b, _backgroundColor);
+    }
+
     for (int i = 0; text[i] != '\0'; ++i) {
         char symbol = text[i];
 
@@ -57,14 +64,14 @@ void TextDrawer::breakLine() {
 
 void TextDrawer::_drawChar(char symbol) {
     const auto &font = *this->font();
-    const Glyph &glyph = font.glyphs[symbol - font.codeFrom];
-
     if (symbol < font.codeFrom || symbol > font.codeTo) {
         return;
     }
 
-    int32_t offsetX = _cursorX + glyph.offsetX;
-    int32_t offsetY = _cursorY + glyph.offsetY;
+    const Glyph &glyph = font.glyphs[symbol - font.codeFrom];
+
+    int32_t offsetX = _cursorX + glyph.offsetX * _scaleX;
+    int32_t offsetY = _cursorY + glyph.offsetY * _scaleY;
 
     for (uint8_t gy = 0; gy < glyph.height; ++gy) {
         for (uint8_t gx = 0; gx < glyph.width; ++gx) {
@@ -72,13 +79,12 @@ void TextDrawer::_drawChar(char symbol) {
             auto byteOffset = glyph.offset + index / 8;
             auto bitOffset = 7 - index % 8;
 
-            auto bit = (font.buffer[byteOffset] >> bitOffset) & 1;
-            auto color = bit ? _color : _backgroundColor;
+            if ((font.buffer[byteOffset] >> bitOffset & 1) == 0) continue;
 
             if (_scaleX == 1 && _scaleY == 1) {
-                _setPixel(offsetX + gx, offsetY + gy, color);
+                _setPixel(offsetX + gx, offsetY + gy, _color);
             } else {
-                _fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, color);
+                _fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, _color);
             }
         }
     }
@@ -88,25 +94,75 @@ void TextDrawer::_drawChar(char symbol) {
 }
 
 void TextDrawer::_setPixel(int32_t x, int32_t y, uint32_t color) {
-    if (color & 0xff000000 == 0) return; // Skip fully transparent colors
+    if ((color & 0xff000000) == 0) return; // Skip fully transparent colors
     if (x < 0 || x >= _width || y < 0 || y >= _height) return;
 
     _screen[y * _width + x] = color;
 }
 
-void TextDrawer::_fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color) {
-    if (color & 0xff000000 == 0) return; // Skip fully transparent colors
+void TextDrawer::_fillRect(const Boundary &b, uint32_t color) {
+    _fillRect(
+        b.left, b.top,
+        std::max(b.right - b.left, 0),
+        std::max(b.bottom - b.top, 0),
+        color
+    );
+}
 
-    auto fromX = std::max(0, x);
-    auto toX = std::min(x + width, _width);
+void TextDrawer::_fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color) {
+    if ((color & 0xff000000) == 0) return; // Skip fully transparent colors
+
+    uint32_t fromX = std::max(0, x);
+    auto toX = std::min<uint32_t>(x + (int32_t) width, _width);
 
     if (fromX >= toX) return;
 
-    auto fromY = std::max(0, y);
-    auto toY = std::min(y + height, _height);
+    uint32_t fromY = std::max(0, y);
+    auto toY = std::min<uint32_t>(fromY + (int32_t) height, _height);
 
-    for (int j = fromY; j < toY; ++j) {
+    for (uint32_t j = fromY; j < toY; ++j) {
         auto *pRow = _screen + j * _width;
         std::fill(pRow + fromX, pRow + toX, color);
     }
+}
+
+Boundary TextDrawer::calcTextBoundaries(const char *text) const {
+    Boundary boundary = {
+        .left = std::numeric_limits<int32_t>::max(),
+        .top = std::numeric_limits<int32_t>::max(),
+        .right = std::numeric_limits<int32_t>::min(),
+        .bottom = std::numeric_limits<int32_t>::min(),
+    };
+
+    auto cursorX = _cursorX;
+    auto cursorY = _cursorY;
+
+    const auto &font = *this->font();
+    for (int i = 0; text[i] != '\0'; ++i) {
+        char symbol = text[i];
+
+        if (symbol == '\n') {
+            cursorY += font.advanceY * _scaleY;
+        } else if (symbol < font.codeFrom || symbol > font.codeTo) {
+            continue;
+        }
+
+        const Glyph &glyph = font.glyphs[symbol - font.codeFrom];
+
+        auto left = cursorX + glyph.offsetX * _scaleX;
+        auto top = cursorY + glyph.offsetY * _scaleY;
+
+        if (left <= boundary.left) boundary.left = left;
+        if (top <= boundary.top) boundary.top = top;
+
+        auto right = left + glyph.width * _scaleX;
+        auto bottom = top + glyph.height * _scaleY;
+
+        if (right >= boundary.right) boundary.right = right;
+        if (bottom >= boundary.bottom) boundary.bottom = bottom;
+
+        cursorX += glyph.advanceX * _scaleX;
+    }
+
+    return boundary;
 }
