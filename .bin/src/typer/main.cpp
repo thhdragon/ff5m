@@ -12,8 +12,7 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
-#include <linux/fb.h>
-#include <sys/ioctl.h>
+#include <map>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -21,23 +20,56 @@
 
 #include "../common/text.h"
 
-#include "../common/fonts/FreeMono_9.h"
-#include "../common/fonts/FreeMono_12.h"
-#include "../common/fonts/FreeMono_18.h"
-#include "../common/fonts/FreeSans_9.h"
-#include "../common/fonts/FreeSans_12.h"
-#include "../common/fonts/FreeSans_18.h"
+
+#include "../common/fonts/JetBrainsMonoThin24pt.h"
+#include "../common/fonts/JetBrainsMonoThin18pt.h"
+#include "../common/fonts/JetBrainsMonoThin12pt.h"
+#include "../common/fonts/JetBrainsMonoBold24pt.h"
+#include "../common/fonts/JetBrainsMonoBold18pt.h"
+#include "../common/fonts/JetBrainsMonoBold12pt.h"
+#include "../common/fonts/JetBrainsMonoBold9pt.h"
+#include "../common/fonts/JetBrainsMono24pt.h"
+#include "../common/fonts/JetBrainsMono18pt.h"
+#include "../common/fonts/JetBrainsMono12pt.h"
+#include "../common/fonts/JetBrainsMono9pt.h"
+#include "../common/fonts/RobotoThin24pt.h"
+#include "../common/fonts/RobotoThin18pt.h"
+#include "../common/fonts/RobotoThin12pt.h"
+#include "../common/fonts/RobotoBold24pt.h"
+#include "../common/fonts/RobotoBold18pt.h"
+#include "../common/fonts/RobotoBold12pt.h"
+#include "../common/fonts/RobotoBold9pt.h"
+#include "../common/fonts/Roboto24pt.h"
+#include "../common/fonts/Roboto18pt.h"
+#include "../common/fonts/Roboto12pt.h"
+#include "../common/fonts/Roboto9pt.h"
 
 #define WIDTH 800
 #define HEIGHT 480
 
-std::unordered_map<std::string, const Font *> fonts{
-    {FreeMono9pt.name, &FreeMono9pt},
-    {FreeMono12pt.name, &FreeMono12pt},
-    {FreeMono18pt.name, &FreeMono18pt},
-    {FreeSans9pt.name, &FreeSans9pt},
-    {FreeSans12pt.name, &FreeSans12pt},
-    {FreeSans18pt.name, &FreeSans18pt},
+std::map<std::string, const Font *> fonts{
+    {JetBrainsMonoThin24pt.name, &JetBrainsMonoThin24pt},
+    {JetBrainsMonoThin18pt.name, &JetBrainsMonoThin18pt},
+    {JetBrainsMonoThin12pt.name, &JetBrainsMonoThin12pt},
+    {JetBrainsMonoBold24pt.name, &JetBrainsMonoBold24pt},
+    {JetBrainsMonoBold18pt.name, &JetBrainsMonoBold18pt},
+    {JetBrainsMonoBold12pt.name, &JetBrainsMonoBold12pt},
+    {JetBrainsMonoBold9pt.name, &JetBrainsMonoBold9pt},
+    {JetBrainsMono24pt.name, &JetBrainsMono24pt},
+    {JetBrainsMono18pt.name, &JetBrainsMono18pt},
+    {JetBrainsMono12pt.name, &JetBrainsMono12pt},
+    {JetBrainsMono9pt.name, &JetBrainsMono9pt},
+    {RobotoThin24pt.name, &RobotoThin24pt},
+    {RobotoThin18pt.name, &RobotoThin18pt},
+    {RobotoThin12pt.name, &RobotoThin12pt},
+    {RobotoBold24pt.name, &RobotoBold24pt},
+    {RobotoBold18pt.name, &RobotoBold18pt},
+    {RobotoBold12pt.name, &RobotoBold12pt},
+    {RobotoBold9pt.name, &RobotoBold9pt},
+    {Roboto24pt.name, &Roboto24pt},
+    {Roboto18pt.name, &Roboto18pt},
+    {Roboto12pt.name, &Roboto12pt},
+    {Roboto9pt.name, &Roboto9pt},
 };
 
 void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
@@ -111,7 +143,7 @@ int main(int argc, char *argv[]) {
         .default_value(0u);
 
     text_command.add_argument("--font", "-f")
-        .default_value(FreeMono12pt.name);
+        .default_value(Roboto12pt.name);
 
     text_command.add_argument("--scale", "-s")
         .scan<'d', int>()
@@ -158,7 +190,9 @@ int main(int argc, char *argv[]) {
 
     if (program.get<bool>("--list-fonts")) {
         std::cout << "Loaded fonts: " << std::endl;
-        for (const auto &key: std::ranges::views::keys(fonts)) {
+
+        const auto keys = std::ranges::views::keys(fonts);
+        for (const auto &key: keys) {
             std::cout << "- " << key << std::endl;
         }
 

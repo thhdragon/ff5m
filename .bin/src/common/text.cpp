@@ -164,5 +164,9 @@ Boundary TextDrawer::calcTextBoundaries(const char *text) const {
         cursorX += glyph.advanceX * _scaleX;
     }
 
+    if (boundary.left > boundary.right || boundary.top > boundary.bottom) {
+        boundary.left = boundary.top = boundary.right = boundary.bottom = 0;
+    }
+
     return boundary;
 }
