@@ -8,7 +8,9 @@
 
 #include <cstdint>
 
-// It's a clone of format descried here:
+// Font generator project can be found here: https://github.com/DrA1ex/font2bitmap-converter
+
+// It's a extension of a format descried here:
 // https://learn.adafruit.com/creating-custom-symbol-font-for-adafruit-gfx-library/creating-new-glyphs
 // https://learn.adafruit.com/creating-custom-symbol-font-for-adafruit-gfx-library/advanced-topics
 
@@ -26,6 +28,8 @@ struct Glyph {
 
 struct Font {
     const char *name;
+    uint8_t bpp;
+
     uint8_t *buffer;
     Glyph *glyphs;
 

@@ -21,55 +21,60 @@
 #include "../common/text.h"
 
 
-#include "../common/fonts/JetBrainsMonoThin24pt.h"
-#include "../common/fonts/JetBrainsMonoThin18pt.h"
-#include "../common/fonts/JetBrainsMonoThin12pt.h"
-#include "../common/fonts/JetBrainsMonoBold24pt.h"
-#include "../common/fonts/JetBrainsMonoBold18pt.h"
-#include "../common/fonts/JetBrainsMonoBold12pt.h"
-#include "../common/fonts/JetBrainsMonoBold9pt.h"
-#include "../common/fonts/JetBrainsMono24pt.h"
-#include "../common/fonts/JetBrainsMono18pt.h"
 #include "../common/fonts/JetBrainsMono12pt.h"
-#include "../common/fonts/JetBrainsMono9pt.h"
-#include "../common/fonts/RobotoThin24pt.h"
-#include "../common/fonts/RobotoThin18pt.h"
-#include "../common/fonts/RobotoThin12pt.h"
-#include "../common/fonts/RobotoBold24pt.h"
-#include "../common/fonts/RobotoBold18pt.h"
-#include "../common/fonts/RobotoBold12pt.h"
-#include "../common/fonts/RobotoBold9pt.h"
-#include "../common/fonts/Roboto24pt.h"
-#include "../common/fonts/Roboto18pt.h"
+#include "../common/fonts/JetBrainsMono16pt.h"
+#include "../common/fonts/JetBrainsMono20pt.h"
+#include "../common/fonts/JetBrainsMono28pt.h"
+#include "../common/fonts/JetBrainsMonoBold12pt.h"
+#include "../common/fonts/JetBrainsMonoBold16pt.h"
+#include "../common/fonts/JetBrainsMonoBold20pt.h"
+#include "../common/fonts/JetBrainsMonoBold28pt.h"
+#include "../common/fonts/JetBrainsMonoThin12ptb4.h"
+#include "../common/fonts/JetBrainsMonoThin16ptb2.h"
+#include "../common/fonts/JetBrainsMonoThin20ptb2.h"
+#include "../common/fonts/JetBrainsMonoThin28ptb2.h"
 #include "../common/fonts/Roboto12pt.h"
-#include "../common/fonts/Roboto9pt.h"
+#include "../common/fonts/Roboto16pt.h"
+#include "../common/fonts/Roboto20pt.h"
+#include "../common/fonts/Roboto28pt.h"
+#include "../common/fonts/RobotoBold12pt.h"
+#include "../common/fonts/RobotoBold16pt.h"
+#include "../common/fonts/RobotoBold20pt.h"
+#include "../common/fonts/RobotoBold28pt.h"
+#include "../common/fonts/RobotoThin12ptb4.h"
+#include "../common/fonts/RobotoThin16ptb2.h"
+#include "../common/fonts/RobotoThin20ptb2.h"
+#include "../common/fonts/RobotoThin28ptb2.h"
 
 #define WIDTH 800
 #define HEIGHT 480
 
 std::map<std::string, const Font *> fonts{
-    {JetBrainsMonoThin24pt.name, &JetBrainsMonoThin24pt},
-    {JetBrainsMonoThin18pt.name, &JetBrainsMonoThin18pt},
-    {JetBrainsMonoThin12pt.name, &JetBrainsMonoThin12pt},
-    {JetBrainsMonoBold24pt.name, &JetBrainsMonoBold24pt},
-    {JetBrainsMonoBold18pt.name, &JetBrainsMonoBold18pt},
-    {JetBrainsMonoBold12pt.name, &JetBrainsMonoBold12pt},
-    {JetBrainsMonoBold9pt.name, &JetBrainsMonoBold9pt},
-    {JetBrainsMono24pt.name, &JetBrainsMono24pt},
-    {JetBrainsMono18pt.name, &JetBrainsMono18pt},
-    {JetBrainsMono12pt.name, &JetBrainsMono12pt},
-    {JetBrainsMono9pt.name, &JetBrainsMono9pt},
-    {RobotoThin24pt.name, &RobotoThin24pt},
-    {RobotoThin18pt.name, &RobotoThin18pt},
-    {RobotoThin12pt.name, &RobotoThin12pt},
-    {RobotoBold24pt.name, &RobotoBold24pt},
-    {RobotoBold18pt.name, &RobotoBold18pt},
-    {RobotoBold12pt.name, &RobotoBold12pt},
-    {RobotoBold9pt.name, &RobotoBold9pt},
-    {Roboto24pt.name, &Roboto24pt},
-    {Roboto18pt.name, &Roboto18pt},
     {Roboto12pt.name, &Roboto12pt},
-    {Roboto9pt.name, &Roboto9pt},
+    {Roboto16pt.name, &Roboto16pt},
+    {Roboto20pt.name, &Roboto20pt},
+    {Roboto28pt.name, &Roboto28pt},
+    {RobotoBold12pt.name, &RobotoBold12pt},
+    {RobotoBold16pt.name, &RobotoBold16pt},
+    {RobotoBold20pt.name, &RobotoBold20pt},
+    {RobotoBold28pt.name, &RobotoBold28pt},
+    {RobotoThin12ptb4.name, &RobotoThin12ptb4},
+    {RobotoThin16ptb2.name, &RobotoThin16ptb2},
+    {RobotoThin20ptb2.name, &RobotoThin20ptb2},
+    {RobotoThin28ptb2.name, &RobotoThin28ptb2},
+
+    {JetBrainsMono12pt.name, &JetBrainsMono12pt},
+    {JetBrainsMono16pt.name, &JetBrainsMono16pt},
+    {JetBrainsMono20pt.name, &JetBrainsMono20pt},
+    {JetBrainsMono28pt.name, &JetBrainsMono28pt},
+    {JetBrainsMonoBold12pt.name, &JetBrainsMonoBold12pt},
+    {JetBrainsMonoBold16pt.name, &JetBrainsMonoBold16pt},
+    {JetBrainsMonoBold20pt.name, &JetBrainsMonoBold20pt},
+    {JetBrainsMonoBold28pt.name, &JetBrainsMonoBold28pt},
+    {JetBrainsMonoThin12ptb4.name, &JetBrainsMonoThin12ptb4},
+    {JetBrainsMonoThin16ptb2.name, &JetBrainsMonoThin16ptb2},
+    {JetBrainsMonoThin20ptb2.name, &JetBrainsMonoThin20ptb2},
+    {JetBrainsMonoThin28ptb2.name, &JetBrainsMonoThin28ptb2},
 };
 
 void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {

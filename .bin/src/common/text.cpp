@@ -8,12 +8,15 @@
 #include "text.h"
 
 #include <algorithm>
+#include <iomanip>
 #include <limits>
 #include <stdexcept>
 
 
 void TextDrawer::setFont(const Font *font) {
     _font = font;
+    _bpp = font->bpp;
+    _pixelMask = (1 << _bpp) - 1;
 }
 
 const Font *TextDrawer::font() const {
@@ -75,16 +78,21 @@ void TextDrawer::_drawChar(char symbol) {
 
     for (uint8_t gy = 0; gy < glyph.height; ++gy) {
         for (uint8_t gx = 0; gx < glyph.width; ++gx) {
-            auto index = gy * glyph.width + gx;
+            auto index = (gy * glyph.width + gx) * _bpp;
             auto byteOffset = glyph.offset + index / 8;
-            auto bitOffset = 7 - index % 8;
+            auto bitOffset = (8 - _bpp) - index % 8;
 
-            if ((font.buffer[byteOffset] >> bitOffset & 1) == 0) continue;
+            auto pixel = (font.buffer[byteOffset] >> bitOffset) & _pixelMask;
+
+            if (pixel == 0) continue;
+
+            uint8_t factor = pixel * 255u / _pixelMask;
+            auto color = _mixColor(_backgroundColor, _color, factor);
 
             if (_scaleX == 1 && _scaleY == 1) {
-                _setPixel(offsetX + gx, offsetY + gy, _color);
+                _setPixel(offsetX + gx, offsetY + gy, color);
             } else {
-                _fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, _color);
+                _fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, color);
             }
         }
     }
@@ -169,4 +177,30 @@ Boundary TextDrawer::calcTextBoundaries(const char *text) const {
     }
 
     return boundary;
+}
+
+uint32_t TextDrawer::_mixColor(uint32_t a, uint32_t b, uint8_t factor) {
+    if (factor == 0) return a;
+    if (factor == 0xFF) return b;
+
+    uint8_t aA = (a >> 24) & 0xFF; // Alpha
+    uint8_t aR = (a >> 16) & 0xFF; // Red
+    uint8_t aG = (a >> 8) & 0xFF;  // Green
+    uint8_t aB = a & 0xFF;         // Blue
+
+    uint8_t bA = (b >> 24) & 0xFF; // Alpha
+    uint8_t bR = (b >> 16) & 0xFF; // Red
+    uint8_t bG = (b >> 8) & 0xFF;  // Green
+    uint8_t bB = b & 0xFF;         // Blue
+
+    // Calculate the inverse factor
+    uint8_t invFactor = 255 - factor;
+
+    // Mix each channel using linear interpolation
+    uint8_t mixedA = ((uint16_t) aA * invFactor + (uint16_t) bA * factor) / 255;
+    uint8_t mixedR = ((uint16_t) aR * invFactor + (uint16_t) bR * factor) / 255;
+    uint8_t mixedG = ((uint16_t) aG * invFactor + (uint16_t) bG * factor) / 255;
+    uint8_t mixedB = ((uint16_t) aB * invFactor + (uint16_t) bB * factor) / 255;
+
+    return (mixedA << 24) | (mixedR << 16) | (mixedG << 8) | mixedB;
 }

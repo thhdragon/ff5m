@@ -32,6 +32,9 @@ class TextDrawer {
     uint8_t _scaleX = 1;
     uint8_t _scaleY = 1;
 
+    uint8_t _bpp = 0;
+    uint8_t _pixelMask = 0;
+
 public:
     TextDrawer(uint32_t *screen, uint32_t width, uint32_t height):
         _screen(screen), _width(width), _height(height) {}
@@ -55,4 +58,6 @@ private:
     void _setPixel(int32_t x, int32_t y, uint32_t color);
     void _fillRect(const Boundary &b, uint32_t color);
     void _fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color);
+
+    static uint32_t _mixColor(uint32_t a, uint32_t b, uint8_t factor);
 };
