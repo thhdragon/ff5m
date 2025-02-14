@@ -21,26 +21,32 @@
 #include "../common/text.h"
 
 
+#include "../common/fonts/JetBrainsMono8ptb4.h"
 #include "../common/fonts/JetBrainsMono12pt.h"
 #include "../common/fonts/JetBrainsMono16pt.h"
 #include "../common/fonts/JetBrainsMono20pt.h"
 #include "../common/fonts/JetBrainsMono28pt.h"
+#include "../common/fonts/JetBrainsMonoBold8ptb4.h"
 #include "../common/fonts/JetBrainsMonoBold12pt.h"
 #include "../common/fonts/JetBrainsMonoBold16pt.h"
 #include "../common/fonts/JetBrainsMonoBold20pt.h"
 #include "../common/fonts/JetBrainsMonoBold28pt.h"
+#include "../common/fonts/JetBrainsMonoThin8ptb4.h"
 #include "../common/fonts/JetBrainsMonoThin12ptb4.h"
 #include "../common/fonts/JetBrainsMonoThin16ptb2.h"
 #include "../common/fonts/JetBrainsMonoThin20ptb2.h"
 #include "../common/fonts/JetBrainsMonoThin28ptb2.h"
+#include "../common/fonts/Roboto8ptb4.h"
 #include "../common/fonts/Roboto12pt.h"
 #include "../common/fonts/Roboto16pt.h"
 #include "../common/fonts/Roboto20pt.h"
 #include "../common/fonts/Roboto28pt.h"
+#include "../common/fonts/RobotoBold8ptb4.h"
 #include "../common/fonts/RobotoBold12pt.h"
 #include "../common/fonts/RobotoBold16pt.h"
 #include "../common/fonts/RobotoBold20pt.h"
 #include "../common/fonts/RobotoBold28pt.h"
+#include "../common/fonts/RobotoThin8ptb4.h"
 #include "../common/fonts/RobotoThin12ptb4.h"
 #include "../common/fonts/RobotoThin16ptb2.h"
 #include "../common/fonts/RobotoThin20ptb2.h"
@@ -50,27 +56,33 @@
 #define HEIGHT 480
 
 std::map<std::string, const Font *> fonts{
+    {Roboto8ptb4.name, &Roboto8ptb4},
     {Roboto12pt.name, &Roboto12pt},
     {Roboto16pt.name, &Roboto16pt},
     {Roboto20pt.name, &Roboto20pt},
     {Roboto28pt.name, &Roboto28pt},
+    {RobotoBold8ptb4.name, &RobotoBold8ptb4},
     {RobotoBold12pt.name, &RobotoBold12pt},
     {RobotoBold16pt.name, &RobotoBold16pt},
     {RobotoBold20pt.name, &RobotoBold20pt},
     {RobotoBold28pt.name, &RobotoBold28pt},
+    {RobotoThin8ptb4.name, &RobotoThin8ptb4},
     {RobotoThin12ptb4.name, &RobotoThin12ptb4},
     {RobotoThin16ptb2.name, &RobotoThin16ptb2},
     {RobotoThin20ptb2.name, &RobotoThin20ptb2},
     {RobotoThin28ptb2.name, &RobotoThin28ptb2},
 
+    {JetBrainsMono8ptb4.name, &JetBrainsMono8ptb4},
     {JetBrainsMono12pt.name, &JetBrainsMono12pt},
     {JetBrainsMono16pt.name, &JetBrainsMono16pt},
     {JetBrainsMono20pt.name, &JetBrainsMono20pt},
     {JetBrainsMono28pt.name, &JetBrainsMono28pt},
+    {JetBrainsMonoBold8ptb4.name, &JetBrainsMonoBold8ptb4},
     {JetBrainsMonoBold12pt.name, &JetBrainsMonoBold12pt},
     {JetBrainsMonoBold16pt.name, &JetBrainsMonoBold16pt},
     {JetBrainsMonoBold20pt.name, &JetBrainsMonoBold20pt},
     {JetBrainsMonoBold28pt.name, &JetBrainsMonoBold28pt},
+    {JetBrainsMonoThin8ptb4.name, &JetBrainsMonoThin8ptb4},
     {JetBrainsMonoThin12ptb4.name, &JetBrainsMonoThin12ptb4},
     {JetBrainsMonoThin16ptb2.name, &JetBrainsMonoThin16ptb2},
     {JetBrainsMonoThin20ptb2.name, &JetBrainsMonoThin20ptb2},
