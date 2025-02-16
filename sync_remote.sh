@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Synchronize changes, printer-side script
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin:/opt/bin:/opt/sbin:/opt/bin:/opt/sbin"
 
@@ -103,7 +109,7 @@ fi
 
 echo -e "${BLUE}Comparing files...${NC}"
 
-CHANGED=1
+CHANGED=0
 
 while read -r file; do
     SRC_FILE="$file"
