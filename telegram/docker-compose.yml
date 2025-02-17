@@ -1,13 +1,13 @@
 version: "3.3"
-# Это пример файла докер композ
-# Его запускать на внешнем хосте для телеграм бота
+# This is an example of a docker compose file
+# Run it on an external host for a telegram bot
 #
 # mkdir config log timelapse_finished timelapse
 # chmod 777 config log timelapse_finished timelapse
 #
-# docker-compose up -d или docker compose up -d
+# docker-compose up -d or docker compose up -d
 #
-# Файл telegram.conf поместить в папку config
+# Place the telegram.conf file in the config folder
 
 services:
   moonraker-telegram-bot:
