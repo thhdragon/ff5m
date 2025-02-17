@@ -34,7 +34,7 @@ command() {
 case "$key" in
     display_off)
         if [ "$value" -eq 1 ]; then
-            message "Не отключайте экран, если вы четко не понимаете как работает карта стола, z-offset и макросы START_PRINT и END_PRINT"
+            message "Do not turn off the screen unless you clearly understand how the bed mesh, z-offset, and the START_PRINT and END_PRINT macros work."
             message "https://github.com/ghzserg/zmod/wiki/FAQ"
             
             $SCRIPTS/commands/zdisplay.sh "off"
@@ -49,15 +49,15 @@ case "$key" in
     
     camera)
         if [ "$value" -eq 1 ]; then
-            message "Изменить параметры камеры можно здесь: Конфигурация -> mod_data -> camera.conf"
+            message "You can change camera parameters here: Configuration -> mod_data -> camera.conf"
             
             cam_pid_file="/run/camera.pid"
             ss -tuln | grep -q ":8080"; STREAM_ACTIVE=$(( $? == 0 ))
             [ -f "$cam_pid_file" ] && kill -0 "$(cat $cam_pid_file)" 2>/dev/null; STREAM_ACTIVE=$(( $? == 0 ))
             
             if (( STREAM_ACTIVE && !STREAM_ACTIVE )); then
-                command "action:prompt_begin Веб-Камера"
-                command "action:prompt_text Камера уже включена! Выключите её на экране принтера и повторите попытку!"
+                command "action:prompt_begin Camera"
+                command "action:prompt_text Camera already in use! Turn it off on the printer's screen settings and try again!"
                 command "action:prompt_end"
                 command "action:prompt_show"
                 
@@ -72,9 +72,9 @@ case "$key" in
     
     fix_e0017)
         if $SCRIPTS/commands/zfix_e0017.sh "$value"; then
-            message "Klipper был изменен. Сейчас будет перезагрузка"
+            message "Klipper was changed. Printer will reboot now"
             sleep 5
-            #reboot
+            reboot
         fi
     ;;
     
@@ -82,10 +82,10 @@ case "$key" in
         if [ "$value" -eq 1 ]; then
             SSH_PUB=$( cat /opt/config/mod_data/ssh.pub.txt )
             
-            message "Изменить параметры SSH можно здесь: Конфигурация -> mod_data -> ssh.conf"
-            message "Поместите текст строчкой ниже в ~/.ssh/authorized_keys для указанного пользователя на ssh сервере"
+            message "You can change SSH parameters here: Configuration -> mod_data -> ssh.conf"
+            message "Place the text one line below in ~/.ssh/authorized_keys for the specified user on the ssh server"
             message "${SSH_PUB}"
-            message "В файле authorized_keys уберите первые 2 символа '# ' - это комментарий"
+            message "In the authorized_keys file, remove the first 2 characters '# ' - this is a comment"
             
             /etc/init.d/S98zssh zstart
         else

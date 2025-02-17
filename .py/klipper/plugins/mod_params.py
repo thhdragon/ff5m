@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List, Any, Dict, Type, Union, Optional
 
-DEFAULT_BOOL_OPTIONS = ["НЕТ", "ДА"]
+DEFAULT_BOOL_OPTIONS = ["NO", "YES"]
 
 
 @dataclass

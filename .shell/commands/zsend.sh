@@ -23,7 +23,7 @@ if [ "$#" -eq 2 ]; then
     fi
     
     if [ -z "$M109" ] || [ -z "$M190" ]; then
-        echo "RESPOND TYPE=error MSG=\"В файле $2 не найдены команды нагрева стола(M140/M190) или сопла(M104/M109).\"" > /tmp/printer
+        echo "RESPOND TYPE=error MSG=\"Commands for heating the bed (M140/M190) or nozzle (M104/M109) were not found in the file $2.\"" > /tmp/printer
         exit 1
     fi
     
@@ -33,5 +33,5 @@ if [ "$#" -eq 2 ]; then
     exit
 fi
 
-echo 'RESPOND TYPE=error MSG="Неверное количество аргументов"' > /tmp/printer
+echo 'RESPOND TYPE=error MSG="Invalid number of arguments"' > /tmp/printer
 exit 1
