@@ -72,7 +72,7 @@
       "key": "disable_screen_led",
       "type": "bool",
       "default": 0,
-      "label": "Allow screen to control LED",
+      "label": "Allow stock firmware to control LED",
       "options": ["YES", "NO"],
       "order": 100
     },
@@ -101,7 +101,7 @@
       "key": "cell_weight",
       "type": "int",
       "default": 0,
-      "label": "Allowed threshold weight on strain gauges",
+      "label": "Allowed threshold weight on load cell",
       "order": 100
     },
     {
@@ -122,7 +122,7 @@
       "key": "sound",
       "type": "bool",
       "default": 1,
-      "label": "Sound accompaniment",
+      "label": "Sound indication",
       "order": 50000
     },
     {
@@ -164,7 +164,7 @@
       "key": "print_leveling",
       "type": "bool",
       "default": 0,
-      "label": "Map table before printing",
+      "label": "Mesh bed before printing",
       "order": 100
     },
     {
@@ -226,14 +226,14 @@
       "key": "weight_check",
       "type": "bool",
       "default": 1,
-      "label": "Table collision protection",
+      "label": "Bed collision protection",
       "order": 10
     },
     {
       "key": "weight_check_max",
       "type": "int",
       "default": 1200,
-      "label": "Table collision protection, weight",
+      "label": "Bed collision protection, weight",
       "order": 11
     },
     {
@@ -242,7 +242,7 @@
       "default": 0,
       "label": "Firmware parameter tuning",
       "order": 12,
-      "warning": "!! After changing the value, be sure to rescan the table map and adjust the Z-Offset.\n!! If you have performed dimension calibration, it must also be updated.\n!! Additionally, you may need to recalibrate the flow and Pressure Advance.\n!! Printing with an old table map or Z-Offset may damage the printer!\nYou can view the changing parameters in the Configuration -> 'mod' -> 'tuning.cfg' section."
+      "warning": "!! After changing the value, be sure to recreate the bed mesh and adjust the Z-Offset.\n!! If you have performed dimension calibration, it must also be updated.\n!! Additionally, you may need to recalibrate the flow and Pressure Advance.\n!! Printing with an old bed mesh or Z-Offset may damage the printer!\nYou can view the changing parameters in the Configuration -> 'mod' -> 'tuning.cfg' section."
     }
   ]
 }
