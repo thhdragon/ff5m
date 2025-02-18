@@ -35,7 +35,7 @@ case "$1" in
     start)
         if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 0; fi
         
-        start 2>&1 | logged "/data/logFiles/boot.log"
+        start 2>&1 | logged "/data/logFiles/boot.log" --print-to-screen
         # wait_for_internet &
     ;;
     *)

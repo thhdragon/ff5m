@@ -7,9 +7,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
-
-CFG_PATH=/opt/config/mod_data/variables.cfg
+source /opt/config/mod/.shell/common.sh
 
 display_on() {
     chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
@@ -36,7 +34,7 @@ test() {
 apply_display_off() {
     killall "ffstartup-arm" > /dev/null 2>&1
     killall "firmwareExe" > /dev/null 2>&1
-    xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+    "$SCRIPTS/screen.sh" draw_splash
     
     return 0
 }

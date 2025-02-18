@@ -7,14 +7,14 @@ PID_FILE=/run/httpd.pid
 
 
 start() {
-    printf "Starting httpd..."
+    echo "Starting httpd..."
     start-stop-daemon -S -b -m -p $PID_FILE --exec httpd -- -p 80 -f -h "/root/www"
     [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 stop() {
-    printf "Stopping httpd..."
-    start-stop-daemon -K -p $PID_FILE
+    echo "Stopping httpd..."
+    start-stop-daemon -K -q -p $PID_FILE
     [ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 

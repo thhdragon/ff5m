@@ -16,11 +16,10 @@ touch "/tmp/not_first_launch_f"
 /opt/config/mod/.root/S45ntpd start
 
 started=0
-printf "Waiting moonraker to start..."
+echo "Waiting moonraker to start..."
 for _ in $(seq 0 30); do
     curl http://localhost:7125 > /dev/null 2>&1 && started=1 && break
     sleep 1
-    printf "."
 done
 
 [ $started = 1 ] && echo "OK" || echo "FAIL"

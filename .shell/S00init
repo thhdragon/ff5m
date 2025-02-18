@@ -103,6 +103,9 @@ initialize() {
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
+    # Print version onto the screen
+    "$SCRIPTS/screen.sh" draw_loading
+
     echo "// Apply database migrations"
     
     # database
@@ -334,7 +337,7 @@ case "$1" in
         mkdir -p /opt/config/mod_data/log/
         rotate_logs "/opt/config/mod_data/log/init.log"
         
-        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log"
+        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --print-to-screen
 
         touch $INIT_FLAG
         

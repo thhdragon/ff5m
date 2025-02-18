@@ -7,13 +7,13 @@ NTP_SERVER="pool.ntp.org"
 PID_FILE=/run/ntpd.pid
 
 start() {
-	printf "Starting ntpd..."
+	echo "Starting ntpd..."
 	start-stop-daemon -S -b -m -p $PID_FILE --exec /usr/sbin/ntpd -- -n -S fake-hwclock -p $NTP_SERVER
 	[ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 stop() {
-	printf "Stopping ntpd..."
+	echo "Stopping ntpd..."
 	start-stop-daemon -K -q -p $PID_FILE
 	[ $? = 0 ] && echo "OK" || echo "FAIL"
 }

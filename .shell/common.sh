@@ -10,6 +10,7 @@
 MOD=/data/.mod/.zmod
 SCRIPTS=/opt/config/mod/.shell
 CMDS=$SCRIPTS/commands
+BINS=/opt/config/mod/.bin/exec
 MOD_DATA=/opt/config/mod_data
 
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch_f"
@@ -23,6 +24,7 @@ unset LD_PRELOAD
 logged() {
     local print=true
     local print_formatted=false
+    local print_to_screen=false
     local log=true
     local log_file=""
     local log_level="     "
@@ -46,6 +48,9 @@ logged() {
             --log-format)
                 log_format="$1"; shift
             ;;
+            --print-to-screen)
+                print_to_screen=true
+            ;;
             *)
                 if [[ -z "$log_file" ]]; then
                     log_file="$param"
@@ -61,11 +66,25 @@ logged() {
         echo "Error: Log file not specified." >&2
         return 1
     fi
-
+    
     if ! $log && ! $print; then
         echo "Error: Printing and logging disabled." >&2
         return 1
     fi
+    
+    
+    messages_queue=()
+    messages_queue_max=3
+    
+    add_to_queue() {
+        local new_item="$1"
+        if [ "${#messages_queue[@]}" -ge "$messages_queue_max" ]; then
+            messages_queue=("${messages_queue[@]:1}")
+        fi
+        
+        messages_queue+=("$new_item")
+    }
+    
     
     while IFS= read -r line; do
         local date_str="$(date '+%Y-%m-%d %H:%M:%S')"
@@ -74,15 +93,15 @@ logged() {
         local line_number=${BASH_LINENO[0]:-unknown}
         local func_name=${FUNCNAME[1]:-global}
         local line_log_level=$log_level
-
+        
         if [[ $line = "@@"* ]]; then
             line_log_level="ERROR"; line="${line:2}"
-        elif [[ $line = "??"* ]]; then
+            elif [[ $line = "??"* ]]; then
             line_log_level="WARN "; line="${line:2}"
-        elif [[ $line = "//"* ]]; then
+            elif [[ $line = "//"* ]]; then
             line_log_level="INFO "; line="${line:2}"
         fi
-
+        
         line="${line#"${line%%[![:space:]]*}"}"
         
         local log_entry="$log_format"
@@ -100,6 +119,11 @@ logged() {
             else
                 printf "%s\n" "$line"
             fi
+        fi
+        
+        if $print_to_screen; then
+            add_to_queue "$line"
+            $SCRIPTS/screen.sh boot_message "${messages_queue[@]}"
         fi
         
         if $log; then
