@@ -35,7 +35,7 @@ echo "Initialize network..."
 wpa_cli -i $INTERFACE enable_network all
 
 echo "Checking connection status..."
-for _ in $(seq 15); do
+for _ in $(seq 30); do
     STATUS=$(wpa_cli -i "$INTERFACE" status | grep wpa_state | awk -F= '{print $2}')
     
     if [[ "$STATUS" == "COMPLETED" ]]; then
