@@ -96,6 +96,30 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     auto text = opts.get<std::string>("--text");
     auto scale = (uint8_t) opts.get<int>("--scale");
     auto fontName = opts.get("--font");
+    auto hAlignStr = opts.get("--h-align");
+    auto vAlignVStr = opts.get("--v-align");
+    auto debug = opts.get<bool>("--debug");
+
+    HorizontalAlign hAlign;
+    if (hAlignStr == "center") {
+        hAlign = HorizontalAlign::CENTER;
+    } else if (hAlignStr == "right") {
+        hAlign = HorizontalAlign::RIGHT;
+    } else {
+        hAlign = HorizontalAlign::LEFT;
+    }
+
+    VerticalAlignment vAlign;
+    if (vAlignVStr == "bottom") {
+        vAlign = VerticalAlignment::BOTTOM;
+    } else if (vAlignVStr == "baseline") {
+        vAlign = VerticalAlignment::BASELINE;
+    } else if (vAlignVStr == "middle") {
+        vAlign = VerticalAlignment::MIDDLE;
+    } else {
+        vAlign = VerticalAlignment::TOP;
+    }
+
 
     if (!fonts.contains(fontName)) {
         throw std::invalid_argument("Unknown font name: " + fontName);
@@ -109,6 +133,9 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     drawer.setBackgroundColor(opts.is_used("--bg-color") ? 0xff000000 | bgColor : 0);
     drawer.setFont(font);
     drawer.setFontScale(scale, scale);
+    drawer.setHorizontalAlignment(hAlign);
+    drawer.setVerticalAlignment(vAlign);
+    drawer.setDebug(debug);
 
     drawer.print(text.c_str());
 }
@@ -167,6 +194,19 @@ int main(int argc, char *argv[]) {
         .default_value(1);
 
     text_command.add_argument("--text", "-t").required();
+    program.add_subparser(text_command);
+
+    text_command.add_argument("--h-align", "-ha")
+        .choices("left", "center", "right")
+        .default_value("left");
+
+    text_command.add_argument("--v-align", "-va")
+        .choices("bottom", "baseline", "middle", "top")
+        .default_value("baseline");
+
+    text_command.add_argument("--debug")
+        .flag();
+
     program.add_subparser(text_command);
 
     argparse::ArgumentParser fill_command("fill");
