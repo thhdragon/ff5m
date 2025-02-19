@@ -19,6 +19,7 @@ KLIPPER_HARD_RESTART=$6
 REMOTE_DIR=$7
 ARCHIVE_NAME=$8
 VERBOSE=$9
+FORCE_RESTART=${10}
 
 COMMAND_TIMEOUT=15
 
@@ -138,7 +139,7 @@ sync
 
 if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
 
-if [ "$CHANGED" -eq 1 ]; then
+if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ]; then
     echo; echo -e "${GREEN}Restarting services...${NC}\n"
     
     run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
