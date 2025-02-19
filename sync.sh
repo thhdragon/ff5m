@@ -21,6 +21,7 @@ ARCHIVE_NAME="sync_$(date +%Y%m%d_%H%M%S).tar.gz"
 SKIP_HEAVY=0
 
 SKIP_RESTART=0
+FORCE_RESTART=0
 SKIP_MOON_RESTART=0
 SKIP_KLIPPER_RESTART=0
 SKIP_MIGRATE=0
@@ -96,6 +97,7 @@ usage() {
     echo -e "    --skip-klipper-restart   Skip restarting Klipper."
     echo -e "    --skip-plugins           Skip Klipper pluggins reloading."
     echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
+    echo -e "    --force-restart, -fr     Force restart services."
     echo -e "    --verbose, -v            Enable verbose mode for detailed output."
     echo -e "    --help, -h               Display this help message."
     echo -e ""
@@ -139,6 +141,7 @@ while [ "$#" -gt 0 ]; do
         ;;
         --skip-restart|-sr)
             SKIP_RESTART=1
+            FORCE_RESTART=0
         ;;
         --skip-moon-restart)
             SKIP_MOON_RESTART=1
@@ -156,7 +159,12 @@ while [ "$#" -gt 0 ]; do
             SKIP_PLUGIN_RELOAD=1
         ;;
         --hard-klipper-restart)
-            KLIPPER_HARD_RESTART=1
+            if [ "$SKIP_RESTART" -eq 0 ]; then
+                KLIPPER_HARD_RESTART=1
+            fi
+        ;;
+        --force-restart|-fr)
+            FORCE_RESTART=1
         ;;
         --verbose|-v)
             print_label "*" "Vebose mode enabled."
@@ -204,6 +212,10 @@ if [ "$KLIPPER_HARD_RESTART" -eq 1 ]; then
     print_label "+" "Klipper hard restart mode enabled."
 fi
 
+if [ "$FORCE_RESTART" -eq 1 ]; then
+    print_label "+" "Force services restart."
+fi
+
 if [ "$HELP" = 1 ] || [ -z "$REMOTE_HOST" ]; then
     usage
     exit 1
@@ -233,6 +245,14 @@ declare -a EXCLUDES=(
     "./sync*.tar.gz"
     "./sync.sh"
     "./sync_remote.sh"
+    "./.bin/src/**/bin"
+    "./.bin/src/**/CMakeFiles"
+    "./.bin/src/**/Makefile"
+    "./.bin/src/**/CMakeCache.txt"
+    "./.bin/src/**/cmake_install.cmake"
+    "./.bin/src/**/.cmake"
+    "./.bin/src/**/Testing"
+    "./.bin/src/cmake-build-*"
 )
 
 if [ "$SKIP_HEAVY" -eq 1 ]; then
@@ -242,6 +262,7 @@ if [ "$SKIP_HEAVY" -eq 1 ]; then
         "./.root/klippy/"
         "./.root/moonraker/"
         "./.zsh/.oh-my-zsh/"
+        "./.bin/"
     )
 fi
 
@@ -276,10 +297,10 @@ fi
 
 echo
 
-ssh "${REMOTE_USER}@${REMOTE_HOST}" 'bash -s ' < sync_remote.sh      \
+ssh "${REMOTE_USER}@${REMOTE_HOST}" 'bash -s ' < sync_remote.sh     \
     "$SKIP_RESTART" "$SKIP_MOON_RESTART" "$SKIP_KLIPPER_RESTART"    \
     "$SKIP_MIGRATE" "$SKIP_PLUGIN_RELOAD" "$KLIPPER_HARD_RESTART"   \
-    "$REMOTE_DIR" "$ARCHIVE_NAME" "$VERBOSE"
+    "$REMOTE_DIR" "$ARCHIVE_NAME" "$VERBOSE" "$FORCE_RESTART"
 
 ret=$?
 

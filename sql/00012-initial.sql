@@ -28,7 +28,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Установить временную зону",
+            "alias": "Set time zone",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -37,7 +37,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "set_timezone"
         },
         {
-            "alias": "Тест скорости диска",
+            "alias": "Disk speed test",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -46,7 +46,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "test_emmc"
         },
         {
-            "alias": "Очистить диск",
+            "alias": "Clean up disk",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -64,7 +64,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "zssh_reload"
         },
         {
-            "alias": "Архивировать конфиг",
+            "alias": "Archive config",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -73,7 +73,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "tar_config"
         },
         {
-            "alias": "Остановить мод",
+            "alias": "Stop mod",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -82,7 +82,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "stop_zmod"
         },
         {
-            "alias": "Запустить мод",
+            "alias": "Run mod",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -91,7 +91,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "start_zmod"
         },
         {
-            "alias": "Текущее время",
+            "alias": "Current time",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -100,7 +100,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "date_get"
         },
         {
-            "alias": "Изменить время",
+            "alias": "Change time",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -141,7 +141,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "g18"
         },
         {
-            "alias": "Параметры Мода",
+            "alias": "Mod Options",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -154,10 +154,10 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "0",
-            "name": "kamp"
+            "name": "camp"
         },
         {
-            "alias": "Расход памяти",
+            "alias": "Memory consumption",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -182,7 +182,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "ОЧИСТИТЬ СОПЛО",
+            "alias": "CLEAN NOZZLE",
             "visible": false,
             "disabledWhilePrinting": false,
             "color": "",
@@ -191,14 +191,14 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "clear_nozzle"
         },
         {
-            "alias": "Выключить принтер",
+            "alias": "Disable printer",
             "visible": false,
             "disabledWhilePrinting": false,
             "color": "",
             "name": "shutdown"
         },
         {
-            "alias": "Перезагрузка в сток",
+            "alias": "Reload to stock",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -256,7 +256,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "m357"
         },
         {
-            "alias": "Удалить мод",
+            "alias": "Delete mod",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -265,7 +265,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "remove_zmod"
         },
         {
-            "alias": "Калибровка стола",
+            "alias": "Bed calibration",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": true,
@@ -273,7 +273,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Калибровка шейперов",
+            "alias": "Shaper calibration",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": true,
@@ -281,7 +281,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Регулировка винтов стола",
+            "alias": "Adjusting bed screws",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": true,
@@ -289,7 +289,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Восстановить Z-offset",
+            "alias": "Restore Z-offset",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": false,
@@ -305,7 +305,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": false
         },
         {
-            "alias": "ОТМЕНИТЬ ПЕЧАТЬ",
+            "alias": "CANCEL PRINT",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -341,7 +341,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "led_on"
         },
         {
-            "alias": "Калибровка PID стола",
+            "alias": "Bed PID calibration",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": true,
@@ -358,7 +358,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "play_midi"
         },
         {
-            "alias": "ВОЗОБНОВИТЬ",
+            "alias": "RESUME",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -367,7 +367,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "resume"
         },
         {
-            "alias": "Калибровка PID экструдера",
+            "alias": "Extruder PID Calibration",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": true,
@@ -383,7 +383,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Загрузить нить",
+            "alias": "Load material",
             "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
@@ -399,7 +399,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "load_filament"
         },
         {
-            "alias": "ПАУЗА",
+            "alias": "PAUSE",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -424,7 +424,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "unload_filament"
         },
         {
-            "alias": "Пауза + смена филамента",
+            "alias": "Pause + change filament",
             "categoryId": "89ac157d-a16a-43f1-900a-498d683bf557",
             "color": "",
             "disabledWhilePrinting": false,
@@ -448,7 +448,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": false
         },
         {
-            "alias": "Сбросить тензодатчики",
+            "alias": "Reset load cells",
             "categoryId": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
             "color": "",
             "disabledWhilePrinting": false,
@@ -496,7 +496,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": false
         },
         {
-            "alias": "Закрыть диалоги",
+            "alias": "Close dialogs",
             "visible": false,
             "disabledWhilePrinting": false,
             "color": "",
@@ -505,7 +505,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "close_dialogs"
         },
         {
-            "alias": "Печать файла + leveling",
+            "alias": "Print file + leveling",
             "color": "",
             "disabledWhilePrinting": false,
             "name": "leveling_print_file",
@@ -519,7 +519,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "visible": true
         },
         {
-            "alias": "Быстро закрыть диалоги",
+            "alias": "Quickly close dialogs",
             "visible": false,
             "disabledWhilePrinting": false,
             "color": "",
@@ -528,7 +528,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "fast_close_dialogs"
         },
         {
-            "alias": "Сохранить изменения",
+            "alias": "Save changes",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -537,7 +537,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "new_save_config"
         },
         {
-            "alias": "Создать резервную копию",
+            "alias": "Create backup",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -546,7 +546,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "config_backup"
         },
         {
-            "alias": "Восстановить резервную копию",
+            "alias": "Restore backup",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -555,7 +555,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "config_restore"
         },
         {
-            "alias": "Обновить камеру",
+            "alias": "Update camera",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -564,7 +564,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "camera_reload"
         },
         {
-            "alias": "Проверить конфигурацию",
+            "alias": "Check configuration",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -573,7 +573,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "config_verify"
         },
         {
-            "alias": "Бэкап конфигурации",
+            "alias": "Backup configuration",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
@@ -667,31 +667,31 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
     [
         {
             "id": "85e2f576-74e1-4bd3-9e82-fca937d1d3ce",
-            "name": "Печать"
+            "name": "Print"
         },
         {
             "id": "4074e4ed-d0d6-4da3-9924-9412e48bbefa",
-            "name": "Периферия"
+            "name": "Peripheral"
         },
         {
             "id": "244d667b-c410-4e01-9bf1-e8e0b9deabe2",
-            "name": "Калибровка"
+            "name": "Calibration"
         },
         {
             "id": "89ac157d-a16a-43f1-900a-498d683bf557",
-            "name": "Филамент"
+            "name": "Filament"
         },
         {
             "id": "5ceaef9c-2e66-4bbf-998b-94fcab116597",
-            "name": "Без экрана"
+            "name": "No screen"
         },
         {
             "id": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
-            "name": "Мод"
+            "name": "Mod"
         },
         {
             "id": "24e79f79-c9db-4e2b-aab3-ed7e5b568d3d",
-            "name": "Система"
+            "name": "System"
         },
         {
             "id": "e004b7a8-256d-4070-8d81-90a2ccef470b",
@@ -705,7 +705,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
     {
         "caa2d751-0d1e-4859-adfe-f631022f17d7":
         {
-            "name": "3. Периферия",
+            "name": "3. Peripherals",
             "color": "primary",
             "colorCustom": "#fff",
             "showInStandby": true,
@@ -741,7 +741,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
         },
         "7ac31722-85f9-4771-9b7c-01597bc176fd":
         {
-            "name": "2. Калибровка",
+            "name": "2. Calibration",
             "color": "primary",
             "colorCustom": "#fff",
             "showInStandby": true,
@@ -785,7 +785,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
         },
         "217c7cae-b4cf-4c05-9ff8-11ae55b48cb5":
         {
-            "name": "1. Филамент",
+            "name": "1. Filament",
             "color": "primary",
             "colorCustom": "#fff",
             "showInStandby": true,
@@ -821,7 +821,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
         },
         "8a862223-f07a-49c2-b0bd-5473b299abff":
         {
-            "name": "4. Мод",
+            "name": "4. Mod",
             "color": "primary",
             "colorCustom": "#fff",
             "showInStandby": true,

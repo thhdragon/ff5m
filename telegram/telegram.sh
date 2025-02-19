@@ -17,11 +17,11 @@ cd ~tbot
 cat > install.sh <<EOF
 #!/bin/bash
 cd
-read -p "Введите название каталога где будет хранится бот [bot1]: " bot_name
+read -p "Enter the name of the directory where the bot will be stored [bot1]: " bot_name
 if [ "\${bot_name}" == "" ]; then bot_name="bot1"; fi
 mkdir -p \${bot_name}
 cd \${bot_name}
-echo "Бот установлен в каталог $(pwd)"
+echo "The bot is installed in the directory $(pwd)"
 mkdir -p config log timelapse_finished timelapse 
 wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/ff5m.sh
 chmod +x ../ff5m.sh
@@ -29,26 +29,26 @@ wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/ghzs
 wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse
 
-echo "1. Идете к https://t.me/BotFather
+echo "1. Go to https://t.me/BotFather
 2. /newbot
-3. Вводите любое имя, которое вам нравится
-4. Вводите имя бота например ff5msuper_bot - обязательно _bot в конце.
-5. Получаете длинный ID - его нужно будет прописать в настройках бота в параметр bot_token"
+3. Enter any name you like
+4. Enter the bot name, for example, ff5msuper_bot - make sure it ends with _bot.
+5. You will receive a long ID - you need to specify it in the bot settings under the bot_token parameter."
 
-read  -p "Введите bot_token: " bot_token
+read -p "Enter bot_token: " bot_token
 
 sed -i "s|bot_token: 1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA|bot_token: \${bot_token}|" config/telegram.conf
 docker-compose up -d
 
-echo "Заходите в своего бота, через телеграм
-Он напишет. Unauthorized access detected with chat_id:
-Впишите полученное числю в chat_id"
+echo "Go to your bot via Telegram.
+It will write: Unauthorized access detected with chat_id:
+Enter the received number into chat_id."
 
-read -p "Введите chat_id: " chat_id 
+read -p "Enter chat_id: " chat_id 
 docker-compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
 docker-compose up -d
-read -p "Нужно создать еще одного бота? [y/N]: " vopros
+read -p "Do you need to create another bot? [y/N]: " vopros
 if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then cd; ./install.sh; fi
 EOF
 chmod +x install.sh

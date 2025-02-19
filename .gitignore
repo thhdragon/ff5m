@@ -3,8 +3,12 @@
 sync_*.tar*
 .DS_store
 
+.cmake
 CMakeFiles
 CMakeCache.txt
+Makefile
 cmake_install.cmake
+cmake-build-*
 
 .bin/src/*/bin
+.bin/src/*/Testing

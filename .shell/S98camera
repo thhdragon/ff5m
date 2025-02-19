@@ -44,7 +44,7 @@ start() {
         
         reload
     else
-        echo "Камера отключена"
+        echo "Camera disabled"
     fi
 }
 

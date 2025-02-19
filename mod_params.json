@@ -40,11 +40,11 @@
       "key": "auto_reboot",
       "type": "AutoRebootEnum",
       "default": "OFF",
-      "label": "Автоперезапуск",
+      "label": "Auto-restart",
       "options": {
-        "OFF": "отключен",
-        "SIMPLE_90": "через 1.5 минуты",
-        "FIRMWARE_90": "прошивки через 1.5 минуты"
+        "OFF": "disabled",
+        "SIMPLE_90": "after 1.5 minutes",
+        "FIRMWARE_90": "firmware after 1.5 minutes"
       },
       "order": 30000
     },
@@ -52,11 +52,11 @@
       "key": "close_dialogs",
       "type": "CloseDialogsEnum",
       "default": "OFF",
-      "label": "Диалоги",
+      "label": "Dialogs",
       "options": {
-        "OFF": "не закрывать",
-        "SLOW": "закрывать через 20 секунд (медленно)",
-        "FAST": "закрывать через 20 секунд (быстро)"
+        "OFF": "do not close",
+        "SLOW": "close after 20 seconds (slowly)",
+        "FAST": "close after 20 seconds (quickly)"
       },
       "order": 30000
     },
@@ -64,50 +64,51 @@
       "key": "disable_priming",
       "type": "bool",
       "default": 0,
-      "label": "Очистка сопла",
-      "options": ["ДА", "НЕТ"],
+      "label": "Nozzle cleaning",
+      "options": ["YES", "NO"],
       "order": 20000
     },
     {
       "key": "disable_screen_led",
       "type": "bool",
       "default": 0,
-      "label": "Разрешать экрану управлять LED",
-      "options": ["ДА", "НЕТ"],
+      "label": "Allow stock firmware to control LED",
+      "options": ["YES", "NO"],
       "order": 100
     },
     {
       "key": "disable_skew",
       "type": "bool",
       "default": 1,
-      "label": "SKEW коррекция",
-      "options": ["ДА", "НЕТ"],
+      "label": "SKEW correction",
+      "options": ["YES", "NO"],
       "order": 20000
     },
     {
       "key": "fix_e0017",
       "type": "bool",
       "default": 0,
-      "label": "Исправлять ошибку E0017"
+      "label": "Fix E0017 error"
     },
     {
       "key": "check_md5",
       "type": "bool",
       "default": 1,
-      "label": "Проверка MD5"
+      "label": "MD5 verification",
+      "warning": "To make the checksum validation work, you need to add a post-processing script to your slicer.\nScripts can be downloaded from 'Configuration -> mod' (addMD5.sh or addMD5.bat)"
     },
     {
       "key": "cell_weight",
       "type": "int",
       "default": 0,
-      "label": "Разрешенный пороговый вес на тензодатчиках",
+      "label": "Allowed threshold weight on load cell",
       "order": 100
     },
     {
       "key": "load_zoffset",
       "type": "bool",
       "default": 0,
-      "label": "Загрузка Z-OFFSET",
+      "label": "Load Z-OFFSET",
       "order": 10000
     },
     {
@@ -121,64 +122,64 @@
       "key": "sound",
       "type": "bool",
       "default": 1,
-      "label": "Звуковое сопровождение",
+      "label": "Sound indication",
       "order": 50000
+    },
+    {
+      "key": "backlight",
+      "type": "int",
+      "default": 50,
+      "label": "Screen brightness",
+      "order": 50001
     },
     {
       "key": "midi_on",
       "type": "str",
       "default": "",
-      "label": "MIDI при включении",
+      "label": "MIDI on startup",
       "order": 50010
     },
     {
       "key": "midi_start",
       "type": "str",
       "default": "",
-      "label": "MIDI при запуске печати",
+      "label": "MIDI when starting print",
       "order": 50011
     },
     {
       "key": "midi_end",
       "type": "str",
       "default": "",
-      "label": "MIDI при завершении печати",
+      "label": "MIDI when completing print",
       "order": 50012
     },
     {
       "key": "new_save_config",
       "type": "bool",
       "default": 0,
-      "label": "Использовать альт. SAVE_CONFIG",
+      "label": "Use alt. SAVE_CONFIG",
       "order": 100
-    },
-    {
-      "key": "preclear",
-      "type": "bool",
-      "default": 0,
-      "label": "Предочистка сопла",
-      "order": 20000
     },
     {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,
-      "label": "Строить карту стола перед печатью",
+      "label": "Mesh bed before printing",
       "order": 100
     },
     {
       "key": "stop_motor",
       "type": "bool",
       "default": 1,
-      "label": "Моторы",
-      "options": ["Не выключать", "Выключать автоматически"],
+      "label": "Motors",
+      "options": ["Do not turn off", "Turn off automatically"],
       "order": 30000
     },
     {
       "key": "use_kamp",
       "type": "bool",
       "default": 0,
-      "label": "Использование KAMP",
+      "label": "Use KAMP",
       "order": 20000
     },
     {
@@ -187,61 +188,61 @@
       "default": "MMC",
       "label": "SWAP",
       "options": {
-        "OFF": "не используется",
-        "MMC": "используется на eMMC",
-        "USB": "используется на USB"
+        "OFF": "not used",
+        "MMC": "used on eMMC",
+        "USB": "used on USB"
       }
     },
     {
       "key": "zclear",
       "type": "LinePurgeEnum",
       "default": "ORCA",
-      "label": "Алгоритм очистки",
+      "label": "Purge algorithm",
       "order": 20000
     },
     {
       "key": "display_off",
       "type": "bool",
       "default": 0,
-      "label": "Экран отключен"
+      "label": "Screen off"
     },
     {
       "key": "camera",
       "type": "bool",
       "default": 0,
-      "label": "Альт. камера",
-      "options": ["не используется", "включена"],
+      "label": "Alt. camera",
+      "options": ["not used", "enabled"],
       "order": 100
     },
     {
       "key": "zssh",
       "type": "bool",
       "default": 0,
-      "label": "SSH-туннель",
-      "options": ["не используется", "включен"],
+      "label": "SSH tunnel",
+      "options": ["not used", "enabled"],
       "order": 100
     },
     {
       "key": "weight_check",
       "type": "bool",
       "default": 1,
-      "label": "Защита стола от ударов",
+      "label": "Bed collision protection",
       "order": 10
     },
     {
       "key": "weight_check_max",
       "type": "int",
       "default": 1200,
-      "label": "Защита стола от ударов, вес",
+      "label": "Bed collision protection, weight",
       "order": 11
     },
     {
       "key": "tune_config",
       "type": "bool",
       "default": 0,
-      "label": "Тюнинг параметров прошивки",
+      "label": "Firmware parameter tuning",
       "order": 12,
-      "warning": "!! После изменения значения обязательно заново снимите карту стола и подберите Z-Offset.\n!! Если вы выполняли калибровку размеров, её также нужно будет обновить.\n!! Кроме того, может потребоваться заново откалибровать поток и Pressure Advance.\n!! Печать с использованием старой карты стола или Z-Offset может повредить принтер!\nПосмотреть изменяемые параметры можно в разделе Конфигурация -> 'mod' -> 'tuning.cfg'"
+      "warning": "!! After changing the value, be sure to recreate the bed mesh and adjust the Z-Offset.\n!! If you have performed dimension calibration, it must also be updated.\n!! Additionally, you may need to recalibrate the flow and Pressure Advance.\n!! Printing with an old bed mesh or Z-Offset may damage the printer!\nYou can view the changing parameters in the Configuration -> 'mod' -> 'tuning.cfg' section."
     }
   ]
 }

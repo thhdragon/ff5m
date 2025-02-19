@@ -87,6 +87,9 @@ initialize() {
     ln -fs /opt/config/mod/.zsh/.profile /root/
     ln -fs /opt/config/mod/.zsh/.zshrc /root/
 
+    # Runtime
+    ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
+
     echo "// Init version"
     
     # version
@@ -99,6 +102,9 @@ initialize() {
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+
+    # Print version onto the screen
+    "$SCRIPTS/screen.sh" draw_loading
 
     echo "// Apply database migrations"
     
@@ -146,9 +152,11 @@ init_chroot() {
     ln -fns /data/logFiles /root/printer_data/logs
     ln -fns /opt/config/ /root/printer_data/config
     ln -fns /opt/config/mod_data/database /root/printer_data/database
+    ln -fns /opt/config/mod/.bin/exec /root/printer_data/bin
     ln -fns /opt/config/mod/.py /root/printer_data/py
-    ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     ln -fns /opt/config/mod/.shell /root/printer_data/scripts
+    
+    ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     
     mount --bind /root/printer_data $MOD/root/printer_data
 
@@ -329,7 +337,7 @@ case "$1" in
         mkdir -p /opt/config/mod_data/log/
         rotate_logs "/opt/config/mod_data/log/init.log"
         
-        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log"
+        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --print-to-screen
 
         touch $INIT_FLAG
         

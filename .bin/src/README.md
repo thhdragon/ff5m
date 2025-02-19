@@ -25,6 +25,7 @@ ct-ng arm-unknown-linux-gnueabi
 # Configure
 # - glibc version to 2.25
 # - Linux Kernel version 5.4.289
+# [Option] you can configure gcc to 7.5.0, but it's pretty old
 ct-ng menuconfig
 
 # Build

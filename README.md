@@ -9,7 +9,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 > *Proceed at your own risk!*
 
 ## Features
-- **Stock** Screen with option to disable it completely to reduce resource consumption
+- **Stock** Screen with option to disable it completely and switch to feather screen version to reduce resource consumption
 - **Klipper** with many patches/fixes/plugins specially adapted for AD5M
 - **Moonraker**
 - **Fluidd** & **Mainsail**
@@ -23,6 +23,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - **Backup** and **Restore** mechanizm for printer's configuration
 - Fix for the **E00017** error.
 - **Failsafe** mechanism to prevent nozzle collisions.
+- Better **Clear Nozzle** algorithm.
 - Enhanced **Shaper Calibration** with automatic plot generation.
 - Easy **Bed Level Screw Tuning**.
 - Customized dedicated Linux environment based on **Buildroot**

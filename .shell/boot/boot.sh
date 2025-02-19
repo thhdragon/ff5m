@@ -36,7 +36,7 @@ if ! "$CMDS/zdisplay.sh" test; then
             echo "Try to connect..."
             
             for _ in $(seq 5); do
-                "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print
+                "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print --print-to-screen
                 ret="${PIPESTATUS[0]}"
                 
                 if [ "$ret" -eq 0 ]; then

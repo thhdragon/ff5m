@@ -1,5 +1,11 @@
 #!/bin/bash
 
+## Synchronize changes, printer-side script
+##
+## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
+##
+## This file may be distributed under the terms of the GNU GPLv3 license
+
 
 PATH="/bin:/sbin:/usr/bin:/usr/sbin:/opt/bin:/opt/sbin:/opt/bin:/opt/sbin"
 
@@ -13,6 +19,7 @@ KLIPPER_HARD_RESTART=$6
 REMOTE_DIR=$7
 ARCHIVE_NAME=$8
 VERBOSE=$9
+FORCE_RESTART=${10}
 
 COMMAND_TIMEOUT=15
 
@@ -103,7 +110,7 @@ fi
 
 echo -e "${BLUE}Comparing files...${NC}"
 
-CHANGED=1
+CHANGED=0
 
 while read -r file; do
     SRC_FILE="$file"
@@ -132,7 +139,7 @@ sync
 
 if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
 
-if [ "$CHANGED" -eq 1 ]; then
+if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ]; then
     echo; echo -e "${GREEN}Restarting services...${NC}\n"
     
     run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
