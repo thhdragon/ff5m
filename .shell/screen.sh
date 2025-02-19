@@ -15,17 +15,19 @@ load_version() {
 
 print_message() {
     local text="$1"
-
+    
     "$BINS/typer" fill -p 0 380 -s 800 80
     "$BINS/typer" text -ha center -p 400 400 -c 00f0f0 -b 0 -f "Roboto 12pt" -t "$text"
 }
 
 print_progress() {
     local value="$1"
-
+    
+    value=$((value > 100 ? 100 : value))
+    
     "$BINS/typer" fill -p 200 420 -s 400 40 -c 872187
     "$BINS/typer" fill -p 205 425 -s 390 30 -c 0
-
+    
     local progress_width=$(( value * 380 / 100 ))
     "$BINS/typer" fill -p 210 430 -s $progress_width 20 -c 872187
 }
@@ -62,7 +64,7 @@ case "$1" in
             echo "File name is missing"
             exit 1
         fi
-
+        
         print_message "$2"
         print_progress 0
     ;;
@@ -72,20 +74,20 @@ case "$1" in
             echo "Progress value is missing"
             exit 1
         fi
-
+        
         print_progress "$2"
     ;;
-
+    
     end_print)
         message="$2"
         if [ -z "$message" ]; then
             message="Finished!"
         fi
-
+        
         print_message "$message"
         print_progress "100"
     ;;
-
+    
     *)
         echo "Usage: $0 <command> [args...]"
         exit 1
