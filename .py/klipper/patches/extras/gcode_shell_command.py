@@ -60,7 +60,7 @@ class ShellCommand:
 
     def cmd_RUN_SHELL_COMMAND(self, params):
         if self.running:
-            raise self.gcode.error("Command already running.")
+            raise self.gcode.error(f"Command {self.name} already running!")
 
         gcode_params = params.get('PARAMS', '')
         gcode_params = shlex.split(gcode_params)
@@ -78,7 +78,11 @@ class ShellCommand:
 
         if self.verbose and not self.background:
             self.proc_fd = proc.stdout.fileno()
-            self.gcode.respond_info("Running Command {%s}...:" % (self.name))
+            if self.debug:
+                self.gcode.respond_info(f"Running Command {self.name} {gcode_params}:")
+            else:
+                self.gcode.respond_info("Running Command {%s}...:" % (self.name))
+            
             hdl = reactor.register_fd(self.proc_fd, self._process_output)
 
         if detached:
@@ -98,7 +102,7 @@ class ShellCommand:
             thread = threading.Thread(target=lambda: self._wait_bg_process(proc, reactor), daemon=True)
             thread.start()
 
-            if self.debug: self.gcode.respond_info(f"Process {self.name} ran in background mode.")
+            if self.debug: self.gcode.respond_info(f"Process ran in background mode: {self.name} {gcode_params}")
             return
 
         eventtime = reactor.monotonic()
