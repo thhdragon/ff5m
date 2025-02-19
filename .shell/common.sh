@@ -9,6 +9,7 @@
 
 MOD=/data/.mod/.zmod
 SCRIPTS=/opt/config/mod/.shell
+PY=/opt/config/mod/.py
 CMDS=$SCRIPTS/commands
 BINS=/opt/config/mod/.bin/exec
 MOD_DATA=/opt/config/mod_data

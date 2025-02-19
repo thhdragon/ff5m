@@ -30,14 +30,14 @@ print_progress() {
     
     local progress_width=$(( value * 380 / 100 ))
     "$BINS/typer" fill -p 210 430 -s $progress_width 20 -c 872187
-
+    
     "$BINS/typer" fill -c 0 -p 610 400 -s 100 80
     "$BINS/typer" text -p 620 440 -va middle -c 00f0f0 -b 0 -t "${value}%"
 }
 
 print_prepare_status() {
     local text="$1"
-
+    
     "$BINS/typer" fill -p 205 425 -s 390 30 -c 0
     "$BINS/typer" text -p 400 440 -ha center -va middle -c 00f0f0 -f "JetBrainsMono 8pt" -b 0 -t "${text}"
 }
@@ -87,13 +87,13 @@ case "$1" in
         
         print_progress "$2"
     ;;
-
+    
     print_status)
         if [ -z "$2" ]; then
             echo "Status is missing"
             exit 1
         fi
-
+        
         print_prepare_status "$2"
     ;;
     
@@ -107,6 +107,15 @@ case "$1" in
         print_progress "100"
     ;;
     
+    backlight)
+        value=$2
+        if [ -z "$2" ]; then
+            echo "Backlight value is missing"
+            exit 1
+        fi
+        
+        chroot "$MOD" /root/printer_data/py/backlight.py $value
+    ;;
     *)
         echo "Usage: $0 <command> [args...]"
         exit 1

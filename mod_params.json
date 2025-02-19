@@ -126,6 +126,13 @@
       "order": 50000
     },
     {
+      "key": "backlight",
+      "type": "int",
+      "default": 50,
+      "label": "Screen brightness",
+      "order": 50001
+    },
+    {
       "key": "midi_on",
       "type": "str",
       "default": "",
