@@ -161,13 +161,6 @@
       "order": 100
     },
     {
-      "key": "preclear",
-      "type": "bool",
-      "default": 0,
-      "label": "Pre-clean nozzle",
-      "order": 20000
-    },
-    {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,

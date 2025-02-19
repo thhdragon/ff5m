@@ -4,9 +4,8 @@
 # "printerSerialNumber"
 # Adventurer5M.json
 
-# Check if the number of arguments is either 2 or 3.
-if [ $# -ne 2 ] && [ $# -ne 3 ]; then 
-    echo "Usage: $0 PRINT|CLOSE FILE [PRECLEAR]"; 
+if [ $# -ne 2 ]; then 
+    echo "Usage: $0 (PRINT|CLOSE) FILE"; 
     exit 1; 
 fi
 
@@ -49,23 +48,14 @@ else
             exit 1
         fi
 
-        # If the optional third argument is "PRECLEAR".
-        if [ "$3" == "PRECLEAR" ]; then
-            echo "$M190" >/tmp/printer
-            echo "$M109" >/tmp/printer
-            echo "_START_PRECLEAR" >/tmp/printer
-            echo "RUN_SHELL_COMMAND CMD=zprint PARAMS=\"PRINT '$2'\"" >/tmp/printer
-        else
-            # Send the print command via cURL.
-            $CURL -s \
-                http://$ip:8898/printGcode \
-                -H 'Content-Type: application/json' \
-                -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'" || \
-                echo "No response from the printer with IP $ip. Please configure the printer. On the printer screen: 'Settings' -> 'WiFi Icon' -> 'Network Mode' -> enable the 'Local Networks Only' toggle."
-        fi
+        $CURL -s \
+            http://$ip:8898/printGcode \
+            -H 'Content-Type: application/json' \
+            -d "{\"serialNumber\":\"$serialNumber\",\"checkCode\":\"$checkCode\",\"fileName\":\"$2\",\"levelingBeforePrint\":true}'" || \
+            echo "No response from the printer with IP $ip. Please configure the printer. On the printer screen: 'Settings' -> 'WiFi Icon' -> 'Network Mode' -> enable the 'Local Networks Only' toggle."
     else
         # If the command does not match "PRINT" or "CLOSE", provide usage instructions.
-        echo "Usage: $0 PRINT|CLOSE FILE [PRECLEAR]"
+        echo "Usage: $0 PRINT|CLOSE FILE"
         exit 1
     fi
 fi
