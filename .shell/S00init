@@ -102,7 +102,9 @@ initialize() {
     MOD_VERSION=$(cat /opt/config/mod/version.txt)
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
 
-    if [ "$GIT_BRANCH" != "main" ]; then
+    if [ -f /opt/config/mod/patch.txt ]; then
+        cp -f /opt/config/mod/patch.txt /tmp/version_patch
+    elif [ "$GIT_BRANCH" != "main" ]; then
         echo "$GIT_BRANCH-$GIT_COMMIT_ID" > /tmp/version_patch
     fi
     

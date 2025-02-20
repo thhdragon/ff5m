@@ -28,7 +28,7 @@ _OFFSET=$(( ${#_S} - 1 ))
 
 MOD_TEXT=$(centered "🔥 \033[1;36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
 FF_TEXT=$(centered "\033[1;33m⚡ \033[36mAD5M v${FIRMWARE_VERSION}" 35 $_OFFSET)
-PATCH_TEXT=$(centered "\033[1;36m${VERSION_PATCH}" 33 0)
+PATCH_TEXT=$(centered "\033[1;36m${VERSION_PATCH}" 35 0)
 
 echo -e "\033[35m
 
@@ -41,6 +41,6 @@ echo -e "\033[35m
  ╚═╝      ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝██║      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
                                      ██║
  ${MOD_TEXT}\033[0;35m██║  ${FF_TEXT}\033[0;35m
-   ${PATCH_TEXT} \033[0;35m╚═╝
+ ${PATCH_TEXT} \033[0;35m╚═╝
 
 \033[0m"
