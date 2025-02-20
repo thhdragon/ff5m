@@ -59,15 +59,6 @@ initialize() {
     echo "// Init Buildroot"
     init_chroot
 
-    echo "// Apply Klipper patches"
-    apply_klipper_patches
-    
-    echo "// Apply other patches"
-    apply_other_patches
-
-    echo "// Restore config"
-    fix_config
-
     echo "// Init mod's files"
 
     # Services
@@ -112,6 +103,15 @@ initialize() {
 
     # Print version onto the screen
     "$SCRIPTS/screen.sh" draw_loading
+
+    echo "// Apply Klipper patches"
+    apply_klipper_patches
+    
+    echo "// Apply other patches"
+    apply_other_patches
+
+    echo "// Restore config"
+    fix_config
 
     echo "// Apply database migrations"
     
