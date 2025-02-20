@@ -19,7 +19,10 @@ if [ ! -f /etc/init.d/S00init ]; then
     /etc/init.d/S00init start
 fi
 
-if ! "$CMDS/zdisplay.sh" test; then
+"$CMDS"/zdisplay.sh test
+DISPLAY_OFF=$?
+
+if ! $DISPLAY_OFF; then
     # Init Wi-Fi
     
     echo "Initialize Wi-Fi..."
@@ -76,7 +79,7 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     /opt/klipper/start.sh &> /dev/null
 
     echo "Boot sequence done"
-else
+elif $DISPLAY_OFF; then
     if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
         echo "?? Switch config to enabled screen..."
         /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
