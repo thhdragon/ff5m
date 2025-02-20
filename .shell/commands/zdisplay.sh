@@ -26,7 +26,7 @@ display_off() {
 }
 
 test() {
-    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$CFG_PATH" --get "display_off")
+    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$VAR_PATH" --get "display_off")
     return "$display_off"
 }
 
@@ -34,7 +34,8 @@ test() {
 apply_display_off() {
     killall "ffstartup-arm" > /dev/null 2>&1
     killall "firmwareExe" > /dev/null 2>&1
-    "$SCRIPTS/screen.sh" draw_splash
+
+    echo "RESTART" > /tmp/printer
     
     return 0
 }
@@ -42,12 +43,15 @@ apply_display_off() {
 case "$1" in
     on)
         display_on
-        echo "Printer will be rebooted in 5 seconds..."
-        echo "RESPOND prefix='//' MSG='Printer will be rebooted in 5 seconds...'" > /tmp/printer
-
         sync
-        
-        { sleep 5 && reboot; } >/dev/null 2>&1 &
+
+        if [ "$2" != "--skip-reboot" ]; then
+            echo "Printer will be rebooted in 5 seconds..."
+            echo "RESPOND prefix='//' MSG='Printer will be rebooted in 5 seconds...'" > /tmp/printer
+            
+            { sleep 5 && reboot; } &>/dev/null &
+        fi
+
         exit 0
     ;;
 

@@ -25,7 +25,7 @@ unset LD_PRELOAD
 logged() {
     local print=true
     local print_formatted=false
-    local print_to_screen=false
+    local send_to_screen=false
     local benchmark=false
     local log=true
     local log_file=""
@@ -50,8 +50,8 @@ logged() {
             --log-format)
                 log_format="$1"; shift
             ;;
-            --print-to-screen)
-                print_to_screen=true
+            --send-to-screen)
+                send_to_screen=true
             ;;
             --benchmark)
                 benchmark=true
@@ -138,7 +138,7 @@ logged() {
             fi
         fi
         
-        if $print_to_screen && [ -n "$line" ]; then
+        if $send_to_screen && [ -n "$line" ]; then
             add_to_queue "$line"
             $SCRIPTS/screen.sh boot_message "${messages_queue[@]}"
         fi

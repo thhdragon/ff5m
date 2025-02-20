@@ -93,6 +93,7 @@ initialize() {
     echo "// Init version"
     
     # version
+    # TODO: Handle case when freshly installed from binary file    
     GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
     GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
     GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
@@ -100,6 +101,10 @@ initialize() {
     FIRMWARE_VERSION=$(cat /root/version)
     MOD_VERSION=$(cat /opt/config/mod/version.txt)
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
+
+    if [ "$GIT_BRANCH" != "main" ]; then
+        echo "$GIT_BRANCH-$GIT_COMMIT_ID" > /tmp/version_patch
+    fi
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
@@ -173,7 +178,8 @@ init_chroot() {
 
     ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
 
-    # load date
+    # load datetime
+    echo "// Loading last saved time..."
     chroot $MOD fake-hwclock load
 }
 
@@ -384,7 +390,7 @@ case "$1" in
         mkdir -p /opt/config/mod_data/log/
         rotate_logs "/opt/config/mod_data/log/init.log"
         
-        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --print-to-screen
+        initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --send-to-screen
 
         touch $INIT_FLAG
         

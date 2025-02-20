@@ -6,10 +6,10 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+source /opt/config/mod/.shell/common.sh
 
 INTERFACE="wlan0"
 WPA_SUPPLICANT_CONF="/etc/wpa_supplicant.conf"
-
 
 echo "Flushing IP address of eth0..."
 ip addr flush dev eth0
@@ -40,10 +40,12 @@ for _ in $(seq 30); do
     
     if [[ "$STATUS" == "COMPLETED" ]]; then
         echo "Successfully connected!"
-        echo "Requesting DHCP...."
+        echo "Requesting DHCP in background...."
         
-        udhcpc -i $INTERFACE
-        exit $?
+        (set -m; udhcpc -i $INTERFACE 2>&1 | logged /data/logFiles/wifi.log --no-print) &> /dev/null &
+        disown
+        
+        exit 0
     elif [[ "$STATUS" == "SCANNING" ]]; then
         echo "Connecting..."
     else

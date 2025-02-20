@@ -14,7 +14,7 @@ R_ACK="\x06"
 R_OK="\x03"
 CMD_BOOT="A"
 
-RETRIES=15
+RETRIES=10
 
 print_hex() {
     echo -n "$1" | xxd -p -u | tr -d '\n'
@@ -46,11 +46,11 @@ for _ in $(seq $RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
     
     if [ -z "$buf" ]; then
-        echo "@@ No data received."
+        echo "@@ No data received from MCU."
         exit 1
     fi
     
-    echo -n "Recv: "
+    echo -n "MCU Recv: "
     print_hex "$buf"
     
     if [[ "$buf" == *"$R_READY"* ]]; then
@@ -62,7 +62,7 @@ done
 echo "Sending boot command..."
 
 for _ in $(seq $RETRIES); do
-    echo -n "Send: "
+    echo -n "MCU Send: "
     print_hex "$CMD_BOOT"
     
     # Send the command
@@ -70,15 +70,15 @@ for _ in $(seq $RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
     
     if [ -z "$buf" ]; then
-        echo "@@ No response received."
+        echo "@@ No response received from MCU."
         exit 2
     fi
     
-    echo -n "Recv: "
+    echo -n "MCU Recv: "
     print_hex "$buf"
     
     if [ "$buf" == "$R_ACK" ] || [ "$buf" == "$R_OK" ]; then
-        echo "Application is starting."
+        echo "MCU is starting."
         break
     fi
 done
