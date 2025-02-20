@@ -188,11 +188,7 @@ init_chroot() {
 apply_klipper_patches() {
     local SRC_DIR="/opt/config/mod/.py/klipper"
     local TARGET_DIR="/opt/klipper/klippy"
-    
-    # Klipper extensions
-    echo "// Link klipper plugins: "
-    echo $SRC_DIR/plugins/*
-    echo
+
 
     # Remove old patches/extensions
     find $TARGET_DIR -type l | while read -r file; do
@@ -224,8 +220,13 @@ apply_klipper_patches() {
         mkdir -p "$TARGET_DIR/$rel_path"
         
         if [ ! -L "$target" ]; then
-            echo "// Create klipper file backup: $target"
-            mv "$target" "$target.bak"
+            if [ ! -f "$target.bak" ]; then
+                echo "// Create klipper file backup: $target"
+                mv "$target" "$target.bak"
+            else
+                echo "// Remove overwritten klipper file: $target"
+                rm -f "$target"
+            fi
             
             echo "// Link patched klipper file: $file"
             ln -fs "$file" "$target"
@@ -422,8 +423,13 @@ case "$1" in
     ;;
     
     reload)
+        echo "Apply klipper patches..."
         apply_klipper_patches
+
+        echo "Apply Other patches..."
         apply_other_patches
+        
+        echo "Update configs..."
         fix_config
     ;;
 

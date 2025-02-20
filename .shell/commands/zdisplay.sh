@@ -35,7 +35,8 @@ apply_display_off() {
     killall "ffstartup-arm" > /dev/null 2>&1
     killall "firmwareExe" > /dev/null 2>&1
 
-    echo "RESTART" > /tmp/printer
+    /etc/init.d/S00init reload
+    "$SCRIPTS"/restart_klipper.sh --hard
     
     return 0
 }
