@@ -79,7 +79,7 @@ logged() {
     
     
     messages_queue=()
-    messages_queue_max=3
+    messages_queue_max=1
     
     add_to_queue() {
         local new_item="$1"
@@ -113,9 +113,9 @@ logged() {
         
         if [[ $line = "@@"* ]]; then
             line_log_level="ERROR"; line="${line:2}"
-            elif [[ $line = "??"* ]]; then
+        elif [[ $line = "??"* ]]; then
             line_log_level="WARN "; line="${line:2}"
-            elif [[ $line = "//"* ]]; then
+        elif [[ $line = "//"* ]]; then
             line_log_level="INFO "; line="${line:2}"
         fi
         
@@ -140,7 +140,7 @@ logged() {
         
         if $send_to_screen && [ -n "$line" ]; then
             add_to_queue "$line"
-            $SCRIPTS/screen.sh boot_message "${messages_queue[@]}"
+            $SCRIPTS/screen.sh boot_message "${messages_queue[@]}" "${line_log_level%"${line_log_level##*[![:space:]]}"}"
         fi
         
         if $log; then

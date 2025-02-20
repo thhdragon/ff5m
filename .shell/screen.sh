@@ -70,9 +70,24 @@ case "$1" in
         fi
         
         uptime=$(awk '{print $1}' < /proc/uptime)
+
+        case "${@: -1}" in
+            ERROR)
+                color=c43c00
+            ;;
+            WARN)
+                color=fa7c17
+            ;;
+            INFO)
+                color=ffffff
+            ;;
+            *)
+                color=b7a6b5
+            ;;
+        esac
         
         "$BINS/typer" fill -p 0 440 -s 800 40
-        "$BINS/typer" text -ha center -p 400 460 -c ffffff -b 0 -f "JetBrainsMono Bold 8pt" -t "$uptime >>  $2"
+        "$BINS/typer" text -ha center -p 400 460 -c $color -b 0 -f "JetBrainsMono Bold 8pt" -t "$uptime >>  $2"
     ;;
     
     print_file)
