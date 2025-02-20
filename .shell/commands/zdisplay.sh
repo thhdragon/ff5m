@@ -35,6 +35,10 @@ apply_display_off() {
     killall "ffstartup-arm" > /dev/null 2>&1
     killall "firmwareExe" > /dev/null 2>&1
 
+    "$SCRIPTS"/screen.sh backlight 0
+    "$SCRIPTS"/screen.sh draw_splash
+    "$SCRIPTS"/screen.sh backlight 100
+
     /etc/init.d/S00init reload
     "$SCRIPTS"/restart_klipper.sh --hard
     

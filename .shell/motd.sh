@@ -26,7 +26,7 @@ centered() {
 _S="🔥"
 _OFFSET=$(( ${#_S} - 1 ))
 
-MOD_TEXT=$(centered "🔥 \033[1;36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
+MOD_TEXT=$(centered "🔥 \033[1;36mFORGE-X v${MOD_VERSION}" 35 $_OFFSET)
 FF_TEXT=$(centered "\033[1;33m⚡ \033[36mAD5M v${FIRMWARE_VERSION}" 35 $_OFFSET)
 PATCH_TEXT=$(centered "\033[1;36m${VERSION_PATCH}" 35 0)
 

@@ -30,7 +30,7 @@ update_var() {
 update_var "NAME" "zmod+"
 update_var "VERSION" "${MOD_VERSION}"
 update_var "VERSION_ID" "${MOD_VERSION}-${PATCH_VERSION}"
-update_var "PRETTY_NAME" "zmod+ ${MOD_VERSION}"
+update_var "PRETTY_NAME" "Forge-X ${MOD_VERSION}"
 update_var "VERSION_CODENAME" "FF5M ${FIRMWARE_VERSION} / ${MOD_VERSION}-${PATCH_VERSION}"
 
 echo "The os-release file has been updated."

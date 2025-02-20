@@ -52,15 +52,15 @@ case "$1" in
     draw_loading)
         load_version
         xzcat /opt/config/mod/load.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 235 380 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
-        "$BINS/typer" text -ha center -p 584 380 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+        "$BINS/typer" text -ha center -p 236 360 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
+        "$BINS/typer" text -ha center -p 592 360 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     draw_splash)
         load_version
         xzcat /opt/config/mod/splash.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 230 335 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
-        "$BINS/typer" text -ha center -p 596 335 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+        "$BINS/typer" text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
+        "$BINS/typer" text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     boot_message)
