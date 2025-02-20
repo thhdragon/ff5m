@@ -36,7 +36,7 @@ if ! "$CMDS/zdisplay.sh" test; then
             echo "Try to connect..."
             
             for _ in $(seq 5); do
-                "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print --print-to-screen
+                "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print --send-to-screen
                 ret="${PIPESTATUS[0]}"
                 
                 if [ "$ret" -eq 0 ]; then
@@ -53,7 +53,6 @@ if ! "$CMDS/zdisplay.sh" test; then
         #TODO: Create AP if no active network configuration
     fi
 fi
-
 
 if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then    
     echo "Start wifi reconnect daemon."    
@@ -75,6 +74,13 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     
     echo "Start klipper."
     /opt/klipper/start.sh &> /dev/null
-fi
 
-echo "Boot sequence done"
+    echo "Boot sequence done"
+else
+    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
+        echo "?? Switch config to enabled screen..."
+        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+    fi
+
+    echo "@@ Failed to initialize mod. Booting into stock firmware..."
+fi

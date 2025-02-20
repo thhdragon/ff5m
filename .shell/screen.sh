@@ -11,6 +11,12 @@ source /opt/config/mod/.shell/common.sh
 load_version() {
     export FIRMWARE_VERSION=$(cat /root/version)
     export MOD_VERSION=$(cat /opt/config/mod/version.txt)
+    export MOD_VERSION_PATCH=$(cat /tmp/version_patch 2> /dev/null)
+
+    export VERSION_STRING="$MOD_VERSION"
+    if [ -n "$MOD_VERSION_PATCH" ]; then
+        export VERSION_STRING=$(echo -e "${VERSION_STRING}\n${MOD_VERSION_PATCH}")
+    fi
 }
 
 print_message() {
@@ -46,14 +52,14 @@ case "$1" in
     draw_loading)
         load_version
         xzcat /opt/config/mod/load.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 235 380 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$MOD_VERSION"
+        "$BINS/typer" text -ha center -p 235 380 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
         "$BINS/typer" text -ha center -p 584 380 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     draw_splash)
         load_version
         xzcat /opt/config/mod/splash.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 230 335 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$MOD_VERSION"
+        "$BINS/typer" text -ha center -p 230 335 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
         "$BINS/typer" text -ha center -p 596 335 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     

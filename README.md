@@ -84,7 +84,7 @@ The mod uses the same installation mechanism as the stock firmware:
 2) Plug in the drive before starting the printer.
 3) Successful installation will be indicated on the display when finished.
 
-**Note**: The mod installer currently requires the printer to be updated to at least version **2.4.5** of the stock Flashforge firmware.
+**Note**: The mod installer currently requires the printer to be updated to at least version **2.6.5** of the stock Flashforge firmware.
 After installation, the printer will boot into the modified stock system by default.
 
 ### (Temporary) Install dependencies
@@ -168,6 +168,9 @@ To connect to the printer, use the following physical printer settings:
 ## Dual Boot
 
 The mod implements a failsafe mechanism to boot the stock firmware before executing any mod-related boot code. This ensures that if the mod encounters any issues, you can safely skip the mod's boot process and load into the stock firmware.
+
+> [!CAUTION]
+> *Skipping the mod doesn't revert the printer's configuration; it only prevents the mod's services from running.*
 
 To use this feature, you have several options:
 

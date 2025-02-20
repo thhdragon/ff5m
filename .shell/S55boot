@@ -11,6 +11,13 @@ source /opt/config/mod/.shell/common.sh
 
 if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
     echo "Boot disabled due to SKIP_ZMOD mode"
+
+    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
+        echo "?? Reverting configuration to be suitable with the enabled screen"
+
+        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+    fi
+    
     exit 0
 fi
 
@@ -35,7 +42,7 @@ case "$1" in
     start)
         if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 0; fi
         
-        start 2>&1 | logged "/data/logFiles/boot.log" --print-to-screen
+        start 2>&1 | logged "/data/logFiles/boot.log" --send-to-screen
         # wait_for_internet &
     ;;
     *)

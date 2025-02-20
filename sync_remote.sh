@@ -137,9 +137,11 @@ fi
 
 sync
 
-if [ "$SKIP_RESTART" -eq 1 ]; then exit 0; fi
+if [ "$CHANGED" -eq 0 ]; then
+    echo; echo -e "${YELLOW}Printer is already in-sync${NC}"
+fi
 
-if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ]; then
+if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ] && [ "$SKIP_RESTART" -eq 0 ]; then
     echo; echo -e "${GREEN}Restarting services...${NC}\n"
     
     run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
@@ -157,6 +159,4 @@ if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ]; then
     fi
     
     echo; echo -e "${GREEN}All done!${NC}"
-else
-    echo; echo -e "${YELLOW}Printer is already in-sync${NC}"
 fi
