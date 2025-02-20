@@ -344,7 +344,29 @@ fix_config() {
         \"avoid_writes\": true
     }," >> $BATCH_FILE
 
-    # 6. Restore printer.base.cfg if a backup exists
+    # 6. Apply tunning parameters
+    TUNING_ENABLED=$("$CMDS"/zconf.sh "$VAR_PATH" --get "tune_config" "0")
+    if [ "$TUNING_ENABLED" -eq 1 ]; then
+        echo "
+        {
+            \"mode\": \"restore\",
+            \"config\": \"/opt/config/printer.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/tuning.cfg\",
+            \"no_data\": true,
+            \"avoid_writes\": true
+        }," >> $BATCH_FILE
+    else
+         echo "
+        {
+            \"mode\": \"restore\",
+            \"config\": \"/opt/config/printer.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/tuning.off.cfg\",
+            \"no_data\": true,
+            \"avoid_writes\": true
+        }," >> $BATCH_FILE
+    fi
+
+    # 7. Restore printer.base.cfg if a backup exists
     if [ -f /opt/config/printer.base.cfg.bak ]; then
         echo "
         {
