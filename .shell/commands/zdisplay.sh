@@ -56,14 +56,6 @@ case "$1" in
         apply_display_off
     ;;
 
-    init)
-        if test; then
-            display_on
-        else
-            display_off
-        fi
-    ;;
-
     apply)
         if ! test; then
             echo "Turning display off"
@@ -78,7 +70,7 @@ case "$1" in
     ;;
     
     *)
-        echo "Usage: $0 on|off|init|test"; exit 1;
+        echo "Usage: $0 on|off|test"; exit 1;
     ;;
 esac
 

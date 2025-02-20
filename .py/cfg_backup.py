@@ -5,6 +5,7 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 import argparse
+import json
 import os.path
 import re
 import sys
@@ -13,11 +14,13 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from platform import python_revision
-from typing import Optional, Dict, Self, Iterable, Tuple, Set, Callable
+from typing import Optional, Dict, Self, Iterable, Tuple, Set, Callable, Any
 
 MAX_BLANK_LINES = 2
 PARAM_WILDCARD = "*"
+
+AVOID_WRITES = False
+DRY_RUN = False
 VERBOSE = False
 
 
@@ -374,8 +377,7 @@ def parse_cmd_configuration(file_path) -> Configuration:
     sys.stderr.flush()
 
     if builder.has_errors:
-        print("Parameters configuration has errors. Exit.", file=sys.stderr)
-        exit(6)
+        raise Exception("The parameter configuration contains errors.")
 
     return new_config
 
@@ -383,7 +385,7 @@ def parse_cmd_configuration(file_path) -> Configuration:
 ## Backup command implementation
 ##########################################################################
 
-def backup(file_path, dst_path, dry=False):
+def backup(file_path: str, dst_path: str, cfg: Configuration, dry=False):
     print(f"Parsing config \"{file_path}\"...")
 
     tmp_path = dst_path + ".tmp"
@@ -394,11 +396,11 @@ def backup(file_path, dst_path, dry=False):
         def _callback(token, line, **kwargs):
             nonlocal section_key, empty
 
-            if token == CfgToken.SECTION and PARAMETERS.is_saving(line):
+            if token == CfgToken.SECTION and cfg.is_saving(line):
                 section_key = line
                 out_f.write(section_key + "\n")
                 if VERBOSE: print(f"Section: {section_key}")
-            elif token == CfgToken.PARAMETER and PARAMETERS.is_saving(section_key, param_name=kwargs["key"]):
+            elif token == CfgToken.PARAMETER and cfg.is_saving(section_key, param_name=kwargs["key"]):
                 out_f.write(line + "\n")
                 empty = False
                 if VERBOSE: print(f"  - {line}")
@@ -408,8 +410,7 @@ def backup(file_path, dst_path, dry=False):
         iterate_printer_config_tokens(file_path, callback=_callback)
 
     if empty:
-        print("Unable to find any parameters in config. Backup not created\n", file=sys.stderr)
-        exit(3)
+        raise Exception("Unable to find any parameters in config. Backup not created")
 
     if not dry:
         os.rename(tmp_path, dst_path)
@@ -423,12 +424,14 @@ def backup(file_path, dst_path, dry=False):
 ## Auxiliary restore classes
 ##########################################################################
 
-@dataclass
+@dataclass(kw_only=True)
 class RestoreState:
     @dataclass
     class SectionState:
         name: str
         data: Dict[str, str] | None = None
+
+    cfg: Configuration
 
     data: Dict[str, Dict[str, str]]
     includes: Set[str]
@@ -462,11 +465,11 @@ class RestoreState:
 
     def is_saving(self, *, param_name: Optional[str] = None):
         if not self.current_section: raise Exception("Section not selected!")
-        return PARAMETERS.is_saving(self.current_section.name, param_name=param_name)
+        return self.cfg.is_saving(self.current_section.name, param_name=param_name)
 
     def is_removing(self, *, param_name: Optional[str] = None):
         if not self.current_section: raise Exception("Section not selected!")
-        return PARAMETERS.is_removing(self.current_section.name, param_name=param_name)
+        return self.cfg.is_removing(self.current_section.name, param_name=param_name)
 
     def mark_parameter_used(self, param_name: str):
         if not self.current_section or self.current_section.data is None:
@@ -482,7 +485,10 @@ class RestoreState:
         self.current_section = None
 
 
-def load_backup(file_path):
+SavedData = Dict[str, Dict[str, Any]]
+
+
+def load_backup(file_path: str, cfg: Configuration) -> SavedData:
     print(f"Parsing backup \"{file_path}\"...")
 
     result = dict()
@@ -491,12 +497,12 @@ def load_backup(file_path):
 
     def _parse_data(token, line, **kwargs):
         nonlocal result, section, section_name
-        if token == CfgToken.SECTION and PARAMETERS.is_saving(line):
+        if token == CfgToken.SECTION and cfg.is_saving(line):
             section_name = line
             if section_name not in result: result[section_name] = dict()
             section = result[section_name]
             if VERBOSE: print(f"Loaded section: {section_name}")
-        elif token == CfgToken.PARAMETER and section_name and PARAMETERS.is_saving(section_name, param_name=kwargs["key"]):
+        elif token == CfgToken.PARAMETER and section_name and cfg.is_saving(section_name, param_name=kwargs["key"]):
             section[kwargs["key"]] = kwargs["value"]
             if VERBOSE: print(f"  - Load Parameter {kwargs['key']}")
         elif token in {CfgToken.BREAK or CfgToken.SECTION}:
@@ -511,14 +517,15 @@ def load_backup(file_path):
 ## Restore command implementation
 ##########################################################################
 
-def restore(file_path, saved_data, dry=False):
+def restore(file_path: str, saved_data: SavedData, cfg: Configuration, dry=False):
     print(f"Restoring config \"{file_path}\"...\n")
 
     tmp_path = file_path + ".tmp"
     state = RestoreState(
+        cfg=cfg,
         data=deepcopy(saved_data),
-        includes={inc for inc, act in PARAMETERS.includes if act == Action.ADD},
-        deferred_includes={inc for inc, _ in PARAMETERS.deferred_includes}
+        includes={inc for inc, act in cfg.includes if act == Action.ADD},
+        deferred_includes={inc for inc, _ in cfg.deferred_includes}
     )
 
     def _handle_section_end(section):
@@ -568,7 +575,7 @@ def restore(file_path, saved_data, dry=False):
         _update_prev_token(CfgToken.DEFERRED_BLOCK_BEGIN)
 
         # Write all deferred includes
-        for path_deferred, _ in PARAMETERS.deferred_includes:
+        for path_deferred, _ in cfg.deferred_includes:
             out_f.write(f"[include {path_deferred}]\n")
 
     with open(tmp_path, "w") as out_f:
@@ -630,7 +637,7 @@ def restore(file_path, saved_data, dry=False):
             elif token == CfgToken.INCLUDE:
                 path = kwargs["path"]
                 deferred = path in state.deferred_includes
-                act = PARAMETERS.include_action(path)
+                act = cfg.include_action(path)
 
                 if deferred and state.is_deferred_block:
                     state.pop_include(path, deferred=True)
@@ -670,7 +677,7 @@ def restore(file_path, saved_data, dry=False):
                 _handle_editable_block_ending()
 
                 # Check for deferred block
-                if state.is_deferred_block is False and PARAMETERS.deferred_includes:
+                if state.is_deferred_block is False and cfg.deferred_includes:
                     state.is_changed = True
                     _write_deferred_block()
 
@@ -688,7 +695,7 @@ def restore(file_path, saved_data, dry=False):
                 out_f.write(line.rstrip() + "\n")
 
         # Add includes at the beginning
-        for inc_path, action in PARAMETERS.includes:
+        for inc_path, action in cfg.includes:
             if action == Action.ADD:
                 out_f.write(f"[include {inc_path}]\n")
 
@@ -710,14 +717,15 @@ def restore(file_path, saved_data, dry=False):
 ## Verify command implementation
 ##########################################################################
 
-def has_changes(file_path, saved_data, logging: Callable = print):
+def has_changes(file_path: str, saved_data: SavedData, cfg: Configuration, logging: Callable = print):
     print(f"Verifying config \"{file_path}\"...")
     logging("")
 
     state = RestoreState(
+        cfg=cfg,
         data=deepcopy(saved_data),
-        includes={inc for inc, act in PARAMETERS.includes if act == Action.ADD},
-        deferred_includes={inc for inc, _ in PARAMETERS.deferred_includes}
+        includes={inc for inc, act in cfg.includes if act == Action.ADD},
+        deferred_includes={inc for inc, _ in cfg.deferred_includes}
     )
 
     def _handle_section_end(section: RestoreState.SectionState):
@@ -765,7 +773,7 @@ def has_changes(file_path, saved_data, logging: Callable = print):
             elif VERBOSE:
                 logging(f"Not Changed {state.current_section.name} {prop}: {actual_value}")
 
-        elif token == CfgToken.INCLUDE and (a := PARAMETERS.include_action(kwargs["path"])) is not None:
+        elif token == CfgToken.INCLUDE and (a := cfg.include_action(kwargs["path"])) is not None:
             path = kwargs["path"]
             deferred = path in state.deferred_includes
 
@@ -810,7 +818,7 @@ def has_changes(file_path, saved_data, logging: Callable = print):
                     logging(f"To Add {name} {prop_key}: <-- {prop_value}")
 
             # Check missing deferred block
-            if state.is_deferred_block is False and PARAMETERS.deferred_includes:
+            if state.is_deferred_block is False and cfg.deferred_includes:
                 state.is_changed = True
                 logging(f"To Add Deferred block")
 
@@ -827,13 +835,41 @@ def has_changes(file_path, saved_data, logging: Callable = print):
 ## Main code
 ##########################################################################
 
+@dataclass
+class ProcessingParams:
+    config_path: str
+    data_path: str
+    params_path: str
+    mode: str
+    no_data: bool
+
+
+def load_params_from_args(values):
+    return ProcessingParams(
+        config_path=values.config,
+        data_path=values.data,
+        params_path=values.params,
+        mode=values.mode,
+        no_data=values.no_data,
+    )
+
+
+def load_params_from_dict(values):
+    return ProcessingParams(
+        config_path=values["config"],
+        mode=values["mode"],
+        data_path=values.get("data", None),
+        params_path=values.get("params", None),
+        no_data=values.get("no_data", False),
+    )
+
 
 def _no_logging(*a, **k):
     pass
 
 
 # @formatter:off
-PARAMETERS = (
+DEFAULT_PARAMETERS = (
     ConfigurationBuilder()
         .start_section("[stepper_x ]")
             .add("rotation_distance")
@@ -844,6 +880,51 @@ PARAMETERS = (
         .build()
 )
 # @formatter:on
+
+def process(p: ProcessingParams):
+    if not os.path.isfile(p.config_path):
+        raise Exception(f"Config file doesn't exists: {p.config_path!r}")
+
+    if p.params_path and not os.path.isfile(p.params_path):
+        raise Exception(f"Parameters file doesn't exists: {p.params_path!r}")
+
+    if p.params_path:
+        cfg = parse_cmd_configuration(p.params_path)
+        print()
+    else:
+        cfg = DEFAULT_PARAMETERS
+
+    if len(list(cfg.sections)) == 0 and len(list(cfg.includes)) == 0 and len(list(cfg.deferred_includes)) == 0:
+        raise Exception(f"Parameters list is empty!")
+
+    if p.mode == "backup":
+        backup(p.config_path, p.data_path, cfg, DRY_RUN)
+    elif p.mode == "restore":
+        if not p.no_data:
+            if not os.path.isfile(p.data_path):
+                raise Exception(f"Backup file doesn't exists: {p.data_path!r}")
+
+            backup_data = load_backup(p.data_path, cfg)
+        else:
+            backup_data = dict()
+
+        if not AVOID_WRITES or has_changes(p.config_path, backup_data, cfg, logging=_no_logging):
+            restore(p.config_path, backup_data, cfg, DRY_RUN)
+        else:
+            print("Config doesn't contains changed properties!")
+    elif p.mode == "verify":
+        if not p.no_data:
+            backup_data = load_backup(p.data_path, cfg)
+        else:
+            backup_data = dict()
+
+        if has_changes(p.config_path, backup_data, cfg):
+            raise Exception(f"Config {p.config_path} changed!")
+
+        print("Config doesn't contains changed properties!")
+    else:
+        print(f"Unsupported mode {p.mode}", file=sys.stderr)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Printer configuration backup & restore script")
@@ -868,60 +949,51 @@ if __name__ == "__main__":
     parser.add_argument("--verbose", action="store_true",
                         help='Dry run', default=False)
 
+    parser.add_argument("-b", "--batch", type=str,
+                        help="Path to a batch processing JSON file)")
+
     args = parser.parse_args()
 
-    config_path = args.config
-    data_path = args.data
-    params_path = args.params
-    mode = args.mode
-    no_data = args.no_data
-    avoid_writes = args.avoid_writes
-    dry_run = args.dry
+    if batch_file := args.batch:
+        print(f"Batch processing mode: {args.batch!r}")
+
+        if not os.path.isfile(batch_file):
+            print(f"Batch file doesn't exists: {batch_file!r}\n", file=sys.stderr)
+            exit(2)
+
+        with open(batch_file, "r") as f:
+            batch_data = json.load(f)
+
+        if not batch_data:
+            print(f"Batch file is empty. ", file=sys.stderr)
+            exit(3)
+
+        if not isinstance(batch_data, list):
+            print(f"Batch file is invalid. Expected array got {type(batch_data)!r}", file=sys.stderr)
+            exit(4)
+
+        try:
+            processing_params = [load_params_from_dict(entry) for entry in batch_data]
+        except Exception as e:
+            print("Unable to parse batch file:", repr(e), file=sys.stderr)
+            exit(5)
+    else:
+        processing_params = [load_params_from_args(args)]
+
+    AVOID_WRITES = args.avoid_writes
+    DRY_RUN = args.dry
     VERBOSE = args.verbose
 
-    if not os.path.isfile(config_path):
-        print(f"Config file doesn't exists: \"{config_path}\"\n", file=sys.stderr)
-        exit(2)
+    has_errors = False
+    for i, params in enumerate(processing_params):
+        if args.batch:
+            print(f"\n*** Processing #{i + 1}:")
 
-    if params_path and not os.path.isfile(params_path):
-        print(f"Parameters file doesn't exists: \"{params_path}\"\n", file=sys.stderr)
-        exit(2)
+        try:
+            process(params)
+        except Exception as e:
+            print("Error:", e, file=sys.stderr)
+            has_errors = True
 
-    if params_path:
-        PARAMETERS = parse_cmd_configuration(params_path)
-        print()
-
-    if len(list(PARAMETERS.sections)) == 0 and len(list(PARAMETERS.includes)) == 0 and len(list(PARAMETERS.deferred_includes)) == 0:
-        print(f"Parameters list is empty!\n", file=sys.stderr)
-        exit(5)
-
-    if mode == "backup":
-        backup(config_path, data_path, dry_run)
-    elif mode == "restore":
-        if not no_data:
-            if not os.path.isfile(data_path):
-                print(f"Backup file doesn't exists: \"{data_path}\"\n", file=sys.stderr)
-                exit(2)
-
-            backup_data = load_backup(data_path)
-        else:
-            backup_data = dict()
-
-        if not avoid_writes or has_changes(config_path, backup_data, logging=_no_logging):
-            restore(config_path, backup_data, dry_run)
-        else:
-            print("Config doesn't contains changed properties!")
-    elif mode == "verify":
-        if not no_data:
-            backup_data = load_backup(data_path)
-        else:
-            backup_data = dict()
-
-        if has_changes(config_path, backup_data):
-            print("\nConfig changed!")
-            exit(1)
-
-        print("Config doesn't contains changed properties!")
-    else:
-        parser.print_help(sys.stderr)
+    if has_errors:
         exit(1)
