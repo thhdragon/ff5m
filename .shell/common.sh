@@ -26,6 +26,7 @@ logged() {
     local print=true
     local print_formatted=false
     local print_to_screen=false
+    local benchmark=false
     local log=true
     local log_file=""
     local log_level="     "
@@ -51,6 +52,9 @@ logged() {
             ;;
             --print-to-screen)
                 print_to_screen=true
+            ;;
+            --benchmark)
+                benchmark=true
             ;;
             *)
                 if [[ -z "$log_file" ]]; then
@@ -87,13 +91,25 @@ logged() {
     }
     
     
+    if $benchmark; then
+        last_time=$(awk '{print $1}' < /proc/uptime)
+    fi
+    
     while IFS= read -r line; do
         local date_str="$(date '+%Y-%m-%d %H:%M:%S')"
         local pid=$$
         local script_name=$(basename "$0")
-        local line_number=${BASH_LINENO[0]:-unknown}
+        local line_number=${BASH_LINENO[0]:-"n/a"}
         local func_name=${FUNCNAME[1]:-global}
         local line_log_level=$log_level
+
+        local line_bench=""
+        if $benchmark; then
+            local now=$(awk '{print $1}' < /proc/uptime)
+            local diff=$(awk 'BEGIN{ print ('$now' - '$last_time') * 1000 }')
+            local line_bench="$diff ms >> "
+            last_time=$now
+        fi
         
         if [[ $line = "@@"* ]]; then
             line_log_level="ERROR"; line="${line:2}"
@@ -118,17 +134,17 @@ logged() {
             if $print_formatted; then
                 printf "%s\n" "$log_entry"
             else
-                printf "%s\n" "$line"
+                printf "%s\n" "${line_bench}${line}"
             fi
         fi
         
-        if $print_to_screen; then
+        if $print_to_screen && [ -n "$line" ]; then
             add_to_queue "$line"
             $SCRIPTS/screen.sh boot_message "${messages_queue[@]}"
         fi
         
         if $log; then
-            printf "%s\n" "$log_entry" >> "$log_file"
+            printf "%s\n" "${line_bench}${log_entry}" >> "$log_file"
         fi
     done
 }
