@@ -93,8 +93,8 @@ case "$1" in
         load_version
         xzcat /opt/config/mod/splash.img.xz > /dev/fb0
         "$BINS/typer" -db batch \
-            --batch text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
-            --batch text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+            --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
+            --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     boot_message)
