@@ -98,6 +98,9 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     auto fontName = opts.get("--font");
     auto hAlignStr = opts.get("--h-align");
     auto vAlignVStr = opts.get("--v-align");
+    auto doubleBuffered = opts.get<bool>("--double-buffered");
+
+
     auto debug = opts.get<bool>("--debug");
 
     HorizontalAlign hAlign;
@@ -135,9 +138,11 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     drawer.setFontScale(scale, scale);
     drawer.setHorizontalAlignment(hAlign);
     drawer.setVerticalAlignment(vAlign);
+    drawer.setDoubleBuffered(doubleBuffered);
     drawer.setDebug(debug);
 
     drawer.print(text.c_str());
+    drawer.flush();
 }
 
 void fill(const argparse::ArgumentParser &opts, uint32_t *buffer) {
@@ -203,6 +208,9 @@ int main(int argc, char *argv[]) {
     text_command.add_argument("--v-align", "-va")
         .choices("bottom", "baseline", "middle", "top")
         .default_value("baseline");
+
+    text_command.add_argument("--double-buffered", "-db")
+        .flag();
 
     text_command.add_argument("--debug")
         .flag();
