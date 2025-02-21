@@ -23,7 +23,7 @@ print_message() {
     local text="$1"
     
     "$BINS/typer" -db batch \
-        --batch fill -p 0 380 -s 800 40 -c 0 \
+        --batch fill -p 0 370 -s 800 50 -c 0 \
         --batch text -ha center -p 400 400 -c 00f0f0 -f "Roboto 12pt" -t "$text"
 }
 
@@ -49,6 +49,35 @@ print_prepare_status() {
     "$BINS/typer" -db batch \
         --batch fill -p 205 425 -s 390 30 -c 0 \
         --batch text -p 400 440 -ha center -va middle -c 00f0f0 -f "JetBrainsMono 8pt" -b 0 -t "${text}"
+}
+
+print_time() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        "$BINS/typer" fill -c 0 -p 0 400 -s 200 80
+        return
+    fi
+
+    print_duration=$(convert_duration "$1")
+    total_duration=$(convert_duration "$2")
+
+    "$BINS/typer" -db batch\
+        --batch fill -c 0 -p 0 400 -s 200 80 \
+        --batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "$print_duration / $total_duration"
+}
+
+convert_duration() {
+    local float_time=$1
+    local rounded_time=$(printf "%.0f" "$float_time") # Round off the time to the nearest integer
+
+    if (( rounded_time < 60 )); then
+        echo "$rounded_time s"
+    elif (( rounded_time < 3600 )); then
+        local minutes=$((rounded_time / 60))
+        echo "$minutes m"
+    else
+        local hours=$((rounded_time / 3600))
+        echo "$hours h"
+    fi
 }
 
 case "$1" in
@@ -127,6 +156,7 @@ case "$1" in
         
         print_message "$2"
         print_progress 0
+        print_time ""
     ;;
     
     print_progress)
@@ -138,15 +168,8 @@ case "$1" in
         print_progress "$2"
     ;;
 
-    print_time)
-        if [ -z "$2" ]; then
-            echo "Time value is missing"
-            exit 1
-        fi
-        
-        "$BINS/typer" -fb batch\
-            --batch fill -c 0 -p 0 400 -s 200 80 \
-            --batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "$2"
+    print_time)      
+        print_time "$2" "$3"
     ;;
     
     print_status)
@@ -166,6 +189,7 @@ case "$1" in
         
         print_message "$message"
         print_progress "100"
+        print_time ""
     ;;
     
     backlight)
