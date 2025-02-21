@@ -22,45 +22,50 @@ load_version() {
 print_message() {
     local text="$1"
     
-    "$BINS/typer" fill -p 0 380 -s 800 80
-    "$BINS/typer" text -ha center -p 400 400 -c 00f0f0 -b 0 -f "Roboto 12pt" -t "$text"
+    "$BINS/typer" -db batch \
+        --batch fill -p 0 380 -s 800 40 -c 0 \
+        --batch text -ha center -p 400 400 -c 00f0f0 -f "Roboto 12pt" -t "$text"
 }
 
 print_progress() {
     local value="$1"
     
     value=$((value > 100 ? 100 : value))
-    
-    "$BINS/typer" fill -p 200 420 -s 400 40 -c 872187
-    "$BINS/typer" fill -p 205 425 -s 390 30 -c 0
-    
     local progress_width=$(( value * 380 / 100 ))
-    "$BINS/typer" fill -p 210 430 -s $progress_width 20 -c 872187
     
-    "$BINS/typer" fill -c 0 -p 610 400 -s 100 80
-    "$BINS/typer" text -p 620 440 -va middle -c 00f0f0 -b 0 -t "${value}%"
+    "$BINS/typer" -db batch \
+        --batch fill -p 200 420 -s 400 40 -c 872187 \
+        --batch fill -p 205 425 -s 390 30 -c 0 \
+        --batch fill -p 210 430 -s $progress_width 20 -c 872187
+
+    "$BINS/typer" -db batch \
+        --batch fill -c 0 -p 610 420 -s 100 60 \
+        --batch text -p 620 440 -va middle -c 00f0f0 -b 0 -t "${value}%"
 }
 
 print_prepare_status() {
     local text="$1"
     
-    "$BINS/typer" fill -p 205 425 -s 390 30 -c 0
-    "$BINS/typer" text -p 400 440 -ha center -va middle -c 00f0f0 -f "JetBrainsMono 8pt" -b 0 -t "${text}"
+    "$BINS/typer" -db batch \
+        --batch fill -p 205 425 -s 390 30 -c 0 \
+        --batch text -p 400 440 -ha center -va middle -c 00f0f0 -f "JetBrainsMono 8pt" -b 0 -t "${text}"
 }
 
 case "$1" in
     draw_loading)
         load_version
         xzcat /opt/config/mod/load.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 236 360 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
-        "$BINS/typer" text -ha center -p 592 360 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+        "$BINS/typer" -db batch \
+            --batch text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
+            --batch text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     draw_splash)
         load_version
         xzcat /opt/config/mod/splash.img.xz > /dev/fb0
-        "$BINS/typer" text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING"
-        "$BINS/typer" text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+        "$BINS/typer" -db batch \
+            --batch text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
+            --batch text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
     ;;
     
     boot_message)
@@ -90,24 +95,28 @@ case "$1" in
         
         messages=""
         for str in "${args[@]:1:($count - 1)}"; do
-            messages="$messages"$'\n'"$str"
+            messages="$messages""$str"$'\n'
         done
 
-        max_lines=3
-        line_height=20
+        max_lines=5
+        line_height=22
         bottom_offset=460
 
-        height=$((count * line_height))
+        height=$(((count - 1) * line_height))
         y_offset=$((bottom_offset - height))
         
-        "$BINS/typer" fill -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height))
+        uptime=$(awk '{print $1}' < /proc/uptime)
 
         if [ "$count" -gt 1 ]; then
-            "$BINS/typer" text -ha center -p 400 $y_offset -c b7a6b5 -f "JetBrainsMono Bold 8pt" -t "$messages"
+            "$BINS/typer" -db batch \
+                --batch fill -c 0 -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height)) \
+                --batch text -ha center -va middle -p 400 $y_offset -c b7a6b5 -f "JetBrainsMono Bold 8pt" -t "$messages" \
+                --batch text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
+        else
+            "$BINS/typer" -db batch \
+                --batch fill -c 0 -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height)) \
+                --batch text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
         fi
-
-        uptime=$(awk '{print $1}' < /proc/uptime)
-        "$BINS/typer" text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
     ;;
     
     print_file)
@@ -127,6 +136,17 @@ case "$1" in
         fi
         
         print_progress "$2"
+    ;;
+
+    print_time)
+        if [ -z "$2" ]; then
+            echo "Time value is missing"
+            exit 1
+        fi
+        
+        "$BINS/typer" -fb batch\
+            --batch fill -c 0 -p 0 400 -s 200 80 \
+            --batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "$2"
     ;;
     
     print_status)

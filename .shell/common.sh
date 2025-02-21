@@ -79,7 +79,7 @@ logged() {
     
     
     messages_queue=()
-    messages_queue_max=3
+    messages_queue_max=5
     
     add_to_queue() {
         local new_item="$1"
