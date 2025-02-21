@@ -68,8 +68,6 @@ case "$1" in
             echo "message text is missing"
             exit 1
         fi
-        
-        uptime=$(awk '{print $1}' < /proc/uptime)
 
         case "${@: -1}" in
             ERROR)
@@ -85,9 +83,31 @@ case "$1" in
                 color=b7a6b5
             ;;
         esac
+
         
-        "$BINS/typer" fill -p 0 440 -s 800 40
-        "$BINS/typer" text -ha center -p 400 460 -c $color -b 0 -f "JetBrainsMono Bold 8pt" -t "$uptime >>  $2"
+        args=("$@")
+        count=$((${#args[@]} - 2))
+        
+        messages=""
+        for str in "${args[@]:1:($count - 1)}"; do
+            messages="$messages"$'\n'"$str"
+        done
+
+        max_lines=3
+        line_height=20
+        bottom_offset=460
+
+        height=$((count * line_height))
+        y_offset=$((bottom_offset - height))
+        
+        "$BINS/typer" fill -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height))
+
+        if [ "$count" -gt 1 ]; then
+            "$BINS/typer" text -ha center -p 400 $y_offset -c b7a6b5 -f "JetBrainsMono Bold 8pt" -t "$messages"
+        fi
+
+        uptime=$(awk '{print $1}' < /proc/uptime)
+        "$BINS/typer" text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
     ;;
     
     print_file)

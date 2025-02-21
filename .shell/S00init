@@ -423,14 +423,19 @@ case "$1" in
     ;;
     
     reload)
-        echo "Apply klipper patches..."
-        apply_klipper_patches
+        {
+            echo "// Apply klipper patches..."
+            apply_klipper_patches
 
-        echo "Apply Other patches..."
-        apply_other_patches
+            echo "// Apply Other patches..."
+            apply_other_patches
         
-        echo "Update configs..."
-        fix_config
+            echo "// Update configs..."
+            fix_config
+
+            echo "// Configuration updated"
+            echo "// Restart klipper process to apply changes"
+        }  2>&1 | logged "/tmp/temp.log" --send-to-screen
     ;;
 
     log)

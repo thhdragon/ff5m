@@ -72,14 +72,14 @@ logged() {
         return 1
     fi
     
-    if ! $log && ! $print; then
+    if ! $log && ! $print && ! $send_to_screen; then
         echo "Error: Printing and logging disabled." >&2
         return 1
     fi
     
     
     messages_queue=()
-    messages_queue_max=1
+    messages_queue_max=3
     
     add_to_queue() {
         local new_item="$1"
@@ -120,15 +120,17 @@ logged() {
         fi
         
         line="${line#"${line%%[![:space:]]*}"}"
-        
-        local log_entry="$log_format"
-        log_entry="${log_entry//'%date%'/$date_str}"
-        log_entry="${log_entry//'%level%'/$line_log_level}"
-        log_entry="${log_entry//'%pid%'/$pid}"
-        log_entry="${log_entry//'%func%'/$func_name}"
-        log_entry="${log_entry//'%line%'/$line_number}"
-        log_entry="${log_entry//'%script%'/$script_name}"
-        log_entry="${log_entry//'%message%'/$line}"
+
+        if $log || $print_formatted; then
+            local log_entry="$log_format"
+            log_entry="${log_entry//'%date%'/$date_str}"
+            log_entry="${log_entry//'%level%'/$line_log_level}"
+            log_entry="${log_entry//'%pid%'/$pid}"
+            log_entry="${log_entry//'%func%'/$func_name}"
+            log_entry="${log_entry//'%line%'/$line_number}"
+            log_entry="${log_entry//'%script%'/$script_name}"
+            log_entry="${log_entry//'%message%'/$line}"
+        fi
         
         if $print; then
             if $print_formatted; then

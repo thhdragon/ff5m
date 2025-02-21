@@ -73,6 +73,6 @@ switch() {
     esac
 }
 
-switch "$@" | logged "/data/logFiles/boot.log"
+switch "$@" 2>&1 | logged "/data/logFiles/boot.log"
 
 exit $?
