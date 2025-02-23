@@ -436,7 +436,7 @@ case "$1" in
 
             echo "// Configuration updated"
             echo "// Restart klipper process to apply changes"
-        }  2>&1 | logged --no-log --send-to-screen --print-level 1
+        }  2>&1 | logged --no-log --send-to-screen --screen-no-followup
     ;;
 
     log)
