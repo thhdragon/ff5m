@@ -50,8 +50,7 @@ for _ in $(seq 30); do
         echo "Connecting..."
     else
         echo "@@ Failed to connect. Current status: $STATUS"
-        sleep 1
-
+        
         echo "?? Try to reconfigure..."
         wpa_cli -i "$INTERFACE" reconfigure
     fi

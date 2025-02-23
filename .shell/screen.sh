@@ -154,14 +154,16 @@ case "$1" in
             color=$(level_to_color "$level")
 
             batches+=(
-                --batch text -ha center -va middle -p 400 "$y_offset" -c "$color" -f "JetBrainsMono Bold 8pt" -t "$message"
+                --batch text -ha left -va middle -p 10 "$y_offset" -c "$color" -f "JetBrainsMono Bold 8pt" -t "$message"
             )
 
             y_offset=$((y_offset + line_height))
         done
 
         uptime=$(awk '{print $1}' < /proc/uptime)
-        batches[-1]="$uptime >> ${batches[-1]}"
+        batches+=(
+            --batch text -ha right -va middle -p 790 "$bottom_offset" -c "00ffff" -f "JetBrainsMono Bold 8pt" -t "<< $uptime"
+        )
 
         "$BINS/typer" -db batch "${batches[@]}"
     ;;
