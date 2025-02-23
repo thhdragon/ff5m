@@ -20,7 +20,7 @@ source /opt/config/mod/.shell/common.sh
 start() {
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ] &&  [ -f "$CUSTOM_BOOT_F" ]; then
         {
-            echo "// Goodby Flashforge :)"
+            echo "// Goodbye Flashforge :)"
             kill -9 "$PPID"
         } 2>&1
 

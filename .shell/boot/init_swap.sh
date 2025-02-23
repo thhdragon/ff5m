@@ -78,7 +78,7 @@ make_swap() {
 }
 
 activate_usb_swap() {
-    echo "Creating SWAP on USB..."
+    echo "// Creating SWAP on USB..."
     
     for device in /dev/sd*; do
         # Skip if it's a partition (e.g., /dev/sda1)
@@ -122,14 +122,13 @@ activate_usb_swap() {
                     continue
                 fi
                 
-                echo "Creating SWAP on USB..."
                 make_swap "$mount_point/swap"
                 
                 if [ $? -eq 0 ]; then
-                    echo "Swap file created and activated on $device"
+                    echo "// Swap file created and activated on $device"
                     return 0
                 else
-                    echo "Failed to enable swap file on $device"
+                    echo "@@ Failed to enable swap file on $device"
                 fi
             done <<< "$partitions"
         else
@@ -141,13 +140,13 @@ activate_usb_swap() {
 }
 
 activate_mmc_swap() {
-    echo "Creating SWAP on eMMC..."
+    echo "// Creating SWAP on eMMC..."
     
     make_swap "$MOD/root/swap"
     if [ $? -eq 0 ]; then
-        echo "Swap file created and activated eMMC"
+        echo "// Swap file created and activated eMMC"
     else
-        echo "Failed to enable swap file on eMMC"
+        echo "@@ Failed to enable swap file on eMMC"
     fi
 }
 

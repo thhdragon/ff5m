@@ -105,7 +105,11 @@ level_to_color() {
 case "$1" in
     draw_loading)
         load_version
-        xzcat /opt/config/mod/load.img.xz > /dev/fb0
+
+        if [ "$2" != "--no-clear" ]; then
+            xzcat /opt/config/mod/load.img.xz > /dev/fb0
+        fi
+        
         "$BINS/typer" -db batch \
             --batch text -ha center -p 236 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 00f0f0 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
@@ -113,7 +117,10 @@ case "$1" in
     
     draw_splash)
         load_version
-        xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+        if [ "$2" != "--no-clear" ]; then
+            xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+        fi
+
         "$BINS/typer" -db batch \
             --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"

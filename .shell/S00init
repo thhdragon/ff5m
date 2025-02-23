@@ -38,28 +38,29 @@ handle_special_boot_mode() {
 }
 
 initialize() {
-    echo "// *** Start initialization"
+    echo "// Initialization started"
     
-    echo "// Checking special boot mode"
+    echo "// Checking special boot mode..."
     handle_special_boot_mode
     
     # If we are here: mod loading not skipped
 
     xzcat /opt/config/mod/load.img.xz > /dev/fb0
 
+    echo "// Mounting partition..."
     mount_data_partition
 
     rotate_logs "/data/logFiles/boot.log"
     rotate_logs "/data/logFiles/ssh.log"
     rotate_logs "/data/logFiles/wifi.log"
     
-    echo "// Init Swap"
+    echo "// SWAP Initialization..."
     /opt/config/mod/.shell/boot/init_swap.sh
 
-    echo "// Init Buildroot"
+    echo "// Buildroot Initialization..."
     init_chroot
 
-    echo "// Init mod's files"
+    echo "// Update links..."
 
     # Services
     rm -f /etc/init.d/S99moon
@@ -81,7 +82,7 @@ initialize() {
     # Runtime
     ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
 
-    echo "// Init version"
+    echo "// Update version..."
     
     # version
     # TODO: Handle case when freshly installed from binary file    
@@ -102,25 +103,25 @@ initialize() {
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
     # Print version onto the screen
-    "$SCRIPTS/screen.sh" draw_loading
+    "$SCRIPTS/screen.sh" draw_loading --no-clear
 
-    echo "// Apply Klipper patches"
+    echo "// Apply klipper patches..."
     apply_klipper_patches
     
-    echo "// Apply other patches"
+    echo "// Apply other patches..."
     apply_other_patches
 
-    echo "// Restore config"
+    echo "// Restore config..."
     fix_config
 
-    echo "// Apply database migrations"
+    echo "// Apply database migrations..."
     
     # database
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
     fi
 
-    echo "// Misc initialization step"
+    echo "// Finishing initialization..."
     
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
@@ -130,7 +131,7 @@ initialize() {
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
     
-    echo "// *** End initialization"
+    echo "// Initialization step done!"
 }
 
 init_chroot() {

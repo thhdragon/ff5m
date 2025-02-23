@@ -40,7 +40,7 @@ if [ "$?" -ne 0 ]; then
     exit 1
 fi
 
-echo "Waiting for MCU to become ready ..."
+echo "// Waiting for MCU to become ready ..."
 
 for _ in $(seq $RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
@@ -54,12 +54,12 @@ for _ in $(seq $RETRIES); do
     print_hex "$buf"
     
     if [[ "$buf" == *"$R_READY"* ]]; then
-        echo "MCU Ready."
+        echo "// MCU Ready."
         break
     fi
 done
 
-echo "Sending boot command..."
+echo "// Sending boot command..."
 
 for _ in $(seq $RETRIES); do
     echo -n "MCU Send: "
@@ -78,8 +78,8 @@ for _ in $(seq $RETRIES); do
     print_hex "$buf"
     
     if [ "$buf" == "$R_ACK" ] || [ "$buf" == "$R_OK" ]; then
-        echo "MCU is starting."
-        break
+        echo "// MCU is starting."
+        exit 0
     fi
 done
 
