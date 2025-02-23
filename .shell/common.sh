@@ -23,13 +23,17 @@ VAR_PATH="$MOD_DATA/variables.cfg"
 unset LD_PRELOAD
 
 logged() {
+    local default_log_level="     "
+
     local print=true
+    local print_level=0
     local print_formatted=false
     local send_to_screen=false
+    local screen_level=1
     local benchmark=false
     local log=true
     local log_file=""
-    local log_level="     "
+    local log_level=0
     local log_format="%date% | %level% | %pid% | %script%:%line% | %message%"
     
     while [[ $# -gt 0 ]]; do
@@ -40,6 +44,9 @@ logged() {
             ;;
             --print-formatted)
                 print_formatted=true
+            ;;
+            --print-level)
+                print_level="$1"; shift
             ;;
             --no-log)
                 log=false
@@ -52,6 +59,9 @@ logged() {
             ;;
             --send-to-screen)
                 send_to_screen=true
+            ;;
+            --screen-level)
+                screen_level="$1"; shift;
             ;;
             --benchmark)
                 benchmark=true
@@ -101,7 +111,7 @@ logged() {
         local script_name=$(basename "$0")
         local line_number=${BASH_LINENO[0]:-"n/a"}
         local func_name=${FUNCNAME[1]:-global}
-        local line_log_level=$log_level
+        local line_log_level="$default_log_level"
 
         local line_bench=""
         if $benchmark; then
@@ -111,12 +121,13 @@ logged() {
             last_time=$now
         fi
         
+        local level=0
         if [[ $line = "@@"* ]]; then
-            line_log_level="ERROR"; line="${line:2}"
+            line_log_level="ERROR"; line="${line:2}"; level=3
         elif [[ $line = "??"* ]]; then
-            line_log_level="WARN "; line="${line:2}"
+            line_log_level="WARN "; line="${line:2}"; level=2
         elif [[ $line = "//"* ]]; then
-            line_log_level="INFO "; line="${line:2}"
+            line_log_level="INFO "; line="${line:2}"; level=1
         fi
         
         line="${line#"${line%%[![:space:]]*}"}"
@@ -132,7 +143,7 @@ logged() {
             log_entry="${log_entry//'%message%'/$line}"
         fi
         
-        if $print; then
+        if $print && [ "$level" -ge "$print_level" ]; then
             if $print_formatted; then
                 printf "%s\n" "$log_entry"
             else
@@ -140,12 +151,12 @@ logged() {
             fi
         fi
         
-        if $send_to_screen && [ -n "$line" ]; then
-            add_to_queue "$line"
-            $SCRIPTS/screen.sh boot_message "${messages_queue[@]}" "${line_log_level%"${line_log_level##*[![:space:]]}"}"
+        if $send_to_screen && [ -n "$line" ] && [ "$level" -ge "$screen_level" ]; then
+            add_to_queue "$level;;$line"
+            $SCRIPTS/screen.sh boot_message "${messages_queue[@]}"
         fi
         
-        if $log; then
+        if $log && [ "$level" -ge "$log_level" ]; then
             printf "%s\n" "${line_bench}${log_entry}" >> "$log_file"
         fi
     done

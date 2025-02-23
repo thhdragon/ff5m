@@ -80,6 +80,28 @@ convert_duration() {
     fi
 }
 
+level_to_color() {
+    local level="$1"
+    local level_trimmed="${level%"${level##*[![:space:]]}"}"
+
+    case "$level_trimmed" in
+            3|ERROR)
+                color=c43c00
+            ;;
+            2|WARN)
+                color=fa7c17
+            ;;
+            1|INFO)
+                color=ffffff
+            ;;
+            *)
+                color=b7a6b5
+            ;;
+        esac
+
+    echo "$color"
+}
+
 case "$1" in
     draw_loading)
         load_version
@@ -98,54 +120,43 @@ case "$1" in
     ;;
     
     boot_message)
-        if [ -z "$2" ]; then
+        shift
+        if [ -z "$1" ]; then
             echo "message text is missing"
             exit 1
         fi
-
-        case "${@: -1}" in
-            ERROR)
-                color=c43c00
-            ;;
-            WARN)
-                color=fa7c17
-            ;;
-            INFO)
-                color=ffffff
-            ;;
-            *)
-                color=b7a6b5
-            ;;
-        esac
-
         
         args=("$@")
-        count=$((${#args[@]} - 2))
-        
-        messages=""
-        for str in "${args[@]:1:($count - 1)}"; do
-            messages="$messages""$str"$'\n'
-        done
+        count=${#args[@]}
 
         max_lines=5
         line_height=22
         bottom_offset=460
 
+        batches=(
+            --batch fill -c 0 -p 0 "$((bottom_offset - max_lines * line_height))" -s 800 "$(((max_lines + 1) * line_height))"
+        )
+
         height=$(((count - 1) * line_height))
         y_offset=$((bottom_offset - height))
-        
-        uptime=$(awk '{print $1}' < /proc/uptime)
 
-        if [ "$count" -gt 1 ]; then
-            "$BINS/typer" -db batch \
-                --batch fill -c 0 -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height)) \
-                --batch text -ha center -va middle -p 400 $y_offset -c b7a6b5 -f "JetBrainsMono Bold 8pt" -t "$messages" \
-                --batch text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
-        else
-            "$BINS/typer" -db batch \
-                --batch fill -c 0 -p 0 $((bottom_offset - max_lines * line_height)) -s 800 $(((max_lines + 1) * line_height)) \
-                --batch text -ha center -va middle -p 400 $bottom_offset -c $color -f "JetBrainsMono Bold 8pt" -t "$uptime >> ${args[*]:$count:1}"
-        fi
+        for str in "${args[@]}"; do
+            # Split argument into level and message
+            level="${str%%;;*}"
+            message="${str#*;;}"
+            color=$(level_to_color "$level")
+
+            batches+=(
+                --batch text -ha center -va middle -p 400 "$y_offset" -c "$color" -f "JetBrainsMono Bold 8pt" -t "$message"
+            )
+
+            y_offset=$((y_offset + line_height))
+        done
+
+        uptime=$(awk '{print $1}' < /proc/uptime)
+        batches[-1]="$uptime >> ${batches[-1]}"
+
+        "$BINS/typer" -db batch "${batches[@]}"
     ;;
     
     print_file)
