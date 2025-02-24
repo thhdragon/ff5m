@@ -62,6 +62,7 @@ By addressing these challenges, this mod strives to unlock the full potential of
 ## Documentation
 - [Installation](docs/INSTALL.md)
 - [Slicing](docs/SLICING.md)
+- [Camera](docs/CAMERA.md)
 - [Dual boot](docs/DUAL_BOOT.md)
 - [Uninstall](docs/UNINSTALL.md)
 - [Recovery guide](docs/RECOVERY.md)
