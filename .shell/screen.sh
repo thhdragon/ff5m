@@ -53,16 +53,25 @@ print_prepare_status() {
 
 print_time() {
     if [ -z "$1" ] || [ -z "$2" ]; then
-        "$BINS/typer" fill -c 0 -p 0 400 -s 200 80
+        print_left_panel ""
         return
     fi
 
     print_duration=$(convert_duration "$1")
     total_duration=$(convert_duration "$2")
 
+    print_left_panel "$print_duration / $total_duration"
+}
+
+print_left_panel() {
+    if [ -z "$1" ]; then
+        "$BINS/typer" fill -c 0 -p 0 400 -s 200 80
+        return
+    fi
+
     "$BINS/typer" -db batch\
         --batch fill -c 0 -p 0 400 -s 200 80 \
-        --batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "$print_duration / $total_duration"
+        --batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "$1"
 }
 
 convert_duration() {
@@ -191,7 +200,11 @@ case "$1" in
     print_time)      
         print_time "$2" "$3"
     ;;
-    
+
+    print_temperature)
+        print_left_panel "$2"
+    ;;
+
     print_status)
         if [ -z "$2" ]; then
             echo "Status is missing"
