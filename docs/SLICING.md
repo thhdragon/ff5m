@@ -1,8 +1,22 @@
 ## Slicing
 
-You need to replace the original start/end gcode with the following:
+To use the mod, you need to replace your slicer's default start and end G-code with the following configurations. These snippets are for _OrcaSlicer_. If you use a different slicer, adjust the placeholders accordingly.
 
-**For OrcaSlicer:**
+#### For Stock Screen
+
+Start Gcode
+```
+START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
+M190 S[bed_temperature_initial_layer_single]
+M104 S[nozzle_temperature_initial_layer]
+```
+
+End Gcode
+```
+END_PRINT
+```
+
+#### For Alternative Screen (Feather Screen)
 
 Start Gcode
 ```
@@ -13,6 +27,7 @@ End Gcode
 ```
 END_PRINT
 ```
+
 
 ### Configuring Moonraker / Klipper connection
 
