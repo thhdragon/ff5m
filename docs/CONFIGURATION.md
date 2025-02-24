@@ -4,7 +4,7 @@ The mod uses its own global configuration management system. The configuration f
 
 However, manually editing this file is not recommended. Parameters alone don't directly control behavior; special scripts handle parameter changes and perform the necessary actions. Instead, use the provided macros to modify settings.
 
-## Configuration Macros
+### Configuration Macros
 - `LIST_MOD_PARAMS`: Lists all available mod parameters and their current values. Use this to explore the full range of configurable settings.
 - `GET_MOD_PARAM PARAM=<name>`: Retrieves the current value of a specific parameter.
 - `SET_MOD_PARAM PARAM=<name> VALUE=<value>`: Sets a new value for a specific parameter.
@@ -44,12 +44,12 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 **Warning:** After changing this value, recreate the bed mesh, adjust Z-Offset, and optionally recalibrate flow and Pressure Advance
 
 
-### Backup Management
+## Backup Management
 
 The mod includes a backup and restore system for the printer's configuration (`printer.base.cfg`). This is essential because stock firmware updates can alter critical parameters, such as `rotation_distance` for steppers, which may lead event to printer damage if not corrected.
 To prevent this, the mod provides a backup management system.
 
-#### Configuring Backup Parameters
+### Configuring Backup Parameters
 
 You can define which parameters or sections to include in the backup by editing the file located in Fluidd under **Configuration -> mod_data -> backup.params.cfg**.  
 The syntax is straightforward:
@@ -65,12 +65,12 @@ The syntax is straightforward:
 -[section name] parameter_name     # Remove a specific parameter from the section
 ```
 
-#### Backup & Restore
+### Backup & Restore
 
 - **Automatic Restore**: The last created backup is automatically restored during the printer's boot process.
 - **Manual Backup**: Backups are not created automatically. You must manually run the `CONFIG_BACKUP` macro to create a backup.
 
-####  Available Macros
+###  Available Macros
 
 - `CONFIG_BACKUP`: Creates a backup of the current configuration.
 - `CONFIG_RESTORE`: Restores the configuration using the most recent backup.
