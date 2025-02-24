@@ -64,6 +64,7 @@ By addressing these challenges, this mod strives to unlock the full potential of
 - [Configuration](docs/CONFIGURATION.md)
 - [Slicing](docs/SLICING.md)
 - [Camera](docs/CAMERA.md)
+- [Telegram Bot and Timelapse](docs/TELEGRAM.md)
 - [Dual boot](docs/DUAL_BOOT.md)
 - [Uninstall](docs/UNINSTALL.md)
 - [Recovery guide](docs/RECOVERY.md)
