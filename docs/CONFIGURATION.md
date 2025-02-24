@@ -41,7 +41,8 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 - `weight_check`: Enables bed collision protection if set to 1.
 
 - `tune_config`: Allows firmware parameter tuning for recommended settings: optimized motors/extruder rotation distance, better probbing, z-parking and more.  
-**Warning:** After changing this value, recreate the bed mesh, adjust Z-Offset, and optionally recalibrate flow and Pressure Advance
+**Warning:** After changing this value, recreate the bed mesh, adjust Z-Offset, and optionally recalibrate flow and Pressure Advance.  
+You can find changed parameters here: [tuning.cfg](/tuning.cfg)
 
 
 ## Backup Management
@@ -77,3 +78,43 @@ The syntax is straightforward:
 - `CONFIG_VERIFY`: Checks if the configuration has changed since the last backup.
 - `BACKUP_TAR`: Creates a .tar archive containing all configuration files for easy storage or transfer.
 
+## User-Defined Parameters
+
+The mod allows you to customize and extend functionality by defining your own macros or overriding existing printer parameters. This override any printer configuration, including `tuning.cfg`. Additionally, you can adjust Moonraker-specific parameters.
+
+**Note**: Changes to `user.cfg` and `user.moonraker.conf` are applied after a restart or configuration reload.
+
+### Customizing Printer Parameters
+
+To add or override printer parameters, edit the file located in Fluidd under **Configuration -> mod_data -> user.cfg**.  
+This file allows you to:
+
+- Define new macros.
+- Override existing parameters (e.g., from tuning.cfg).
+- Add custom configurations.
+
+**Example:**
+
+```cfg
+[gcode_macro MY_CUSTOM_MACRO]
+description: My custom macro
+gcode:
+  M117 Hello, World!
+
+[stepper_x]
+rotation_distance: 40  # Override the rotation_distance for the X stepper
+```
+
+### Customizing Moonraker Parameters
+To modify Moonraker-specific settings, edit the file located in Fluidd under **Configuration -> mod_data -> user.moonraker.conf**.  
+This file allows you to adjust Moonraker behavior, such as API settings, notifications, or plugins.
+
+**Example:**
+
+```cfg
+[authorization]
+force_logins: true  # Require login for all users
+
+[notifier]
+url: http://example.com/notify  # Custom notification endpoint
+```
