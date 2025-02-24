@@ -34,13 +34,13 @@ echo "Initialize network..."
 
 wpa_cli -i $INTERFACE enable_network all
 
-echo "Checking connection status..."
+echo "Initialize Wi-Fi connection..."
 for _ in $(seq 30); do
     STATUS=$(wpa_cli -i "$INTERFACE" status | grep wpa_state | awk -F= '{print $2}')
     
     if [[ "$STATUS" == "COMPLETED" ]]; then
-        echo "Successfully connected!"
-        echo "Requesting DHCP in background...."
+        echo "// Successfully connected!"
+        echo "// Requesting DHCP in background...."
         
         (set -m; udhcpc -i $INTERFACE 2>&1 | logged /data/logFiles/wifi.log --no-print) &> /dev/null &
         disown
@@ -50,7 +50,8 @@ for _ in $(seq 30); do
         echo "Connecting..."
     else
         echo "@@ Failed to connect. Current status: $STATUS"
-        echo "Try to reconfigure..."
+        
+        echo "?? Try to reconfigure..."
         wpa_cli -i "$INTERFACE" reconfigure
     fi
     

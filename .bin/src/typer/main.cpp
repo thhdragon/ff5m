@@ -4,6 +4,7 @@
 //
 // This file may be distributed under the terms of the GNU GPLv3 license
 
+#include <algorithm>
 #include <cstring>
 #include <fcntl.h>
 #include <fstream>
@@ -89,7 +90,7 @@ std::map<std::string, const Font *> fonts{
     {JetBrainsMonoThin28ptb2.name, &JetBrainsMonoThin28ptb2},
 };
 
-void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
+void drawText(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto pos = opts.get<std::vector<int>>("--pos");
     auto color = opts.get<uint32_t>("--color");
     auto bgColor = opts.get<uint32_t>("--bg-color");
@@ -98,7 +99,6 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     auto fontName = opts.get("--font");
     auto hAlignStr = opts.get("--h-align");
     auto vAlignVStr = opts.get("--v-align");
-    auto debug = opts.get<bool>("--debug");
 
     HorizontalAlign hAlign;
     if (hAlignStr == "center") {
@@ -127,7 +127,6 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
 
     const Font *font = fonts[fontName];
 
-    TextDrawer drawer(buffer,WIDTH, HEIGHT);
     drawer.setPosition(pos[0], pos[1]);
     drawer.setColor(color | 0xff000000);
     drawer.setBackgroundColor(opts.is_used("--bg-color") ? 0xff000000 | bgColor : 0);
@@ -135,117 +134,185 @@ void drawText(const argparse::ArgumentParser &opts, uint32_t *buffer) {
     drawer.setFontScale(scale, scale);
     drawer.setHorizontalAlignment(hAlign);
     drawer.setVerticalAlignment(vAlign);
-    drawer.setDebug(debug);
 
     drawer.print(text.c_str());
 }
 
-void fill(const argparse::ArgumentParser &opts, uint32_t *buffer) {
+void fill(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto pos = opts.get<std::vector<int>>("--pos");
     auto size = opts.get<std::vector<int>>("--size");
     auto color = 0xff000000 | opts.get<uint32_t>("--color");
 
-    auto fromX = std::max(0, pos[0]);
-    auto toX = std::min(pos[0] + size[0],WIDTH);
-
-    auto fromY = std::max(0, pos[1]);
-    auto toY = std::min(pos[1] + size[1],HEIGHT);
-
-    for (int j = fromY; j < toY; ++j) {
-        auto *pRow = buffer + j * WIDTH;
-        std::fill(pRow + fromX, pRow + toX, color);
-    }
+    drawer.fillRect(pos[0], pos[1], size[0], size[1], color);
 }
 
-void clear(const argparse::ArgumentParser &opts, uint32_t *buffer) {
+void clear(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto color = 0xff000000 | opts.get<uint32_t>("--color");
-    std::fill_n(buffer, WIDTH * HEIGHT, color);
+    drawer.clear(color);
 }
 
+std::vector<std::vector<std::string>> parse_batch_args(const std::vector<std::string> &args) {
+    if (args.empty()) return {};
 
-int main(int argc, char *argv[]) {
-    argparse::ArgumentParser program("typer");
-    program.add_description("Flashforge AD5M screen drawing utility");
-    program.add_epilog("Copyright (C) 2025, Alexander K <https://github.com/drA1ex>");
+    std::vector<std::vector<std::string>> result;
+    result.emplace_back();
+    result.back().emplace_back("--batch");
 
-    program.add_argument("--list-fonts").help("List loaded fonts and exit.").flag();
+    for (const auto &arg: args) {
+        auto &last = result.back();
+        if (arg == "--batch") {
+            if (last.size() > 1) {
+                result.emplace_back();
+                result.back().emplace_back("--batch");
+            }
 
-    argparse::ArgumentParser text_command("text");
-    text_command.add_description("Prints text at position");
+            continue;
+        }
 
-    text_command.add_argument("--pos", "-p")
+        last.push_back(arg);
+    }
+
+    if (result.back().size() == 1) result.pop_back();
+
+    return std::move(result);
+}
+
+struct ProgramParser {
+    argparse::ArgumentParser program;
+    argparse::ArgumentParser batch_parser;
+    argparse::ArgumentParser text_command;
+    argparse::ArgumentParser fill_command;
+    argparse::ArgumentParser clear_command;
+};
+
+std::unique_ptr<ProgramParser> build_parser() {
+    auto result = std::unique_ptr<ProgramParser>(new ProgramParser{
+        .program = argparse::ArgumentParser("typer"),
+        .batch_parser = argparse::ArgumentParser("batch"),
+        .text_command = argparse::ArgumentParser("text"),
+        .fill_command = argparse::ArgumentParser("fill"),
+        .clear_command = argparse::ArgumentParser("clear")
+    });
+
+    result->program.add_description("Flashforge AD5M screen drawing utility");
+    result->program.add_epilog("Copyright (C) 2025, Alexander K <https://github.com/drA1ex>");
+
+    result->program.add_argument("--debug").flag();
+    result->program.add_argument("--double-buffered", "-db").flag();
+    result->program.add_argument("--list-fonts").help("List loaded fonts and exit.").flag();
+
+    // ************ Batch Parser
+
+    result->batch_parser.add_description("Batch processing");
+    result->batch_parser.add_epilog("Example: ./typer batch \\\n"
+        "    --batch clear <...> \\\n"
+        "    --batch fill <...> \\\n"
+        "    --batch text <...>");
+
+    result->batch_parser.add_argument("--batch")
+        .help("Beginning of a batch")
+        .remaining();
+
+    result->program.add_subparser(result->batch_parser);
+
+    // ************ Text Parser
+
+
+    result->text_command.add_description("Prints text at position");
+
+    result->text_command.add_argument("--pos", "-p")
         .nargs(2)
         .scan<'d', int>()
         .required();
 
-    text_command.add_argument("--color", "-c")
+    result->text_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
         .required();
 
-    text_command.add_argument("--bg-color", "-b")
+    result->text_command.add_argument("--bg-color", "-b")
         .scan<'X', uint32_t>()
         .default_value(0u);
 
-    text_command.add_argument("--font", "-f")
+    result->text_command.add_argument("--font", "-f")
         .default_value(Roboto12pt.name);
 
-    text_command.add_argument("--scale", "-s")
+    result->text_command.add_argument("--scale", "-s")
         .scan<'d', int>()
         .default_value(1);
 
-    text_command.add_argument("--text", "-t").required();
-    program.add_subparser(text_command);
+    result->text_command.add_argument("--text", "-t").required();
 
-    text_command.add_argument("--h-align", "-ha")
+    result->text_command.add_argument("--h-align", "-ha")
         .choices("left", "center", "right")
         .default_value("left");
 
-    text_command.add_argument("--v-align", "-va")
+    result->text_command.add_argument("--v-align", "-va")
         .choices("bottom", "baseline", "middle", "top")
         .default_value("baseline");
 
-    text_command.add_argument("--debug")
-        .flag();
+    result->program.add_subparser(result->text_command);
 
-    program.add_subparser(text_command);
+    // ************ Fill Parser
 
-    argparse::ArgumentParser fill_command("fill");
-    fill_command.add_description("Fill specified region with color");
-    fill_command.add_argument("--pos", "-p")
+    result->fill_command.add_description("Fill specified region with color");
+    result->fill_command.add_argument("--pos", "-p")
         .nargs(2)
         .scan<'d', int>()
         .required();
 
-    fill_command.add_argument("--size", "-s")
+    result->fill_command.add_argument("--size", "-s")
         .nargs(2)
         .scan<'d', int>()
         .required();
 
-    fill_command.add_argument("--color", "-c")
+    result->fill_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
         .default_value(0u);
 
-    program.add_subparser(fill_command);
+    result->program.add_subparser(result->fill_command);
 
-    argparse::ArgumentParser clear_command("clear");
-    clear_command.add_description("Clear entire screen");
+    // ************ Clear Parser
 
-    clear_command.add_argument("--color", "-c")
+    result->clear_command.add_description("Clear entire screen");
+
+    result->clear_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
         .default_value(0u);
 
-    program.add_subparser(clear_command);
+    result->program.add_subparser(result->clear_command);
+
+    return result;
+}
+
+void run_program(const ProgramParser &args, TextDrawer &drawer) {
+    auto &[
+        program, batch_parser, text_command, fill_command, clear_command
+    ] = args;
+
+    if (program.is_subcommand_used("fill")) {
+        fill(fill_command, drawer);
+    } else if (program.is_subcommand_used("text")) {
+        drawText(text_command, drawer);
+    } else if (program.is_subcommand_used("clear")) {
+        clear(clear_command, drawer);
+    } else {
+        std::cerr << "Unknown program: " << program << std::endl;
+    }
+}
+
+int main(int argc, char *argv[]) {
+    auto main = build_parser();
 
     try {
-        program.parse_args(argc, argv);
+        main->program.parse_args(argc, argv);
     } catch (const std::exception &e) {
         std::cerr << "Unable to parse args: " << e.what() << std::endl;
 
-        std::cout << program << std::endl;
+        std::cout << main->program << std::endl;
         return 1;
     }
 
-    if (program.get<bool>("--list-fonts")) {
+    if (main->program.get<bool>("--list-fonts")) {
         std::cout << "Loaded fonts: " << std::endl;
 
         const auto keys = std::ranges::views::keys(fonts);
@@ -269,17 +336,33 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    TextDrawer drawer(fbp, WIDTH, HEIGHT);
+    drawer.setDoubleBuffered(main->program.get<bool>("--double-buffered"));
+    drawer.setDebug(main->program.get<bool>("--debug"));
 
-    if (program.is_subcommand_used("fill")) {
-        fill(fill_command, fbp);
-    } else if (program.is_subcommand_used("text")) {
-        drawText(text_command, fbp);
-    } else if (program.is_subcommand_used("clear")) {
-        clear(clear_command, fbp);
+    if (main->program.is_subcommand_used("batch")) {
+        auto batch_args = main->batch_parser.get<std::vector<std::string>>("--batch");
+        auto batches = parse_batch_args(batch_args);
+
+        for (auto &batch: batches) {
+            auto batch_parser = build_parser();
+
+            try {
+                batch_parser->program.parse_args(batch);
+            } catch (const std::exception &e) {
+                std::cerr << "Unable to parse batch: ";
+                for (const auto &str: batch) { std::cerr << "\"" << str << "\" "; }
+                std::cerr << std::endl;
+                std::cerr << "Error: " << e.what() << std::endl;
+            }
+
+            run_program(*batch_parser, drawer);
+        }
     } else {
-        std::cout << program << std::endl;
-        return 1;
+        run_program(*main, drawer);
     }
+
+    drawer.flush();
 
     munmap(fbp, WIDTH * HEIGHT * 4);
     close(fbfd);

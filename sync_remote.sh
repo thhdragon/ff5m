@@ -137,7 +137,11 @@ fi
 
 sync
 
-if [ "$CHANGED" -eq 0 ]; then
+if [ "$CHANGED" -eq 1 ]; then
+    date +%Y-%m-%dT%H:%M:%SZ > /opt/config/mod/patch.txt
+    cp -f /opt/config/mod/patch.txt /tmp/version_patch
+    /opt/config/mod/.shell/motd.sh > /etc/motd
+else
     echo; echo -e "${YELLOW}Printer is already in-sync${NC}"
 fi
 

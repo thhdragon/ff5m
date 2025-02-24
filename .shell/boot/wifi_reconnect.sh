@@ -22,4 +22,4 @@ handle() {
     esac
 }
 
-handle "$@" | logged "/data/logFiles/wifi.log"
+handle "$@" 2>&1 | logged "/data/logFiles/wifi.log"

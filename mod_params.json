@@ -203,7 +203,8 @@
       "key": "display_off",
       "type": "bool",
       "default": 0,
-      "label": "Screen off"
+      "label": "Display",
+      "options": ["Flashforge", "Feather"]
     },
     {
       "key": "camera",

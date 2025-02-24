@@ -127,7 +127,7 @@ load_profile() {
     return 1
 }
 
-echo -e "${GREEN}Flashforge zmod+ synchronization script${NC}\n"
+echo -e "${GREEN}Flashforge Forge-X synchronization script${NC}\n"
 
 while [ "$#" -gt 0 ]; do
     param=$1; shift
@@ -167,7 +167,7 @@ while [ "$#" -gt 0 ]; do
             FORCE_RESTART=1
         ;;
         --verbose|-v)
-            print_label "*" "Vebose mode enabled."
+            print_label "*" "Verbose mode enabled."
             VERBOSE=1
         ;;
         --help)
@@ -175,7 +175,7 @@ while [ "$#" -gt 0 ]; do
         ;;
         *)
             HELP=1
-            echo -e "${RED}Unknow parameter: \"${param}\"${NC}"
+            echo -e "${RED}Unknown parameter: \"${param}\"${NC}"
         ;;
     esac
 done

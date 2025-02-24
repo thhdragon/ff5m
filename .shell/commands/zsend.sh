@@ -24,10 +24,16 @@ if [ "$#" -eq 2 ]; then
     
     if [ -z "$M109" ] || [ -z "$M190" ]; then
         echo "RESPOND TYPE=error MSG=\"Commands for heating the bed (M140/M190) or nozzle (M104/M109) were not found in the file $2.\"" > /tmp/printer
+        echo "RESPOND TYPE=error MSG=\"Without these commands Stock Firmware will not print a file.\"" > /tmp/printer
         exit 1
     fi
     
-    RET=$(/usr/bin/python /root/printer_data/py/zsend.py "M23" "$2")
+    RET=$(/usr/bin/python /root/printer_data/py/zsend.py "M23" "$2" 2>&1)
+
+    if [ "$?" -ne 0 ]; then
+        echo -e "Error while sending file to print."
+    fi
+    
     echo -e "$RET"
     
     exit

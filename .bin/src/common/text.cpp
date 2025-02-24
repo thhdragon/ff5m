@@ -13,6 +13,14 @@
 #include <ranges>
 #include <stdexcept>
 
+
+TextDrawer::~TextDrawer() {
+    flush();
+
+    delete[] _backBuffer;
+    _backBuffer = nullptr;
+}
+
 void TextBoundary::offset(int32_t x, int32_t y) {
     this->left += x;
     this->right += x;
@@ -50,6 +58,15 @@ void TextDrawer::setBackgroundColor(uint32_t color) {
     _backgroundColor = color;
 }
 
+void TextDrawer::setDoubleBuffered(bool enable) {
+    if (enable && !_backBuffer) {
+        _backBuffer = new uint32_t[_width * _height];
+    } else if (!enable && _backBuffer) {
+        delete[] _backBuffer;
+        _backBuffer = nullptr;
+    }
+}
+
 void TextDrawer::setPosition(int32_t x, int32_t y) {
     _cursorX = x;
     _cursorY = y;
@@ -81,15 +98,21 @@ void TextDrawer::print(const char *text) {
 
     for (const auto &line: lines) {
         auto b = calcTextBoundaries(line, _cursorX, _cursorY);
-        _fillRect(b, _backgroundColor);
+        if (b.left >= b.right && b.top >= b.bottom) {
+            // Empty line or no supported glyphs
+            breakLine();
+            continue;
+        }
+
+        fillRect(b, _backgroundColor);
 
         if (_debug) {
-            _fillRect({b.left, b.baseline, b.right, b.baseline + 1}, 0xff0000ff);
+            fillRect({b.left, b.top, b.left + 1, b.bottom}, 0xff00ff00);
+            fillRect({b.right, b.top, b.right + 1, b.bottom}, 0xff00ff00);
+            fillRect({b.left, b.top, b.right, b.top + 1}, 0xff00ff00);
+            fillRect({b.left, b.bottom, b.right, b.bottom + 1}, 0xff00ff00);
 
-            _fillRect({b.left, b.top, b.left + 1, b.bottom}, 0xff00ff00);
-            _fillRect({b.right, b.top, b.right + 1, b.bottom}, 0xff00ff00);
-            _fillRect({b.left, b.top, b.right, b.top + 1}, 0xff00ff00);
-            _fillRect({b.left, b.bottom, b.right, b.bottom + 1}, 0xff00ff00);
+            fillRect({b.left, b.baseline, b.right, b.baseline + 1}, 0xff0000ff);
         }
 
         int32_t x = b.start;
@@ -105,6 +128,34 @@ void TextDrawer::print(const char *text) {
 
 void TextDrawer::breakLine() {
     _cursorY += font()->advanceY * _scaleY;
+}
+
+void TextDrawer::flush() {
+    if (!_backBuffer
+        || _affectedArea.left >= _affectedArea.right
+        || _affectedArea.top >= _affectedArea.bottom) {
+        return;
+    }
+
+    if (_debug) {
+        fillRect(_affectedArea.left, _affectedArea.top - 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
+        fillRect(_affectedArea.left, _affectedArea.bottom + 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
+        fillRect(_affectedArea.left - 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
+        fillRect(_affectedArea.right + 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
+    }
+
+    if (_affectedArea.left < 0) _affectedArea.left = 0;
+    if (_affectedArea.right > _width) _affectedArea.right = (int32_t) _width;
+    if (_affectedArea.top < 0) _affectedArea.top = 0;
+    if (_affectedArea.bottom > _height) _affectedArea.bottom = (int32_t) _height;
+
+    for (uint32_t j = _affectedArea.top; j < _affectedArea.bottom; ++j) {
+        auto *src = _backBuffer + j * _width;
+        auto *dst = _screen + j * _width + _affectedArea.left;
+        std::copy(src + _affectedArea.left, src + _affectedArea.right, dst);
+    }
+
+    _affectedArea = {};
 }
 
 int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
@@ -132,9 +183,9 @@ int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
             auto color = _mixColor(_backgroundColor, _color, factor);
 
             if (_scaleX == 1 && _scaleY == 1) {
-                _setPixel(offsetX + gx, offsetY + gy, color);
+                setPixel(offsetX + gx, offsetY + gy, color);
             } else {
-                _fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, color);
+                fillRect(offsetX + gx * _scaleX, offsetY + gy * _scaleY, _scaleX, _scaleY, color);
             }
         }
     }
@@ -143,15 +194,24 @@ int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
     return glyph.advanceX * _scaleX;
 }
 
-void TextDrawer::_setPixel(int32_t x, int32_t y, uint32_t color) {
+void TextDrawer::setPixel(int32_t x, int32_t y, uint32_t color) {
     if ((color & 0xff000000) == 0) return; // Skip fully transparent colors
     if (x < 0 || x >= _width || y < 0 || y >= _height) return;
 
-    _screen[y * _width + x] = color;
+    if (_backBuffer) {
+        _backBuffer[y * _width + x] = color;
+
+        if (_affectedArea.left > x) _affectedArea.left = x;
+        if (_affectedArea.right <= x) _affectedArea.right = x + 1;
+        if (_affectedArea.top > y) _affectedArea.top = y;
+        if (_affectedArea.bottom <= y) _affectedArea.bottom = y + 1;
+    } else {
+        _screen[y * _width + x] = color;
+    }
 }
 
-void TextDrawer::_fillRect(const TextBoundary &b, uint32_t color) {
-    _fillRect(
+void TextDrawer::fillRect(const Rect &b, uint32_t color) {
+    fillRect(
         b.left, b.top,
         std::max(b.right - b.left, 0),
         std::max(b.bottom - b.top, 0),
@@ -159,21 +219,33 @@ void TextDrawer::_fillRect(const TextBoundary &b, uint32_t color) {
     );
 }
 
-void TextDrawer::_fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color) {
+void TextDrawer::fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color) {
     if ((color & 0xff000000) == 0) return; // Skip fully transparent colors
 
-    uint32_t fromX = std::max(0, x);
-    auto toX = std::min<uint32_t>(x + (int32_t) width, _width);
+    auto fromX = std::max(0, x);
+    auto toX = std::min(x + (int32_t) width, (int32_t) _width);
 
     if (fromX >= toX) return;
 
-    uint32_t fromY = std::max(0, y);
-    auto toY = std::min<uint32_t>(fromY + (int32_t) height, _height);
+    auto fromY = std::max(0, y);
+    auto toY = std::min(fromY + (int32_t) height, (int32_t) _height);
 
-    for (uint32_t j = fromY; j < toY; ++j) {
-        auto *pRow = _screen + j * _width;
+    auto buffer = _backBuffer ? _backBuffer : _screen;
+    for (int32_t j = fromY; j < toY; ++j) {
+        auto *pRow = buffer + j * _width;
         std::fill(pRow + fromX, pRow + toX, color);
     }
+
+    if (_backBuffer) {
+        if (_affectedArea.left > fromX) _affectedArea.left = fromX;
+        if (_affectedArea.right <= toX) _affectedArea.right = toX + 1;
+        if (_affectedArea.top > fromY) _affectedArea.top = fromY;
+        if (_affectedArea.bottom <= toY) _affectedArea.bottom = toY + 1;
+    }
+}
+
+void TextDrawer::clear(uint32_t color) {
+    fillRect(0, 0, _width, _height, color);
 }
 
 TextBoundary TextDrawer::calcTextBoundaries(const char *text, int32_t x, int32_t y) const {
@@ -221,6 +293,7 @@ TextBoundary TextDrawer::calcTextBoundaries(const std::string_view &text, int32_
 
     if (boundary.left > boundary.right || boundary.top > boundary.bottom) {
         boundary.left = boundary.top = boundary.right = boundary.bottom = 0;
+        return boundary;
     }
 
     auto [offsetX, offsetY] = _getAlignmentOffset(boundary);

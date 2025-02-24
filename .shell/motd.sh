@@ -8,6 +8,7 @@
 
 MOD_VERSION=${1-$(cat /opt/config/mod/version.txt)}
 FIRMWARE_VERSION=${2-$(cat /root/version)}
+VERSION_PATCH=${3-$(cat /tmp/version_patch)}
 
 centered() {
     local text="$1"; local width=$2; local offset=${3:-0}
@@ -25,8 +26,9 @@ centered() {
 _S="🔥"
 _OFFSET=$(( ${#_S} - 1 ))
 
-MOD_TEXT=$(centered "🔥 \033[1;36mZMOD+ v${MOD_VERSION}" 35 $_OFFSET)
+MOD_TEXT=$(centered "🔥 \033[1;36mFORGE-X v${MOD_VERSION}" 35 $_OFFSET)
 FF_TEXT=$(centered "\033[1;33m⚡ \033[36mAD5M v${FIRMWARE_VERSION}" 35 $_OFFSET)
+PATCH_TEXT=$(centered "\033[1;36m${VERSION_PATCH}" 35 0)
 
 echo -e "\033[35m
 
@@ -39,6 +41,6 @@ echo -e "\033[35m
  ╚═╝      ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝██║      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝
                                      ██║
  ${MOD_TEXT}\033[0;35m██║  ${FF_TEXT}\033[0;35m
-                                     ╚═╝
+ ${PATCH_TEXT} \033[0;35m╚═╝
 
 \033[0m"

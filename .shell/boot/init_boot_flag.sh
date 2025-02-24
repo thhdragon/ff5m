@@ -44,7 +44,7 @@ search_special_boot_flag_usb() {
         fi
         
         if is_usb_disk "$device"; then
-            echo "Found USB disk: $device"
+            echo "// Found USB disk: $device"
             
             partitions=$(fdisk -l "$device" | awk '/^ *[0-9]+/ {print $1 " " $4}' | sort -k2,2nr)
             if [ -z "$partitions" ]; then
@@ -80,7 +80,7 @@ search_special_boot_flag_usb() {
                 fi
 
                 if [ -n "$found" ]; then
-                    echo "Boot flag found: $found"
+                    echo "// Boot flag found: $found"
                     eval "$callback" "$found"
                     return 0
                 fi
@@ -97,7 +97,7 @@ search_special_boot_flag_root() {
 
     found=$(check_special_boot_flag "/opt/config/mod/")
     if [ -n "$found" ]; then
-        echo "Boot flag found: $found"
+        echo "// Boot flag found: $found"
         eval "$callback" "$found"
         return 0
     fi
@@ -110,14 +110,14 @@ handle_special_boot_flag() {
     
     case "$name" in
         SKIP_ZMOD)
-            echo "Skipping mod load..."
+            echo "?? Skipping mod load..."
             rm -f /opt/config/mod/SKIP_ZMOD
             touch /tmp/SKIP_ZMOD
             
             exit 0
             ;;
         SKIP_ZMOD_SOFT)
-            echo "Skipping mod load in soft mode..."
+            echo "?? Skipping mod load in soft mode..."
             rm -f /opt/config/mod/SKIP_ZMOD_SOFT
             touch /tmp/SKIP_ZMOD_SOFT
 
@@ -129,7 +129,7 @@ handle_special_boot_flag() {
             exit 0
             ;;
         REMOVE_ZMOD)
-            echo "Removing mod..."
+            echo "@@ Removing mod..."
             mount_data_partition
             
             cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
@@ -138,7 +138,7 @@ handle_special_boot_flag() {
             exit 0
             ;;
         SOFT_REMOVE_ZMOD)
-            echo "Removing mod in soft mode..."
+            echo "@@ Removing mod in soft mode..."
         
             mount_data_partition
             cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
@@ -147,7 +147,7 @@ handle_special_boot_flag() {
             exit 0
             ;;
         *)
-            echo "Unknown special boot flag \"$name\""
+            echo "@@ Unknown special boot flag \"$name\""
             exit 1
     esac
 }
@@ -155,8 +155,13 @@ handle_special_boot_flag() {
 search() {
     local callback=$1
 
-    search_special_boot_flag_root "$callback"
-    search_special_boot_flag_usb "$callback"
+    search_special_boot_flag_root "$callback" \
+        || search_special_boot_flag_usb "$callback"
+
+    ret=$?
+    echo "// No special boot flag found."
+
+    return $ret
 }
 
 case "$1" in

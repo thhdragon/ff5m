@@ -35,16 +35,28 @@ source "/opt/config/mod_data/camera.conf"
 
 _VIDEO_P="/dev/${VIDEO}"
 
+if [ "$VIDEO" = "auto" ]; then
+    _VIDEO_P="/dev/video0"
+    
+    for device in /dev/video*; do
+        v4l2-ctl -d /dev/video1 -V &> /dev/null
+        
+        if [ "$?" -eq 0 ]; then
+            _VIDEO_P=$device
+            break;
+        fi
+    done
+fi
 
 start() {
     enabled=$($CFG_SCRIPT $VAR_PATH --get "camera" "0")
     if [ "$enabled" -eq 1 ]; then
-        /usr/bin/v4l2-ctl --set-fmt-video=width="${WIDTH}",height="${HEIGHT}",pixelformat=1
+        v4l2-ctl -d "${_VIDEO_P}" --set-fmt-video=width="${WIDTH}",height="${HEIGHT}"
         start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
         
         reload
     else
-        echo "Camera disabled"
+        echo "Camera disabled in configuration"
     fi
 }
 
@@ -60,11 +72,11 @@ restart() {
 
 reload() {
     if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
-        v4l2-ctl --set-ctrl sharpness=${E_SHARPNESS} --device=${_VIDEO_P}
-        v4l2-ctl --set-ctrl brightness=${E_BRIGHTNESS} --device=${_VIDEO_P}
-        v4l2-ctl --set-ctrl contrast=${E_CONTRAST} --device=${_VIDEO_P}
-        v4l2-ctl --set-ctrl gamma=${E_GAMMA} --device=${_VIDEO_P}
-        v4l2-ctl --set-ctrl gain=${E_GAIN} --device=${_VIDEO_P}
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness=${E_SHARPNESS}
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl brightness=${E_BRIGHTNESS}
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast=${E_CONTRAST}
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma=${E_GAMMA}
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain=${E_GAIN}
     fi
 }
 

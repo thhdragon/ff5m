@@ -19,15 +19,15 @@ source /opt/config/mod/.shell/common.sh
 
 start() {
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ] &&  [ -f "$CUSTOM_BOOT_F" ]; then
-        {
-            echo "// Goodby Flashforge :)"
-            kill -9 "$PPID"
-        } 2>&1
-
         # Turn off and on display's backlight otherwise it's will not work.
         "$SCRIPTS"/screen.sh backlight 0
         "$SCRIPTS"/screen.sh draw_splash
         "$SCRIPTS"/screen.sh backlight 100
+
+        {
+            echo "// Goodbye Flashforge :)"
+            kill -9 "$PPID"
+        } 2>&1
         
         sound_enabled=$($CFG_SCRIPT "$VAR_PATH" --get "sound" "1")
         [ "$sound_enabled" -eq 1 ] && \
@@ -37,10 +37,11 @@ start() {
         fi
     fi
     
-    echo "// Starting Buildroot env..."
+    echo "// Starting services..."
     chroot "$MOD" /opt/config/mod/.root/start.sh
-    echo "// Done"
-    
+    echo "// Done. Loaded for $(awk '{print $1}' < /proc/uptime) sec."
+
+    rm -f "$SCREEN_FOLLOW_UP_LOG"
     touch "$NOT_FIRST_LAUNCH_F"
 }
 
@@ -73,6 +74,6 @@ switch() {
     esac
 }
 
-switch "$@" | logged "/data/logFiles/boot.log"
+switch "$@" 2>&1 | logged "/data/logFiles/boot.log" --send-to-screen --screen-no-followup
 
 exit $?

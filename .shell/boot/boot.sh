@@ -19,10 +19,13 @@ if [ ! -f /etc/init.d/S00init ]; then
     /etc/init.d/S00init start
 fi
 
-if ! "$CMDS/zdisplay.sh" test; then
-    # Init Wi-Fi
+"$CMDS"/zdisplay.sh test
+DISPLAY_OFF=$?
+
+if [ "$DISPLAY_OFF" -eq 1 ]; then
+    # Init Network
     
-    echo "Initialize Wi-Fi..."
+    echo "// Network initialization..."
     if [ -f "/etc/wpa_supplicant.conf" ]; then
         echo "Configuration found"
         
@@ -33,7 +36,7 @@ if ! "$CMDS/zdisplay.sh" test; then
         fi
         
         if ! ps | grep -q "[n]l80211"; then
-            echo "Try to connect..."
+            echo "// Try to connect..."
             
             for _ in $(seq 5); do
                 "$SCRIPTS/boot/wifi_connect.sh" 2>&1 | logged /data/logFiles/wifi.log --no-print --send-to-screen
@@ -41,7 +44,7 @@ if ! "$CMDS/zdisplay.sh" test; then
                 
                 if [ "$ret" -eq 0 ]; then
                     MOD_CUSTOM_BOOT=1
-                    echo "Connected"
+                    echo "// Connected!"
                     break
                 fi
                 
@@ -59,7 +62,7 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     killall "wpa_cli"
     wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
 
-    echo "Network initialized."
+    echo "// Network initialized!"
     touch "$CUSTOM_BOOT_F"
     
     sleep 1
@@ -69,18 +72,20 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     mount -t configfs none /sys/kernel/config -o rw,relatime
     mount -t debugfs none /sys/kernel/debug -o rw,relatime
     
-    echo "Boot MCU."
+    echo "// MCU booting..."
     /opt/config/mod/.shell/boot/boot_mcu.sh
     
-    echo "Start klipper."
+    echo "// Start klipper."
     /opt/klipper/start.sh &> /dev/null
 
-    echo "Boot sequence done"
-else
+    echo "// Boot sequence done!"
+elif [ "$DISPLAY_OFF" -eq 1 ]; then
     if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
         echo "?? Switch config to enabled screen..."
         /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
     fi
 
     echo "@@ Failed to initialize mod. Booting into stock firmware..."
+else 
+    echo "// Booting stock firmware..." 
 fi

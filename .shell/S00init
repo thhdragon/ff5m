@@ -38,37 +38,29 @@ handle_special_boot_mode() {
 }
 
 initialize() {
-    echo "// *** Start initialization"
+    echo "// Initialization started"
     
-    echo "// Checking special boot mode"
+    echo "// Checking special boot mode..."
     handle_special_boot_mode
     
     # If we are here: mod loading not skipped
 
     xzcat /opt/config/mod/load.img.xz > /dev/fb0
 
+    echo "// Mounting partition..."
     mount_data_partition
 
     rotate_logs "/data/logFiles/boot.log"
     rotate_logs "/data/logFiles/ssh.log"
     rotate_logs "/data/logFiles/wifi.log"
     
-    echo "// Init Swap"
+    echo "// SWAP Initialization..."
     /opt/config/mod/.shell/boot/init_swap.sh
 
-    echo "// Init Buildroot"
+    echo "// Buildroot Initialization..."
     init_chroot
 
-    echo "// Apply Klipper patches"
-    apply_klipper_patches
-    
-    echo "// Apply other patches"
-    apply_other_patches
-
-    echo "// Restore config"
-    fix_config
-
-    echo "// Init mod's files"
+    echo "// Update links..."
 
     # Services
     rm -f /etc/init.d/S99moon
@@ -90,7 +82,7 @@ initialize() {
     # Runtime
     ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
 
-    echo "// Init version"
+    echo "// Update version..."
     
     # version
     # TODO: Handle case when freshly installed from binary file    
@@ -102,23 +94,34 @@ initialize() {
     MOD_VERSION=$(cat /opt/config/mod/version.txt)
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
 
-    if [ "$GIT_BRANCH" != "main" ]; then
+    if [ -f /opt/config/mod/patch.txt ]; then
+        cp -f /opt/config/mod/patch.txt /tmp/version_patch
+    elif [ "$GIT_BRANCH" != "main" ]; then
         echo "$GIT_BRANCH-$GIT_COMMIT_ID" > /tmp/version_patch
     fi
     
     chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
     # Print version onto the screen
-    "$SCRIPTS/screen.sh" draw_loading
+    "$SCRIPTS/screen.sh" draw_loading --no-clear
 
-    echo "// Apply database migrations"
+    echo "// Apply klipper patches..."
+    apply_klipper_patches
+    
+    echo "// Apply other patches..."
+    apply_other_patches
+
+    echo "// Restore config..."
+    fix_config
+
+    echo "// Apply database migrations..."
     
     # database
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
     fi
 
-    echo "// Misc initialization step"
+    echo "// Finishing initialization..."
     
     /opt/config/mod/.shell/motd.sh > /etc/motd
     /opt/config/mod/.shell/commands/zshaper.sh --clear
@@ -128,7 +131,7 @@ initialize() {
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
     
-    echo "// *** End initialization"
+    echo "// Initialization step done!"
 }
 
 init_chroot() {
@@ -186,11 +189,7 @@ init_chroot() {
 apply_klipper_patches() {
     local SRC_DIR="/opt/config/mod/.py/klipper"
     local TARGET_DIR="/opt/klipper/klippy"
-    
-    # Klipper extensions
-    echo "// Link klipper plugins: "
-    echo $SRC_DIR/plugins/*
-    echo
+
 
     # Remove old patches/extensions
     find $TARGET_DIR -type l | while read -r file; do
@@ -222,8 +221,13 @@ apply_klipper_patches() {
         mkdir -p "$TARGET_DIR/$rel_path"
         
         if [ ! -L "$target" ]; then
-            echo "// Create klipper file backup: $target"
-            mv "$target" "$target.bak"
+            if [ ! -f "$target.bak" ]; then
+                echo "// Create klipper file backup: $target"
+                mv "$target" "$target.bak"
+            else
+                echo "// Remove overwritten klipper file: $target"
+                rm -f "$target"
+            fi
             
             echo "// Link patched klipper file: $file"
             ln -fs "$file" "$target"
@@ -344,7 +348,29 @@ fix_config() {
         \"avoid_writes\": true
     }," >> $BATCH_FILE
 
-    # 6. Restore printer.base.cfg if a backup exists
+    # 6. Apply tunning parameters
+    TUNING_ENABLED=$("$CMDS"/zconf.sh "$VAR_PATH" --get "tune_config" "0")
+    if [ "$TUNING_ENABLED" -eq 1 ]; then
+        echo "
+        {
+            \"mode\": \"restore\",
+            \"config\": \"/opt/config/printer.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/tuning.cfg\",
+            \"no_data\": true,
+            \"avoid_writes\": true
+        }," >> $BATCH_FILE
+    else
+         echo "
+        {
+            \"mode\": \"restore\",
+            \"config\": \"/opt/config/printer.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/tuning.off.cfg\",
+            \"no_data\": true,
+            \"avoid_writes\": true
+        }," >> $BATCH_FILE
+    fi
+
+    # 7. Restore printer.base.cfg if a backup exists
     if [ -f /opt/config/printer.base.cfg.bak ]; then
         echo "
         {
@@ -398,9 +424,19 @@ case "$1" in
     ;;
     
     reload)
-        apply_klipper_patches
-        apply_other_patches
-        fix_config
+        {
+            echo "// Apply klipper patches..."
+            apply_klipper_patches
+
+            echo "// Apply Other patches..."
+            apply_other_patches
+        
+            echo "// Update configs..."
+            fix_config
+
+            echo "// Configuration updated"
+            echo "// Restart klipper process to apply changes"
+        }  2>&1 | logged --no-log --send-to-screen --screen-no-followup
     ;;
 
     log)

@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # Run
-# bash <(wget --cache=off -q -O - https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.sh)
+# bash <(wget --cache=off -q -O - https://github.com/dra1ex/ff5m/raw/refs/heads/main/telegram/telegram.sh)
 
 apt update 
 apt upgrade -y
 apt install docker.io docker-compose docker sudo -y
 
-useradd -m -G docker tbot
-chsh tbot -s /bin/bash
+useradd -m -G docker ff5m
+chsh ff5m -s /bin/bash
 
 systemctl enable docker
 systemctl restart docker
 
-cd ~tbot
+cd ~/ff5m
+
 cat > install.sh <<EOF
 #!/bin/bash
 cd
@@ -23,10 +24,10 @@ mkdir -p \${bot_name}
 cd \${bot_name}
 echo "The bot is installed in the directory $(pwd)"
 mkdir -p config log timelapse_finished timelapse 
-wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/ff5m.sh
+wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/dra1ex/ff5m/refs/heads/main/telegram/ff5m.sh
 chmod +x ../ff5m.sh
-wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/ghzserg/ff5m/refs/heads/main/telegram/docker-compose.yml
-wget --cache=off -q -O config/telegram.conf https://github.com/ghzserg/ff5m/raw/refs/heads/main/telegram/telegram.conf
+wget --cache=off -q -O docker-compose.yml https://raw.githubusercontent.com/dra1ex/ff5m/refs/heads/main/telegram/docker-compose.yml
+wget --cache=off -q -O config/telegram.conf https://github.com/dra1ex/ff5m/raw/refs/heads/main/telegram/telegram.conf
 chmod 777 config log timelapse_finished timelapse
 
 echo "1. Go to https://t.me/BotFather
@@ -51,5 +52,6 @@ docker-compose up -d
 read -p "Do you need to create another bot? [y/N]: " vopros
 if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then cd; ./install.sh; fi
 EOF
+
 chmod +x install.sh
-su - tbot ./install.sh
+su - ff5m ./install.sh
