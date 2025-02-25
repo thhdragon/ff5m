@@ -70,7 +70,5 @@ To see usage instructions, run:
 
 It's not suitable for a full UI, but it consumes almost no resources and allows you to print any information you need.
 
-To print/draw information you can use `typer` tool, which localed at `/root/printer_data/bin/typer`
-To see how to use it, run `/root/printer_data/bin/typer --help`
 
 For examples you can view [display_off.cfg](/display_off.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
