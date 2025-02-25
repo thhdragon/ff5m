@@ -37,10 +37,12 @@ SET_MOD_PARAM PARAM="display_off" VALUE=1
 This will disable the stock screen and activate the Feather screen immediately. **Make sure to wait until the current print finishes before doing this! :)**
 
 
-**Note**: You must configure **Wi-Fi** before disabling the stock screen.
-After a reboot, the mod connects to a network automatically, but it uses the configuration created by the stock screen: `/etc/wpa_supplicant.conf`
+> [!NOTE]
+> You must configure **Wi-Fi** before disabling the stock screen.  
+> After a reboot, the mod connects to a network automatically, but it uses the configuration created by the stock screen: `/etc/wpa_supplicant.conf`
 
-**Warning**: Ethernet networking has not been tested and may not work.
+> [!WARNING]
+> Ethernet networking has not been tested and may not work.
 
 **If you lose access** to the printer after disabling the screen, you can temporarily prevent the mod from booting using the [Dual Boot](/docs/DUAL_BOOT.md) option.  
 Then you can edit `variables.cfg` file and disable `display_off` parameter manually:
