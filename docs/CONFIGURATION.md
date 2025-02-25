@@ -32,7 +32,7 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 - `fix_e0017`: Enables a fix for the E0017 error if set to 1.
 
 - `check_md5`: Enables MD5 checksum verification for G-code files.  
-**Note:** Requires a post-processing script in your slicer. Scripts are available in Configuration -> mod (addMD5.sh or addMD5.bat).
+**Note:** Requires a [post-processing script](/docs/SLICING.md#md5-checksum-validation) in your slicer. Scripts are available in Configuration -> mod (addMD5.sh or addMD5.bat).
 
 - `use_kamp`: Enables KAMP (Klipper Adaptive Meshing and Purging) if set to 1.
 
@@ -82,7 +82,8 @@ The syntax is straightforward:
 
 The mod allows you to customize and extend functionality by defining your own macros or overriding existing printer parameters. This override any printer configuration, including `tuning.cfg`. Additionally, you can adjust Moonraker-specific parameters.
 
-**Note**: Changes to `user.cfg` and `user.moonraker.conf` are applied after a restart or configuration reload.
+> [!NOTE]
+> Changes to `user.cfg` and `user.moonraker.conf` are applied after a restart or configuration reload.
 
 ### Customizing Printer Parameters
 
