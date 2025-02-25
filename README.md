@@ -1,3 +1,8 @@
+<p align="center">
+<img width="400" src="https://github.com/user-attachments/assets/3bf83bca-d7de-4c8c-96ca-16560915c019" />
+<img width="400" src="https://github.com/user-attachments/assets/a4f6d3f9-abc6-4529-abf8-3fc9db3d9eed" />
+</p>
+
 # Flashforge Adventurer 5M Firmware Mod
 
 This is an _unofficial_ mod to run Moonraker, Klipper (with essential patches), Mainsail, and Fluidd on the Flashforge AD5M (Pro) 3D printers.
