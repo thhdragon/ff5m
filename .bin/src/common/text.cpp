@@ -13,6 +13,8 @@
 #include <ranges>
 #include <stdexcept>
 
+#include "utf8.h"
+
 
 TextDrawer::~TextDrawer() {
     flush();
@@ -118,7 +120,7 @@ void TextDrawer::print(const char *text) {
         int32_t x = b.start;
         int32_t y = b.baseline;
 
-        for (const auto &symbol: line) {
+        for (const auto &symbol: UTF8Reader{line}) {
             x += _drawChar(symbol, x, y);
         }
 
@@ -158,7 +160,7 @@ void TextDrawer::flush() {
     _affectedArea = {};
 }
 
-int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
+int32_t TextDrawer::_drawChar(uint16_t symbol, int32_t cursorX, int32_t cursorY) {
     const auto &font = *this->font();
     if (symbol < font.codeFrom || symbol > font.codeTo) {
         return 0;
@@ -266,7 +268,7 @@ TextBoundary TextDrawer::calcTextBoundaries(const std::string_view &text, int32_
     auto cursorY = y;
 
     const auto &font = *this->font();
-    for (const auto &symbol: text) {
+    for (const auto &symbol: UTF8Reader{text}) {
         if (symbol == '\n') {
             cursorY = x;
             cursorY += font.advanceY * _scaleY;

@@ -121,7 +121,7 @@ public:
 private:
     typedef std::pair<int32_t, int32_t> Point;
 
-    int32_t _drawChar(char symbol, int32_t cursorX, int32_t cursorY);
+    int32_t _drawChar(uint16_t symbol, int32_t cursorX, int32_t cursorY);
     [[nodiscard]] Point _getAlignmentOffset(const TextBoundary &boundary) const;
 
     static uint32_t _mixColor(uint32_t a, uint32_t b, uint8_t factor);
