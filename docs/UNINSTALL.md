@@ -1,9 +1,14 @@
 ## Uninstall
 
-To remove the mod, you have several options:
+> [!CAUTION]
+> After uninstalling the mod, some printer parameters will revert to stock defaults. This can affect settings like Z-Offset, Mesh Bed Leveling, and others.
+> It is **strongly recommended** to review all settings and recalibrate the printer to avoid potential damage.
 
 > [!WARNING]
 > Uninstalling the mod will remove all custom configurations and settings. If you plan to reinstall the mod later, consider using the `SOFT_REMOVE` option to preserve root access and configurations.
+
+
+To remove the mod, you have several options:
 
 ### Run Macro via Fluidd/Mainsail
 
