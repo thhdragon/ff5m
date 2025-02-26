@@ -60,6 +60,10 @@ void TextDrawer::setBackgroundColor(uint32_t color) {
     _backgroundColor = color;
 }
 
+void TextDrawer::setStrokeDirection(StrokeDirection value) {
+    _strokeDirection = value;
+}
+
 void TextDrawer::setDoubleBuffered(bool enable) {
     if (enable && !_backBuffer) {
         _backBuffer = new uint32_t[_width * _height];
@@ -109,11 +113,7 @@ void TextDrawer::print(const char *text) {
         fillRect(b, _backgroundColor);
 
         if (_debug) {
-            fillRect({b.left, b.top, b.left + 1, b.bottom}, 0xff00ff00);
-            fillRect({b.right, b.top, b.right + 1, b.bottom}, 0xff00ff00);
-            fillRect({b.left, b.top, b.right, b.top + 1}, 0xff00ff00);
-            fillRect({b.left, b.bottom, b.right, b.bottom + 1}, 0xff00ff00);
-
+            strokeRect(b, 0xff00ff00);
             fillRect({b.left, b.baseline, b.right, b.baseline + 1}, 0xff0000ff);
         }
 
@@ -140,10 +140,7 @@ void TextDrawer::flush() {
     }
 
     if (_debug) {
-        fillRect(_affectedArea.left, _affectedArea.top - 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
-        fillRect(_affectedArea.left, _affectedArea.bottom + 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
-        fillRect(_affectedArea.left - 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
-        fillRect(_affectedArea.right + 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
+        strokeRect(_affectedArea, 0xffffff00);
     }
 
     if (_affectedArea.left < 0) _affectedArea.left = 0;
@@ -244,6 +241,38 @@ void TextDrawer::fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height,
         if (_affectedArea.top > fromY) _affectedArea.top = fromY;
         if (_affectedArea.bottom <= toY) _affectedArea.bottom = toY + 1;
     }
+}
+
+void TextDrawer::strokeRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color, uint8_t lineWidth) {
+    strokeRect({x, y, (int32_t) (x + width), (int32_t) (y + height)}, color, lineWidth);
+}
+
+void TextDrawer::strokeRect(const Rect &b, uint32_t color, uint8_t lineWidth) {
+    int outer, inner;
+    if (_strokeDirection == StrokeDirection::OUTER) {
+        outer = lineWidth;
+        inner = 0;
+    } else if (_strokeDirection == StrokeDirection::INNER) {
+        auto maxLineWidth = std::min(b.right - b.left, b.bottom - b.top);
+        auto lw = std::max(1, std::min((int32_t) lineWidth, maxLineWidth));
+        outer = 0;
+        inner = lw;
+    } else {
+        auto maxLineWidth = std::min(b.right - b.left, b.bottom - b.top) * 2;
+        auto lw = std::max(1, std::min((int32_t) lineWidth, maxLineWidth));
+
+        outer = lw / 2;
+        inner = std::max(1, lw - outer);
+    }
+
+    // Left Vertical line
+    fillRect({b.left - outer, b.top - outer, b.left + inner, b.bottom + outer}, color);
+    // Right Vertical line
+    fillRect({b.right - inner, b.top - outer, b.right + outer, b.bottom + outer}, color);
+    // Top Horizontal line
+    fillRect({b.left, b.top - outer, b.right, b.top + inner}, color);
+    // Bottom Horizontal line
+    fillRect({b.left, b.bottom - inner, b.right, b.bottom + outer}, color);
 }
 
 void TextDrawer::clear(uint32_t color) {

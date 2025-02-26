@@ -5,7 +5,6 @@
 // This file may be distributed under the terms of the GNU GPLv3 license
 
 #include <algorithm>
-#include <cstring>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
@@ -146,6 +145,24 @@ void fill(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     drawer.fillRect(pos[0], pos[1], size[0], size[1], color);
 }
 
+void stroke(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
+    auto pos = opts.get<std::vector<int>>("--pos");
+    auto size = opts.get<std::vector<int>>("--size");
+    auto color = 0xff000000 | opts.get<uint32_t>("--color");
+    auto lineWidth = std::max<uint8_t>(1, opts.get<uint8_t>("--line-width"));
+    auto strokeDirection = opts.get("--stroke-direction");
+
+    if (strokeDirection == "outer") {
+        drawer.setStrokeDirection(StrokeDirection::OUTER);
+    } else if (strokeDirection == "middle") {
+        drawer.setStrokeDirection(StrokeDirection::MIDDLE);
+    } else if (strokeDirection == "inner") {
+        drawer.setStrokeDirection(StrokeDirection::INNER);
+    }
+
+    drawer.strokeRect(pos[0], pos[1], size[0], size[1], color, lineWidth);
+}
+
 void clear(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto color = 0xff000000 | opts.get<uint32_t>("--color");
     drawer.clear(color);
@@ -182,15 +199,18 @@ struct ProgramParser {
     argparse::ArgumentParser batch_parser;
     argparse::ArgumentParser text_command;
     argparse::ArgumentParser fill_command;
+    argparse::ArgumentParser stroke_command;
     argparse::ArgumentParser clear_command;
 };
 
 std::unique_ptr<ProgramParser> build_parser() {
     auto result = std::unique_ptr<ProgramParser>(new ProgramParser{
+        // NOLINT(*-make-unique)
         .program = argparse::ArgumentParser("typer"),
         .batch_parser = argparse::ArgumentParser("batch"),
         .text_command = argparse::ArgumentParser("text"),
         .fill_command = argparse::ArgumentParser("fill"),
+        .stroke_command = argparse::ArgumentParser("stroke"),
         .clear_command = argparse::ArgumentParser("clear")
     });
 
@@ -271,6 +291,33 @@ std::unique_ptr<ProgramParser> build_parser() {
 
     result->program.add_subparser(result->fill_command);
 
+    // ************ Stroke Parser
+
+    result->stroke_command.add_description("Stroke specified region with color");
+    result->stroke_command.add_argument("--pos", "-p")
+        .nargs(2)
+        .scan<'d', int>()
+        .required();
+
+    result->stroke_command.add_argument("--size", "-s")
+        .nargs(2)
+        .scan<'d', int>()
+        .required();
+
+    result->stroke_command.add_argument("--color", "-c")
+        .scan<'X', uint32_t>()
+        .default_value(0xffffffu);
+
+    result->stroke_command.add_argument("--line-width", "-lw")
+        .scan<'d', uint8_t>()
+        .default_value((uint8_t) 1);
+
+    result->stroke_command.add_argument("--stroke-direction", "-sd")
+        .choices("outer", "middle", "inner")
+        .default_value("middle");
+
+    result->program.add_subparser(result->stroke_command);
+
     // ************ Clear Parser
 
     result->clear_command.add_description("Clear entire screen");
@@ -286,13 +333,15 @@ std::unique_ptr<ProgramParser> build_parser() {
 
 void run_program(const ProgramParser &args, TextDrawer &drawer) {
     auto &[
-        program, batch_parser, text_command, fill_command, clear_command
+        program, batch_parser, text_command, fill_command, stroke_command, clear_command
     ] = args;
 
     if (program.is_subcommand_used("fill")) {
         fill(fill_command, drawer);
     } else if (program.is_subcommand_used("text")) {
         drawText(text_command, drawer);
+    } else if (program.is_subcommand_used(("stroke"))) {
+        stroke(stroke_command, drawer);
     } else if (program.is_subcommand_used("clear")) {
         clear(clear_command, drawer);
     } else {
