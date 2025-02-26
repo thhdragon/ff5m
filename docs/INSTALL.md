@@ -28,6 +28,8 @@ After installation, the printer will boot into the modified stock system by defa
 
 ### (Temporary) Install dependencies
 
+The mod comes with pre-installed **root** access, allowing you to connect via SSH using the credentials _root/root_.
+
 As the mod is still in development, it does not have a firmware image yet.
 Therefore, you need to install the necessary dependencies on the printer:
 
@@ -53,8 +55,7 @@ opkg install busybox htop nano zsh
 
 ### Run the Switching Script
 
-The mod comes with pre-installed **root** access, allowing you to connect via SSH using the credentials _root/root_.
-To proceed, download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
+Download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
 
 ```bash
 IP="<your_printer_IP>"
