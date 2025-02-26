@@ -123,6 +123,8 @@ public:
     void strokeRect(const Rect &b, uint32_t color, uint8_t lineWidth = 1);
     void strokeRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color, uint8_t lineWidth = 1);
 
+    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint8_t lineWidth = 1);
+
     void clear(uint32_t color = 0);
 
     void flush();

@@ -8,7 +8,7 @@
 #include "text.h"
 
 #include <algorithm>
-#include <iomanip>
+#include <cmath>
 #include <limits>
 #include <ranges>
 #include <stdexcept>
@@ -245,6 +245,48 @@ void TextDrawer::fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height,
 
 void TextDrawer::strokeRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color, uint8_t lineWidth) {
     strokeRect({x, y, (int32_t) (x + width), (int32_t) (y + height)}, color, lineWidth);
+}
+
+void TextDrawer::drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint8_t lineWidth) {
+    if (y1 == y2) return fillRect(std::min(x1, x2), y1 - lineWidth / 2, std::abs(x2 - x1), lineWidth, color);
+    if (x1 == x2) return fillRect(x1 - lineWidth / 2, std::min(y1, y2), lineWidth, std::abs(y2 - y1), color);
+
+    const auto dx = x2 - x1;
+    const auto dy = y2 - y1;
+
+    if (!dx || !dy) return;
+
+    // Get normalized direction vector
+    auto distance = std::sqrtf(dx * dx + dy * dy);
+    const auto xDirection = (float) dx / distance;
+    const auto yDirection = (float) dy / distance;
+
+    const auto xStep = std::abs(1 / xDirection);
+    const auto yStep = std::abs(1 / yDirection);
+
+    float x = x1, y = y1;
+    float distanceX = 0, distanceY = 0;
+    float drawDistance = 0;
+    while (drawDistance <= distance) {
+        bool isX = distanceX + xStep < distanceY + yStep;
+        if (isX) {
+            x += std::copysignf(1.f, xDirection);
+            distanceX += xStep;
+            drawDistance = distanceX;
+        } else {
+            y += std::copysignf(1.f, yDirection);
+            distanceY += yStep;
+            drawDistance = distanceX;
+        }
+
+        if (lineWidth <= 1) {
+            setPixel((int32_t) x, (int32_t) y, color);
+        } else if (isX) {
+            fillRect((int32_t) x, (int32_t) y - lineWidth / 2, 1, lineWidth, color);
+        } else {
+            fillRect((int32_t) x - lineWidth / 2, (int32_t) y, lineWidth, 1, color);
+        }
+    }
 }
 
 void TextDrawer::strokeRect(const Rect &b, uint32_t color, uint8_t lineWidth) {

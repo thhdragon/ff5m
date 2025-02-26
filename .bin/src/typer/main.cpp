@@ -145,6 +145,14 @@ void fill(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     drawer.fillRect(pos[0], pos[1], size[0], size[1], color);
 }
 
+StrokeDirection _parseDirection(const std::string &value) {
+    if (value == "outer") return StrokeDirection::OUTER;
+    if (value == "middle") return StrokeDirection::MIDDLE;
+    if (value == "inner") return StrokeDirection::INNER;
+
+    throw std::invalid_argument("Invalid value for StrokeDirection: " + value);
+}
+
 void stroke(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto pos = opts.get<std::vector<int>>("--pos");
     auto size = opts.get<std::vector<int>>("--size");
@@ -152,15 +160,17 @@ void stroke(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
     auto lineWidth = std::max<uint8_t>(1, opts.get<uint8_t>("--line-width"));
     auto strokeDirection = opts.get("--stroke-direction");
 
-    if (strokeDirection == "outer") {
-        drawer.setStrokeDirection(StrokeDirection::OUTER);
-    } else if (strokeDirection == "middle") {
-        drawer.setStrokeDirection(StrokeDirection::MIDDLE);
-    } else if (strokeDirection == "inner") {
-        drawer.setStrokeDirection(StrokeDirection::INNER);
-    }
-
+    drawer.setStrokeDirection(_parseDirection(strokeDirection));
     drawer.strokeRect(pos[0], pos[1], size[0], size[1], color, lineWidth);
+}
+
+void line(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
+    auto start = opts.get<std::vector<int>>("--start");
+    auto end = opts.get<std::vector<int>>("--end");
+    auto color = 0xff000000 | opts.get<uint32_t>("--color");
+    auto lineWidth = std::max<uint8_t>(1, opts.get<uint8_t>("--line-width"));
+
+    drawer.drawLine(start[0], start[1], end[0], end[1], color, lineWidth);
 }
 
 void clear(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
@@ -200,19 +210,22 @@ struct ProgramParser {
     argparse::ArgumentParser text_command;
     argparse::ArgumentParser fill_command;
     argparse::ArgumentParser stroke_command;
+    argparse::ArgumentParser line_command;
     argparse::ArgumentParser clear_command;
 };
 
 std::unique_ptr<ProgramParser> build_parser() {
-    auto result = std::unique_ptr<ProgramParser>(new ProgramParser{
-        // NOLINT(*-make-unique)
-        .program = argparse::ArgumentParser("typer"),
-        .batch_parser = argparse::ArgumentParser("batch"),
-        .text_command = argparse::ArgumentParser("text"),
-        .fill_command = argparse::ArgumentParser("fill"),
-        .stroke_command = argparse::ArgumentParser("stroke"),
-        .clear_command = argparse::ArgumentParser("clear")
-    });
+    auto result = std::unique_ptr<ProgramParser>( // NOLINT(*-make-unique)
+        new ProgramParser{
+            .program = argparse::ArgumentParser("typer"),
+            .batch_parser = argparse::ArgumentParser("batch"),
+            .text_command = argparse::ArgumentParser("text"),
+            .fill_command = argparse::ArgumentParser("fill"),
+            .stroke_command = argparse::ArgumentParser("stroke"),
+            .line_command = argparse::ArgumentParser("line"),
+            .clear_command = argparse::ArgumentParser("clear")
+        }
+    );
 
     result->program.add_description("Flashforge AD5M screen drawing utility");
     result->program.add_epilog("Copyright (C) 2025, Alexander K <https://github.com/drA1ex>");
@@ -318,6 +331,29 @@ std::unique_ptr<ProgramParser> build_parser() {
 
     result->program.add_subparser(result->stroke_command);
 
+    // ************ Line Parser
+
+    result->line_command.add_description("Draw line with color");
+    result->line_command.add_argument("--start", "-s")
+        .nargs(2)
+        .scan<'d', int>()
+        .required();
+
+    result->line_command.add_argument("--end", "-e")
+        .nargs(2)
+        .scan<'d', int>()
+        .required();
+
+    result->line_command.add_argument("--color", "-c")
+        .scan<'X', uint32_t>()
+        .default_value(0xffffffu);
+
+    result->line_command.add_argument("--line-width", "-lw")
+        .scan<'d', uint8_t>()
+        .default_value((uint8_t) 1);
+
+    result->program.add_subparser(result->line_command);
+
     // ************ Clear Parser
 
     result->clear_command.add_description("Clear entire screen");
@@ -333,15 +369,18 @@ std::unique_ptr<ProgramParser> build_parser() {
 
 void run_program(const ProgramParser &args, TextDrawer &drawer) {
     auto &[
-        program, batch_parser, text_command, fill_command, stroke_command, clear_command
+        program, batch_parser, text_command, fill_command,
+        stroke_command, line_command, clear_command
     ] = args;
 
     if (program.is_subcommand_used("fill")) {
         fill(fill_command, drawer);
     } else if (program.is_subcommand_used("text")) {
         drawText(text_command, drawer);
-    } else if (program.is_subcommand_used(("stroke"))) {
+    } else if (program.is_subcommand_used("stroke")) {
         stroke(stroke_command, drawer);
+    } else if (program.is_subcommand_used("line")) {
+        line(line_command, drawer);
     } else if (program.is_subcommand_used("clear")) {
         clear(clear_command, drawer);
     } else {
