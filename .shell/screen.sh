@@ -34,13 +34,11 @@ print_progress() {
     local progress_width=$(( value * 380 / 100 ))
     
     "$BINS/typer" -db batch \
-        --batch fill -p 200 420 -s 400 40 -c 872187 \
-        --batch fill -p 205 425 -s 390 30 -c 0 \
-        --batch fill -p 210 430 -s $progress_width 20 -c 872187
-
-    "$BINS/typer" -db batch \
-        --batch fill -c 0 -p 610 420 -s 100 60 \
-        --batch text -p 620 440 -va middle -c 00f0f0 -b 0 -t "${value}%"
+        --batch fill    -c 0         -p 200 420 -s 400 40 \
+        --batch stroke  -c 872187    -p 200 420 -s 400 40 -lw 4 -sd inner \
+        --batch fill    -c 872187    -p 210 430 -s $progress_width 20 \
+        --batch fill    -c 0         -p 610 420 -s 100 60  \
+        --batch text    -c 00f0f0    -p 620 440 -va middle -b 0 -t "${value}%"
 }
 
 print_prepare_status() {
