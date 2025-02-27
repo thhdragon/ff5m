@@ -168,8 +168,8 @@ int32_t TextDrawer::_drawChar(uint16_t symbol, int32_t cursorX, int32_t cursorY)
     const int32_t offsetX = cursorX + glyph.offsetX * _scaleX;
     const int32_t offsetY = cursorY + glyph.offsetY * _scaleY;
 
-    for (uint8_t gy = 0; gy < glyph.height; ++gy) {
-        for (uint8_t gx = 0; gx < glyph.width; ++gx) {
+    for (uint16_t gy = 0; gy < glyph.height; ++gy) {
+        for (uint16_t gx = 0; gx < glyph.width; ++gx) {
             auto index = (gy * glyph.width + gx) * _bpp;
             auto byteOffset = glyph.offset + index / 8;
             auto bitOffset = (8 - _bpp) - index % 8;

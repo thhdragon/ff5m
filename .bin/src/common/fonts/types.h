@@ -17,13 +17,13 @@
 struct Glyph {
     uint32_t offset;
 
-    uint8_t width;
-    uint8_t height;
+    uint16_t width;
+    uint16_t height;
 
-    int8_t advanceX;
+    int16_t advanceX;
 
-    int8_t offsetX;
-    int8_t offsetY;
+    int16_t offsetX;
+    int16_t offsetY;
 };
 
 struct Font {
@@ -36,5 +36,5 @@ struct Font {
     uint16_t codeFrom;
     uint16_t codeTo;
 
-    int8_t advanceY;
+    int16_t advanceY;
 };
