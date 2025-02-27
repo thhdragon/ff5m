@@ -661,6 +661,14 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "0",
             "name": "web"
+        },
+        {
+            "alias": "",
+            "visible": true,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "85e2f576-74e1-4bd3-9e82-fca937d1d3ce",
+            "name": "m108"
         }
     ],
     "categories":

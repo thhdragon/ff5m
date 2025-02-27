@@ -110,7 +110,7 @@ class GCodeDispatch:
         self.mux_commands = {}
         self.gcode_help = {}
         # Register commands needed before config file is loaded
-        handlers = ['M110', 'M112', 'M115',
+        handlers = ['M108', 'M110', 'M112', 'M115',
                     'RESTART', 'FIRMWARE_RESTART', 'ECHO', 'STATUS', 'HELP']
         for cmd in handlers:
             func = getattr(self, 'cmd_' + cmd)
@@ -310,6 +310,19 @@ class GCodeDispatch:
                              % (key_param, key))
         values[key_param](gcmd)
     # Low-level G-Code commands that are needed before the config file is loaded
+    cmd_M108_help = "Skip Mod's heating commands"
+    def cmd_M108(self, gcmd):
+        wait_cmd = self.printer.lookup_object("gcode_macro _WAIT_TEMPERATURE")
+        if not wait_cmd: raise self.error("_WAIT_TEMPERATURE doesn't exist!")
+        if "cancel" not in wait_cmd.variables: raise self.error("_WAIT_TEMPERATURE doesn't contain the 'cancel' variable!")
+        if "active" not in wait_cmd.variables: raise self.error("_WAIT_TEMPERATURE doesn't contain the 'active' variable!")
+        if not wait_cmd.variables["active"]: return self.respond_raw("There is no active _WAIT_TEMPERATURE process!")
+
+        # Set the "cancel" variable to True, which _WAIT_TEMPERATURE will later read
+        wait_cmd.variables = dict(wait_cmd.variables)
+        wait_cmd.variables["cancel"] = True
+        self.respond_raw("Set cancellation flag for _WAIT_TEMPERATURE!")
+
     def cmd_M110(self, gcmd):
         # Set Current Line Number
         pass
@@ -403,6 +416,7 @@ class GCodeIO:
         if self.is_fileinput:
             self.printer.request_exit('error_exit')
     m112_r = re.compile('^(?:[nN][0-9]+)?\s*[mM]112(?:\s|$)')
+    m108_r = re.compile('^[mM]108(?:\s|$)')
     def _process_data(self, eventtime):
         # Read input, separate by newline, and add to pending_commands
         try:
@@ -426,12 +440,15 @@ class GCodeIO:
                 self.gcode.request_restart('exit')
             pending_commands.append("")
         # Handle case where multiple commands pending
-        if self.is_processing_data or len(pending_commands) > 1:
+        if self.is_processing_data or len(pending_commands) >= 1:
             if len(pending_commands) < 20:
                 # Check for M112 out-of-order
                 for line in lines:
                     if self.m112_r.match(line) is not None:
                         self.gcode.cmd_M112(None)
+                    elif self.m108_r.match(line) is not None:
+                        pending_commands.remove(line) # To avoid repeating execution
+                        self.gcode.cmd_M108(None)
             if self.is_processing_data:
                 if len(pending_commands) >= 20:
                     # Stop reading input
