@@ -51,6 +51,7 @@
 #include "../common/fonts/RobotoThin16ptb2.h"
 #include "../common/fonts/RobotoThin20ptb2.h"
 #include "../common/fonts/RobotoThin28ptb2.h"
+#include "../common/fonts/Typicons12ptb2.h"
 #include "../common/fonts/Typicons16ptb2.h"
 #include "../common/fonts/Typicons28ptb2.h"
 #include "../common/fonts/Typicons36ptb2.h"
@@ -91,6 +92,7 @@ std::map<std::string, const Font *> fonts{
     {JetBrainsMonoThin20ptb2.name, &JetBrainsMonoThin20ptb2},
     {JetBrainsMonoThin28ptb2.name, &JetBrainsMonoThin28ptb2},
 
+    {Typicons12ptb2.name, &Typicons12ptb2},
     {Typicons16ptb2.name, &Typicons16ptb2},
     {Typicons28ptb2.name, &Typicons28ptb2},
     {Typicons36ptb2.name, &Typicons36ptb2},

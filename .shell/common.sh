@@ -16,6 +16,7 @@ MOD_DATA=/opt/config/mod_data
 
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch_f"
 CUSTOM_BOOT_F="/tmp/custom_boot_f"
+NETWORK_CONNECTED_F="/tmp/net_connected_f"
 
 SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 

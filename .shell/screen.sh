@@ -6,6 +6,8 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+export LANG=en_US.UTF-8
+
 source /opt/config/mod/.shell/common.sh
 
 load_version() {
@@ -131,6 +133,59 @@ case "$1" in
         "$BINS/typer" -db batch \
             --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+    ;;
+
+    draw_status_bar)
+        icon_wifi=$(printf '\uE146')
+        icon_heater=$(printf '\ue119')
+        icon_bed=$(printf '\ue003')
+        icon_servo=$(printf '\ue050')
+        icon_active=$(printf '\ue076')
+        icon_camera=$(printf '\ue03b')
+
+        shift
+
+        nozzle_temp="$1"
+        bed_temp="$2"
+        camera_active=$( ps | grep -q "[m]jpg_streamer"; echo $(($? == 0)) )
+
+        wifi_color=$( [ -f "$NETWORK_CONNECTED_F" ] && echo "ffffff" || echo "606060" )
+        nozzle_color=$( [ "$nozzle_temp" -ge 50 ] && echo "ff0000" || echo "ffffff" )
+        bed_color=$( [ "$bed_temp" -ge 40 ] && echo "ff0000" || echo "ffffff" )
+        active_color="ea00ff"
+        servo_color="ff9000"
+        camera_color="ffffff"
+
+        y=25
+
+        batches=(
+            --batch fill -p 0 0 -s 800 40
+            --batch text -p 30  "$y" -c "$bed_color"      -ha right  -va middle -f  "Typicons 12pt"      -t "$icon_bed"
+            --batch text -p 35  "$y" -c "$bed_color"      -ha left   -va middle -f  "JetBrainsMono 12pt" -t "$bed_temp"
+            --batch text -p 115 "$y" -c "$nozzle_color"   -ha right  -va middle -f  "Typicons 12pt"      -t "$icon_heater"
+            --batch text -p 120 "$y" -c "$nozzle_color"   -ha left   -va middle -f  "JetBrainsMono 12pt" -t "$nozzle_temp"
+        )
+
+        x=770
+        x_offset=40
+
+        batches+=(
+            --batch text -p $x $y  -c "$wifi_color"     -ha right    -va middle -f  "Typicons 12pt"      -t "$icon_wifi"
+        ) && x=$((x - x_offset))
+
+        [ "$camera_active" -eq 1 ] && batches+=(
+            --batch text -p $x $y  -c "$camera_color"   -ha right    -va middle -f  "Typicons 12pt"      -t "$icon_camera"
+        ) && x=$((x - x_offset))
+
+        [ "$3" -eq 1 ] && batches+=(
+            --batch text -p $x $y  -c "$active_color"   -ha right    -va middle -f  "Typicons 12pt"      -t "$icon_active"
+        ) && x=$((x - x_offset))
+
+        [ "$4" -eq 1 ] && batches+=(
+            --batch text -p $x $y  -c "$servo_color"    -ha right    -va middle -f  "Typicons 12pt"      -t "$icon_servo"
+        ) && x=$((x - x_offset))
+        
+        "$BINS/typer" -db batch "${batches[@]}"
     ;;
     
     boot_message)
