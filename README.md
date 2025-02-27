@@ -68,6 +68,7 @@ By addressing these challenges, this mod strives to unlock the full potential of
 - [Installation](docs/INSTALL.md)
 - [Configuration](docs/CONFIGURATION.md)
 - [Slicing](docs/SLICING.md)
+- [Printing](docs/PRINTING.md)
 - [Alternative Screen](docs/SCREEN.md)
 - [Camera](docs/CAMERA.md)
 - [Telegram Bot and Timelapse](docs/TELEGRAM.md)
