@@ -221,8 +221,16 @@ class GCodeDispatch:
     def run_script_from_command(self, script):
         self._process_commands(script.split('\n'), need_ack=False)
     def run_script(self, script):
+        # Special parser for immediate commands
+        lines = script.split('\n')
+        for line in lines:
+            if self.immediate_cmds_r.match(line):
+                lines.remove(line)
+                self.run_script_from_command(line)
+
         with self.mutex:
-            self._process_commands(script.split('\n'), need_ack=False)
+            self._process_commands(lines, need_ack=False)
+
     def get_mutex(self):
         return self.mutex
     def create_gcode_command(self, command, commandline, params):
@@ -252,6 +260,8 @@ class GCodeDispatch:
         r'(?P<cmd>[a-zA-Z_][a-zA-Z0-9_]+)(?:\s+|$)'
         r'(?P<args>[^#*;]*?)'
         r'\s*(?:[#*;].*)?$')
+    immediate_cmds = [ "M108", "LED", "LED_ON", "LED_OFF", "RESPOND", "TONE", "ALARM", "BEEP", "MEM", "PLAY_MIDI" ]
+    immediate_cmds_r = re.compile(r'^(' + '|'.join(re.escape(cmd) for cmd in immediate_cmds) + r')(?:\s|$)', re.IGNORECASE)
     def _get_extended_params(self, gcmd):
         m = self.extended_r.match(gcmd.get_commandline())
         if m is None:
@@ -416,7 +426,6 @@ class GCodeIO:
         if self.is_fileinput:
             self.printer.request_exit('error_exit')
     m112_r = re.compile('^(?:[nN][0-9]+)?\s*[mM]112(?:\s|$)')
-    m108_r = re.compile('^[mM]108(?:\s|$)')
     def _process_data(self, eventtime):
         # Read input, separate by newline, and add to pending_commands
         try:
@@ -446,9 +455,6 @@ class GCodeIO:
                 for line in lines:
                     if self.m112_r.match(line) is not None:
                         self.gcode.cmd_M112(None)
-                    elif self.m108_r.match(line) is not None:
-                        pending_commands.remove(line) # To avoid repeating execution
-                        self.gcode.cmd_M108(None)
             if self.is_processing_data:
                 if len(pending_commands) >= 20:
                     # Stop reading input
