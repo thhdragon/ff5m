@@ -57,6 +57,10 @@ For the alternative screen (or headless mode), use the following mod [parameters
 - `load_zoffset`: Load the saved Z-Offset value.
 - `z_offset`: Manually set the Z-Offset value.
 
+Macros:
+- `LOAD_GCODE_OFFSET`: Load and apply Z-Offset from mod's parameter
+- `SET_GCODE_OFFSET`: It's standard Klipper macro to apply Z-Offset, but it's also save value to the mod's parameter
+
 ## Nozzle Cleaning
 
 The mod provides several options for priming line and nozzle cleaning before a print.   
