@@ -8,7 +8,12 @@ While the stock camera remains available, the mod's camera is optimized for mini
 > [!NOTE]
 > If you choose to use the alternative display implementation (e.g., Feather Screen), the stock camera will not be available, as the stock firmware is completely disabled in this mode. In such cases, the mod's camera is the only option.
 
-If you still want to use stock camera functionality, skip steps up to Step 4.
+If you still want to use stock camera functionality, read the next section.
+
+### Using the Stock Camera
+
+If you prefer to use the stock camera functionality, you can skip Steps 1–3 and start directly with Step 4. Configure the camera settings in Fluidd or Mainsail as described, and ensure the stock camera is enabled in the printer's on-screen settings. However, be aware that the stock camera consumes significantly more resources, which may impact overall printer performance and could lead to print failures, such as unexpected print stoppages. You have been warned. Proceed at your own risk.
+
 
 ### Configuring the Mod's Camera
 
@@ -78,7 +83,3 @@ After completing the configuration, reload the Fluidd page. The camera should no
 
 #### Notes for Mainsail Users
 If you’re using Mainsail, the configuration process is nearly identical to Fluidd. Simply follow the steps above, and you’ll be good to go. If you run into any issues, double-check the URLs and ensure the stock camera is disabled.
-
-### Using the Stock Camera
-
-If you prefer to use the stock camera functionality, you can skip Steps 1–3 and start directly with Step 4. Configure the camera settings in Fluidd or Mainsail as described, and ensure the stock camera is enabled in the printer's on-screen settings. However, be aware that the stock camera consumes significantly more resources, which may impact overall printer performance and could lead to print failures, such as unexpected print stoppages. You have been warned. Proceed at your own risk.
