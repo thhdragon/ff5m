@@ -8,8 +8,8 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
-    echo "SSH tunnel due to SKIP_ZMOD mode"
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+    echo "SSH tunnel due to SKIP_MOD mode"
     exit 0
 fi
 

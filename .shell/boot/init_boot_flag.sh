@@ -7,7 +7,7 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-FLAGS=("SKIP_ZMOD" "SKIP_ZMOD_SOFT" "REMOVE_ZMOD" "SOFT_REMOVE_ZMOD")
+FLAGS=("SKIP_MOD" "SKIP_MOD_SOFT" "REMOVE_MOD" "REMOVE_MOD_SOFT")
 
 check_special_boot_flag() {
     local path=$1
@@ -109,17 +109,17 @@ handle_special_boot_flag() {
     local name="$1"
     
     case "$name" in
-        SKIP_ZMOD)
+        SKIP_MOD)
             echo "?? Skipping mod load..."
-            rm -f /opt/config/mod/SKIP_ZMOD
-            touch /tmp/SKIP_ZMOD
+            rm -f /opt/config/mod/SKIP_MOD
+            touch /tmp/SKIP_MOD
             
             exit 0
             ;;
-        SKIP_ZMOD_SOFT)
+        SKIP_MOD_SOFT)
             echo "?? Skipping mod load in soft mode..."
-            rm -f /opt/config/mod/SKIP_ZMOD_SOFT
-            touch /tmp/SKIP_ZMOD_SOFT
+            rm -f /opt/config/mod/SKIP_MOD_SOFT
+            touch /tmp/SKIP_MOD_SOFT
 
             # oh-my-zsh
             if [ -d /root/.oh-my-zsh ]; then
@@ -128,7 +128,7 @@ handle_special_boot_flag() {
             
             exit 0
             ;;
-        REMOVE_ZMOD)
+        REMOVE_MOD)
             echo "@@ Removing mod..."
             mount_data_partition
             
@@ -137,7 +137,7 @@ handle_special_boot_flag() {
             
             exit 0
             ;;
-        SOFT_REMOVE_ZMOD)
+        REMOVE_MOD_SOFT)
             echo "@@ Removing mod in soft mode..."
         
             mount_data_partition
