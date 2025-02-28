@@ -6,7 +6,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
+source /opt/config/mod/.shell/common.sh
 
 CFG_PATH="/opt/config/mod_data/backup.params.cfg"
 
@@ -17,35 +17,61 @@ fi
 
 PARAMS="-p ${CFG_PATH}"
 
-tar_config() {
-    local name="backup_$(date +%Y%m%d_%H%M%S)"
+PRIVATE_PARAMS=(
+    ./mod_data/ssh.conf
+    ./mod_data/ssh.key
+    ./mod_data/ssh.pub.txt
+)
+
+COMMON_CFG_PARAMS=(
+    ./printer.cfg
+    ./printer.base.cfg
+    ./printer.base.cfg.bak
+    ./mod_data/backup.params.cfg
+    ./mod_data/camera.conf
+    ./mod_data/user.cfg
+    ./mod_data/user.moonraker.conf
+    ./mod_data/variables.cfg
+    ./mod_data/web.conf
+)
+
+TAR_BACKUP_PARAMS=(
+    "${PRIVATE_PARAMS[@]}"
+    "${COMMON_CFG_PARAMS[@]}"
+)
+
+TAR_DEBUG_PARAMS=(
+    "${COMMON_CFG_PARAMS[@]}"
+    ./mod/sql/version
+    /data/logFiles/boot.log*
+    /data/logFiles/ssh.log*
+    /data/logFiles/wifi.log*
+    /data/logFiles/mod/*.log*
+    /data/logFiles/printer.log
+    /data/logFiles/moonraker.log
+    /root/version
+    /data/.mod/.zmod/etc/os-release
+)
+
+tar_backup() {
+    local prefix="$1"
+    local list_name="$2"
+
+    declare -n list_ref="$list_name"
+
+    local name="${prefix}_$(date +%Y%m%d_%H%M%S)"
 
     pushd > /dev/null /opt/config || exit 1
 
-    tar -cf "./mod_data/$name.tar"       \
-        ./printer.cfg                    \
-        ./printer.base.cfg               \
-        ./printer.base.cfg.bak           \
-        ./mod_data/backup.params.cfg     \
-        ./mod_data/camera.conf           \
-        ./mod_data/ssh.conf              \
-        ./mod_data/ssh.key               \
-        ./mod_data/ssh.pub.txt           \
-        ./mod_data/user.cfg              \
-        ./mod_data/user.moonraker.conf   \
-        ./mod_data/variables.cfg         \
-        ./mod_data/web.conf              \
-    > /dev/null 2>&1
-
+    tar -cf "./mod_data/$name.tar" "${list_ref[@]}" &> /dev/null
     gzip "./mod_data/$name.tar"
     rm -f "./mod_data/$name.tar"
 
     popd > /dev/null || true
 
-    echo "Backup archive successfully created! You can download it from the Configuration tab:"
+    echo "Archive successfully created! You can download it from the Configuration tab:"
     echo "Configuration -> mod_data -> $name.tar.gz"
 }
-
 
 while [ "$#" -gt 0 ]; do
     param=$1; shift
@@ -61,7 +87,11 @@ while [ "$#" -gt 0 ]; do
             PARAMS="-m verify ${PARAMS}"
         ;;
         --tar-backup)
-            tar_config
+            tar_backup "backup" TAR_BACKUP_PARAMS
+            exit $?
+        ;;
+        --tar-debug)
+            tar_backup "debug" TAR_DEBUG_PARAMS
             exit $?
         ;;
         --dry)
@@ -77,14 +107,11 @@ while [ "$#" -gt 0 ]; do
             shift
         ;;
         *)
-            echo "Unknow parameter: '$1'"
+            echo "Unknown parameter: '$1'"
             exit 1
         ;;
     esac
 done
-
-if [ "$2" = 1 ]; then PARAMS="$PARAMS --dry"; fi
-if [ "$3" = 1 ]; then PARAMS="$PARAMS --verbose"; fi
 
 # TODO: klipper sets LD_PRELOAD variable, idkw
 LD_PRELOAD="" chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py $PARAMS
