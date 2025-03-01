@@ -129,8 +129,12 @@ reload() {
 switch() {
     case "$1" in
         start)
-            [ ! -f "$NOT_FIRST_LAUNCH_F" ] && exit 0
-            start
+            # Init ssh connection later.
+            # Establishing an SSH connection during boot will dramatically increase overall boot time.
+            # If the server is unavailable, it will increase it even more.
+            if [ -f "$NOT_FIRST_LAUNCH_F" ]; then
+                start
+            fi
         ;;
         stop)
             stop
