@@ -36,14 +36,6 @@ case $1 in
         cp -u /tmp/*.json /opt/config/mod_data/
         chroot "$MOD" /opt/config/mod/.root/zshaper.sh
     ;;
-    --recalculate)
-        SCV=5
-        if [ "$2" = "--scv" ]; then
-            SCV="$3"
-        fi
-
-        chroot "$MOD" /opt/config/mod/.root/zshaper.sh "$SCV"
-    ;;
     *)
         echo "Unknown parameter value: '$1'"
         exit 1
