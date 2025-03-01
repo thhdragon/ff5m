@@ -49,6 +49,7 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/mod/*.log*
     /data/logFiles/printer.log
     /data/logFiles/moonraker.log
+    /data/logFiles/console*.log
     /root/version
     /data/.mod/.zmod/etc/os-release
 )
@@ -73,6 +74,20 @@ tar_backup() {
     echo "Configuration -> mod_data -> $name.tar.gz"
 }
 
+copy_pipe() {
+    local pipe_name="$1"
+    local file="$2"
+
+    touch "$file"
+    while true; do
+        if read -t 0.1 -r line < "$pipe_name"; then
+            echo "$line" >> "$file"
+        else
+            break
+        fi
+    done
+}
+
 while [ "$#" -gt 0 ]; do
     param=$1; shift
     
@@ -91,6 +106,7 @@ while [ "$#" -gt 0 ]; do
             exit $?
         ;;
         --tar-debug)
+            copy_pipe "/tmp/printer" "/data/logFiles/console_$(date +%Y%m%d_%H%M%S).log"
             tar_backup "debug" TAR_DEBUG_PARAMS
             exit $?
         ;;
