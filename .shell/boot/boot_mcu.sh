@@ -14,7 +14,8 @@ R_ACK="\x06"
 R_OK="\x03"
 CMD_BOOT="A"
 
-RETRIES=10
+READY_RETRIES=10
+BOOT_RETRIES=5
 
 print_hex() {
     echo -n "$1" | xxd -p -u | tr -d '\n'
@@ -42,7 +43,7 @@ fi
 
 echo "// Waiting for MCU to become ready ..."
 
-for _ in $(seq $RETRIES); do
+for _ in $(seq $READY_RETRIES); do
     buf=$(dd if="$TTY" bs=32 count=1 status=none)
     
     if [ -z "$buf" ]; then
@@ -61,7 +62,7 @@ done
 
 echo "// Sending boot command..."
 
-for _ in $(seq $RETRIES); do
+for _ in $(seq $BOOT_RETRIES); do
     echo -n "MCU Send: "
     print_hex "$CMD_BOOT"
     

@@ -95,7 +95,7 @@ usage() {
     echo -e "    --skip-database          Skip database migration."
     echo -e "    --skip-moon-restart      Skip restarting Moonraker."
     echo -e "    --skip-klipper-restart   Skip restarting Klipper."
-    echo -e "    --skip-plugins           Skip Klipper pluggins reloading."
+    echo -e "    --skip-plugins           Skip Klipper plugins reloading."
     echo -e "    --hard-klipper-restart   Use Hard restart for Klipper."
     echo -e "    --force-restart, -fr     Force restart services."
     echo -e "    --verbose, -v            Enable verbose mode for detailed output."
@@ -121,7 +121,7 @@ load_profile() {
         fi
     done
 
-    echo -e "${RED}Unknow profile: \"${key}\"${NC}\n"
+    echo -e "${RED}Unknown profile: \"${key}\"${NC}\n"
     HELP=1
 
     return 1
@@ -228,7 +228,7 @@ cleanup() {
 
 abort() {
     trap SIGINT
-    echo; echo 'Aborted'
+    echo; echo -e "${RED}Process aborted${NC}"
     cleanup
     
     exit 2

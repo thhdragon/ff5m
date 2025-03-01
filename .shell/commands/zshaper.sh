@@ -19,8 +19,8 @@ clear_shaper_data() {
 
     images=$(find "$path" -name "$name" -mtime "$preserve_days" -maxdepth 1 -type f | sort)
         
-    images_x=$(echo "$images" | grep -i "x.png" | head -n "-$preserve_cnt")
-    images_y=$(echo "$images" | grep -i "y.png" | head -n "-$preserve_cnt")
+    images_x=$(echo "$images" | grep -i "_x_" | head -n "-$preserve_cnt")
+    images_y=$(echo "$images" | grep -i "_y_" | head -n "-$preserve_cnt")
 
     echo -e "${images_x}\n${images_y}" | xargs -r -I{} -- rm {}
 }
@@ -35,15 +35,6 @@ case $1 in
         cp -u /tmp/*.csv /opt/config/mod_data/
         cp -u /tmp/*.json /opt/config/mod_data/
         chroot "$MOD" /opt/config/mod/.root/zshaper.sh
-    ;;
-    --recalculate)
-        SCV=5
-        if [ "$2" = "--scv" ]; then
-            SCV="$3"
-        fi
-
-        # TODO:
-        chroot "$MOD" /opt/config/mod/.root/zshaper.sh "$SCV"
     ;;
     *)
         echo "Unknown parameter value: '$1'"

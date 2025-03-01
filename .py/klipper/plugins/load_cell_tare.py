@@ -17,6 +17,7 @@ class LoadCellTareGcode:
         self.gcode = self.printer.lookup_object("gcode")
 
         self.gcode.register_command("LOAD_CELL_TARE", self.cmd_LOAD_CELL_TARE)
+        self.gcode.register_command("TEST_M108", self.cmd_TEST_M108)
 
     def _lazy_load_printers_objects(self):
         if self.loaded: return
@@ -33,6 +34,9 @@ class LoadCellTareGcode:
 
     def _tare_confirmed(self):
         return bool(self.level_pin.last_state)
+
+    def cmd_TEST_M108(self, gcmd):
+        self.gcode.respond_raw("TEST_M108")
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
         self._lazy_load_printers_objects()

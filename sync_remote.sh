@@ -36,6 +36,16 @@ cleanup() {
     rm -r "./.sync"
 }
 
+abort() {
+    trap SIGINT
+    echo; echo -e "${RED}Remote process aborted${NC}"
+    cleanup
+    
+    exit 2
+}
+
+trap "abort" INT
+
 print_status() {
     local name="$1"; local status="$2"; local color="$3"
     echo -e "${NC}► ${name}\t\t${color}${status}${NC}"
@@ -61,9 +71,9 @@ run_service() {
     print_status "$name" "${status}..." "${YELLOW}"
     
     if [ "$VERBOSE" -eq 0 ]; then
-        ${command[@]} > /dev/null 2>&1
+        "${command[@]}" > /dev/null 2>&1
     else
-        ${command[@]}
+        "${command[@]}"
     fi
     
     local ret=$?

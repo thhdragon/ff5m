@@ -9,8 +9,6 @@
 
 echo "Starting services..."
 
-touch "/tmp/not_first_launch_f"
-
 /opt/config/mod/.root/S65moonraker start
 /opt/config/mod/.root/S70httpd start
 /opt/config/mod/.root/S45ntpd start

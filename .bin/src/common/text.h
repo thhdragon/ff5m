@@ -53,6 +53,12 @@ enum class VerticalAlignment: uint8_t {
     BOTTOM   = 3,
 };
 
+enum class StrokeDirection: uint8_t {
+    OUTER  = 0,
+    MIDDLE = 1,
+    INNER  = 2,
+};
+
 class TextDrawer {
     uint32_t *_screen;
     uint32_t _width;
@@ -65,6 +71,7 @@ class TextDrawer {
     uint32_t _backgroundColor = 0;
     const Font *_font = nullptr;
 
+    int32_t _lineBeginningX = 0;
     int32_t _cursorX = 0;
     int32_t _cursorY = 0;
 
@@ -73,6 +80,7 @@ class TextDrawer {
 
     HorizontalAlign _horizontalAlign = HorizontalAlign::LEFT;
     VerticalAlignment _verticalAlign = VerticalAlignment::BASELINE;
+    StrokeDirection _strokeDirection = StrokeDirection::MIDDLE;
 
     uint8_t _bpp = 0;
     uint8_t _pixelMask = 0;
@@ -100,6 +108,8 @@ public:
     void setColor(uint32_t color);
     void setBackgroundColor(uint32_t color);
 
+    void setStrokeDirection(StrokeDirection value);
+
     void setDoubleBuffered(bool enable);
     void setDebug(bool enable);
 
@@ -111,6 +121,11 @@ public:
     void fillRect(const Rect &b, uint32_t color);
     void fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color);
 
+    void strokeRect(const Rect &b, uint32_t color, uint8_t lineWidth = 1);
+    void strokeRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color, uint8_t lineWidth = 1);
+
+    void drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint8_t lineWidth = 1);
+
     void clear(uint32_t color = 0);
 
     void flush();
@@ -121,7 +136,7 @@ public:
 private:
     typedef std::pair<int32_t, int32_t> Point;
 
-    int32_t _drawChar(char symbol, int32_t cursorX, int32_t cursorY);
+    int32_t _drawChar(uint16_t symbol, int32_t cursorX, int32_t cursorY);
     [[nodiscard]] Point _getAlignmentOffset(const TextBoundary &boundary) const;
 
     static uint32_t _mixColor(uint32_t a, uint32_t b, uint8_t factor);

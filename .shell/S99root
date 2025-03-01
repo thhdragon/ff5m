@@ -8,8 +8,8 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
-    echo "Buildroot services disabled due to SKIP_ZMOD mode"
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+    echo "Buildroot services disabled due to SKIP_MOD mode"
     exit 0
 fi
 
@@ -39,7 +39,12 @@ start() {
     
     echo "// Starting services..."
     chroot "$MOD" /opt/config/mod/.root/start.sh
-    echo "// Done. Loaded for $(awk '{print $1}' < /proc/uptime) sec."
+
+    if [ ! -f "$NOT_FIRST_LAUNCH_F" ]; then
+        echo "// Done. Loaded for $(awk '{print $1}' < /proc/uptime) sec."
+    else
+        echo "// Done."
+    fi
 
     rm -f "$SCREEN_FOLLOW_UP_LOG"
     touch "$NOT_FIRST_LAUNCH_F"

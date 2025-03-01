@@ -64,13 +64,13 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "zssh_reload"
         },
         {
-            "alias": "Archive config",
+            "alias": "Archive debug",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "24e79f79-c9db-4e2b-aab3-ed7e5b568d3d",
             "order": 9,
-            "name": "tar_config"
+            "name": "tar_debug"
         },
         {
             "alias": "Stop mod",
@@ -79,7 +79,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 4,
-            "name": "stop_zmod"
+            "name": "stop_mod"
         },
         {
             "alias": "Run mod",
@@ -88,7 +88,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 5,
-            "name": "start_zmod"
+            "name": "start_mod"
         },
         {
             "alias": "Current time",
@@ -204,7 +204,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 7,
-            "name": "skip_zmod"
+            "name": "skip_mod"
         },
         {
             "alias": "",
@@ -213,7 +213,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 8,
-            "name": "soft_remove"
+            "name": "remove_mod_soft"
         },
         {
             "alias": "",
@@ -262,7 +262,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 9,
-            "name": "remove_zmod"
+            "name": "remove_mod"
         },
         {
             "alias": "Bed calibration",
@@ -573,13 +573,13 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "name": "config_verify"
         },
         {
-            "alias": "Backup configuration",
+            "alias": "Archive config",
             "visible": true,
             "disabledWhilePrinting": false,
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 0,
-            "name": "backup_tar"
+            "name": "tar_backup"
         },
         {
             "alias": "",
@@ -636,7 +636,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 6,
-            "name": "skip_zmod_soft"
+            "name": "skip_mod_soft"
         },
         {
             "alias": "",
@@ -661,6 +661,14 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "0",
             "name": "web"
+        },
+        {
+            "alias": "",
+            "visible": true,
+            "disabledWhilePrinting": false,
+            "color": "",
+            "categoryId": "85e2f576-74e1-4bd3-9e82-fca937d1d3ce",
+            "name": "m108"
         }
     ],
     "categories":
@@ -831,7 +839,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             [
                 {
                     "pos": 1,
-                    "name": "BACKUP_TAR",
+                    "name": "TAR_BACKUP",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -863,7 +871,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 5,
-                    "name": "START_ZMOD",
+                    "name": "START_MOD",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -871,7 +879,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 6,
-                    "name": "STOP_ZMOD",
+                    "name": "STOP_MOD",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -879,7 +887,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 7,
-                    "name": "SKIP_ZMOD",
+                    "name": "SKIP_MOD",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -887,7 +895,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 8,
-                    "name": "SOFT_REMOVE",
+                    "name": "REMOVE_MOD_SOFT",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -895,7 +903,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 9,
-                    "name": "REMOVE_ZMOD",
+                    "name": "REMOVE_MOD",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,
@@ -987,7 +995,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 10,
-                    "name": "TAR_CONFIG",
+                    "name": "TAR_DEBUG",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,

@@ -8,8 +8,8 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if [ -f /tmp/SKIP_ZMOD ] || [ -f /tmp/SKIP_ZMOD_SOFT ]; then
-    echo "SSH tunnel due to SKIP_ZMOD mode"
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+    echo "SSH tunnel due to SKIP_MOD mode"
     exit 0
 fi
 
@@ -129,8 +129,12 @@ reload() {
 switch() {
     case "$1" in
         start)
-            [ ! -f "$NOT_FIRST_LAUNCH_F" ] && exit 0
-            start
+            # Init ssh connection later.
+            # Establishing an SSH connection during boot will dramatically increase overall boot time.
+            # If the server is unavailable, it will increase it even more.
+            if [ -f "$NOT_FIRST_LAUNCH_F" ]; then
+                start
+            fi
         ;;
         stop)
             stop

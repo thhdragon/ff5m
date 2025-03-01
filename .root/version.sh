@@ -27,7 +27,7 @@ update_var() {
 }
 
 
-update_var "NAME" "zmod+"
+update_var "NAME" "Forge-X"
 update_var "VERSION" "${MOD_VERSION}"
 update_var "VERSION_ID" "${MOD_VERSION}-${PATCH_VERSION}"
 update_var "PRETTY_NAME" "Forge-X ${MOD_VERSION}"

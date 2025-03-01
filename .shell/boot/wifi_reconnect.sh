@@ -12,9 +12,11 @@ handle() {
     case "$2" in
         CONNECTED)
             echo "Connection Established";
+            touch "$NETWORK_CONNECTED_F"
         ;;
         DISCONNECTED)
             echo "?? Connection Lost";
+            rm -f "$NETWORK_CONNECTED_F"
         ;;
         *)
             echo "Received Wi-Fi signal: " "$@"

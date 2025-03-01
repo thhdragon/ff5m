@@ -8,10 +8,12 @@
 #include "text.h"
 
 #include <algorithm>
-#include <iomanip>
+#include <cmath>
 #include <limits>
 #include <ranges>
 #include <stdexcept>
+
+#include "utf8.h"
 
 
 TextDrawer::~TextDrawer() {
@@ -58,6 +60,10 @@ void TextDrawer::setBackgroundColor(uint32_t color) {
     _backgroundColor = color;
 }
 
+void TextDrawer::setStrokeDirection(StrokeDirection value) {
+    _strokeDirection = value;
+}
+
 void TextDrawer::setDoubleBuffered(bool enable) {
     if (enable && !_backBuffer) {
         _backBuffer = new uint32_t[_width * _height];
@@ -68,7 +74,7 @@ void TextDrawer::setDoubleBuffered(bool enable) {
 }
 
 void TextDrawer::setPosition(int32_t x, int32_t y) {
-    _cursorX = x;
+    _cursorX = _lineBeginningX = x;
     _cursorY = y;
 }
 
@@ -96,37 +102,34 @@ void TextDrawer::print(const char *text) {
             return std::string_view(rng.data(), rng.size());
         });
 
+    bool firstLine = true;
     for (const auto &line: lines) {
+        if (!firstLine) breakLine();
+        firstLine = false;
+
         auto b = calcTextBoundaries(line, _cursorX, _cursorY);
         if (b.left >= b.right && b.top >= b.bottom) {
             // Empty line or no supported glyphs
-            breakLine();
             continue;
         }
 
         fillRect(b, _backgroundColor);
 
         if (_debug) {
-            fillRect({b.left, b.top, b.left + 1, b.bottom}, 0xff00ff00);
-            fillRect({b.right, b.top, b.right + 1, b.bottom}, 0xff00ff00);
-            fillRect({b.left, b.top, b.right, b.top + 1}, 0xff00ff00);
-            fillRect({b.left, b.bottom, b.right, b.bottom + 1}, 0xff00ff00);
-
+            strokeRect(b, 0xff00ff00);
             fillRect({b.left, b.baseline, b.right, b.baseline + 1}, 0xff0000ff);
         }
 
-        int32_t x = b.start;
-        int32_t y = b.baseline;
+        _cursorX = b.start;
 
-        for (const auto &symbol: line) {
-            x += _drawChar(symbol, x, y);
+        for (const auto &symbol: UTF8Reader{line}) {
+            _cursorX += _drawChar(symbol, _cursorX, b.baseline);
         }
-
-        breakLine();
     }
 }
 
 void TextDrawer::breakLine() {
+    _cursorX = _lineBeginningX;
     _cursorY += font()->advanceY * _scaleY;
 }
 
@@ -138,10 +141,7 @@ void TextDrawer::flush() {
     }
 
     if (_debug) {
-        fillRect(_affectedArea.left, _affectedArea.top - 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
-        fillRect(_affectedArea.left, _affectedArea.bottom + 1, _affectedArea.right - _affectedArea.left, 1, 0xffffff00);
-        fillRect(_affectedArea.left - 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
-        fillRect(_affectedArea.right + 1, _affectedArea.top, 1, _affectedArea.bottom - _affectedArea.top, 0xffffff00);
+        strokeRect(_affectedArea, 0xffffff00);
     }
 
     if (_affectedArea.left < 0) _affectedArea.left = 0;
@@ -158,7 +158,7 @@ void TextDrawer::flush() {
     _affectedArea = {};
 }
 
-int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
+int32_t TextDrawer::_drawChar(uint16_t symbol, int32_t cursorX, int32_t cursorY) {
     const auto &font = *this->font();
     if (symbol < font.codeFrom || symbol > font.codeTo) {
         return 0;
@@ -169,8 +169,8 @@ int32_t TextDrawer::_drawChar(char symbol, int32_t cursorX, int32_t cursorY) {
     const int32_t offsetX = cursorX + glyph.offsetX * _scaleX;
     const int32_t offsetY = cursorY + glyph.offsetY * _scaleY;
 
-    for (uint8_t gy = 0; gy < glyph.height; ++gy) {
-        for (uint8_t gx = 0; gx < glyph.width; ++gx) {
+    for (uint16_t gy = 0; gy < glyph.height; ++gy) {
+        for (uint16_t gx = 0; gx < glyph.width; ++gx) {
             auto index = (gy * glyph.width + gx) * _bpp;
             auto byteOffset = glyph.offset + index / 8;
             auto bitOffset = (8 - _bpp) - index % 8;
@@ -244,6 +244,80 @@ void TextDrawer::fillRect(int32_t x, int32_t y, uint32_t width, uint32_t height,
     }
 }
 
+void TextDrawer::strokeRect(int32_t x, int32_t y, uint32_t width, uint32_t height, uint32_t color, uint8_t lineWidth) {
+    strokeRect({x, y, (int32_t) (x + width), (int32_t) (y + height)}, color, lineWidth);
+}
+
+void TextDrawer::drawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint32_t color, uint8_t lineWidth) {
+    if (y1 == y2) return fillRect(std::min(x1, x2), y1 - lineWidth / 2, std::abs(x2 - x1), lineWidth, color);
+    if (x1 == x2) return fillRect(x1 - lineWidth / 2, std::min(y1, y2), lineWidth, std::abs(y2 - y1), color);
+
+    const auto dx = x2 - x1;
+    const auto dy = y2 - y1;
+
+    if (!dx || !dy) return;
+
+    // Get normalized direction vector
+    auto distance = std::sqrtf(dx * dx + dy * dy);
+    const auto xDirection = (float) dx / distance;
+    const auto yDirection = (float) dy / distance;
+
+    const auto xStep = std::abs(1 / xDirection);
+    const auto yStep = std::abs(1 / yDirection);
+
+    float x = x1, y = y1;
+    float distanceX = 0, distanceY = 0;
+    float drawDistance = 0;
+    while (drawDistance <= distance) {
+        bool isX = distanceX + xStep < distanceY + yStep;
+        if (isX) {
+            x += std::copysignf(1.f, xDirection);
+            distanceX += xStep;
+            drawDistance = distanceX;
+        } else {
+            y += std::copysignf(1.f, yDirection);
+            distanceY += yStep;
+            drawDistance = distanceX;
+        }
+
+        if (lineWidth <= 1) {
+            setPixel((int32_t) x, (int32_t) y, color);
+        } else if (isX) {
+            fillRect((int32_t) x, (int32_t) y - lineWidth / 2, 1, lineWidth, color);
+        } else {
+            fillRect((int32_t) x - lineWidth / 2, (int32_t) y, lineWidth, 1, color);
+        }
+    }
+}
+
+void TextDrawer::strokeRect(const Rect &b, uint32_t color, uint8_t lineWidth) {
+    int outer, inner;
+    if (_strokeDirection == StrokeDirection::OUTER) {
+        outer = lineWidth;
+        inner = 0;
+    } else if (_strokeDirection == StrokeDirection::INNER) {
+        auto maxLineWidth = std::min(b.right - b.left, b.bottom - b.top);
+        auto lw = std::max(1, std::min((int32_t) lineWidth, maxLineWidth));
+        outer = 0;
+        inner = lw;
+    } else {
+        auto maxLineWidth = std::min(b.right - b.left, b.bottom - b.top) * 2;
+        auto lw = std::max(1, std::min((int32_t) lineWidth, maxLineWidth));
+
+        outer = lw / 2;
+        inner = std::max(1, lw - outer);
+    }
+
+    // Left Vertical line
+    fillRect({b.left - outer, b.top - outer, b.left + inner, b.bottom + outer}, color);
+    // Right Vertical line
+    fillRect({b.right - inner, b.top - outer, b.right + outer, b.bottom + outer}, color);
+    // Top Horizontal line
+    fillRect({b.left, b.top - outer, b.right, b.top + inner}, color);
+    // Bottom Horizontal line
+    fillRect({b.left, b.bottom - inner, b.right, b.bottom + outer}, color);
+}
+
 void TextDrawer::clear(uint32_t color) {
     fillRect(0, 0, _width, _height, color);
 }
@@ -266,7 +340,7 @@ TextBoundary TextDrawer::calcTextBoundaries(const std::string_view &text, int32_
     auto cursorY = y;
 
     const auto &font = *this->font();
-    for (const auto &symbol: text) {
+    for (const auto &symbol: UTF8Reader{text}) {
         if (symbol == '\n') {
             cursorY = x;
             cursorY += font.advanceY * _scaleY;

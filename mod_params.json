@@ -237,6 +237,20 @@
       "order": 11
     },
     {
+      "key": "bed_mesh_validation",
+      "type": "bool",
+      "default": 0,
+      "label": "Bed Mesh Validation",
+      "order": 12
+    },
+    {
+      "key": "bed_mesh_validation_tolerance",
+      "type": "float",
+      "default": 0.2,
+      "label": "Bed Mesh Validation Z-Offset Tolerance",
+      "order": 13
+    },
+    {
       "key": "tune_config",
       "type": "bool",
       "default": 0,

@@ -10,8 +10,8 @@ To use this feature, you have several options:
 ### Using USB Drive
 
 Format a USB drive to FAT32 and place an empty file in the root directory:  
-- Name the file `SKIP_ZMOD` to completely skip the mod loading..
-- Name the file `SKIP_ZMOD_SOFT` to skip additional service loading while preserving root access.
+- Name the file `SKIP_MOD` to completely skip the mod loading..
+- Name the file `SKIP_MOD_SOFT` to skip additional service loading while preserving root access.
 
 Insert the USB drive before turning on the printer. The mod will automatically recognize the USB drive and load in the selected mode.
 
@@ -19,7 +19,7 @@ Insert the USB drive before turning on the printer. The mod will automatically r
 
 Run the macro in Klipper's console:  
 
-- `SKIP_ZMOD` to completely skip the mod loading.
-- `SKIP_ZMOD_SOFT` to skip additional service loading while preserving root access.
+- `SKIP_MOD` to completely skip the mod loading.
+- `SKIP_MOD_SOFT` to skip additional service loading while preserving root access.
 
 The mod will automatically reboot and load in the selected mode.

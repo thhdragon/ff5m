@@ -110,7 +110,7 @@ class GCodeDispatch:
         self.mux_commands = {}
         self.gcode_help = {}
         # Register commands needed before config file is loaded
-        handlers = ['M110', 'M112', 'M115',
+        handlers = ['M108', 'M110', 'M112', 'M115',
                     'RESTART', 'FIRMWARE_RESTART', 'ECHO', 'STATUS', 'HELP']
         for cmd in handlers:
             func = getattr(self, 'cmd_' + cmd)
@@ -221,8 +221,16 @@ class GCodeDispatch:
     def run_script_from_command(self, script):
         self._process_commands(script.split('\n'), need_ack=False)
     def run_script(self, script):
+        # Special parser for immediate commands
+        lines = script.split('\n')
+        for line in lines:
+            if self.immediate_cmds_r.match(line):
+                lines.remove(line)
+                self.run_script_from_command(line)
+
         with self.mutex:
-            self._process_commands(script.split('\n'), need_ack=False)
+            self._process_commands(lines, need_ack=False)
+
     def get_mutex(self):
         return self.mutex
     def create_gcode_command(self, command, commandline, params):
@@ -252,6 +260,8 @@ class GCodeDispatch:
         r'(?P<cmd>[a-zA-Z_][a-zA-Z0-9_]+)(?:\s+|$)'
         r'(?P<args>[^#*;]*?)'
         r'\s*(?:[#*;].*)?$')
+    immediate_cmds = [ "M108", "LED", "LED_ON", "LED_OFF", "TONE", "ALARM", "BEEP" ]
+    immediate_cmds_r = re.compile(r'^(' + '|'.join(re.escape(cmd) for cmd in immediate_cmds) + r')(?:\s|$)', re.IGNORECASE)
     def _get_extended_params(self, gcmd):
         m = self.extended_r.match(gcmd.get_commandline())
         if m is None:
@@ -310,6 +320,19 @@ class GCodeDispatch:
                              % (key_param, key))
         values[key_param](gcmd)
     # Low-level G-Code commands that are needed before the config file is loaded
+    cmd_M108_help = "Skip Mod's heating commands"
+    def cmd_M108(self, gcmd):
+        wait_cmd = self.printer.lookup_object("gcode_macro _WAIT_TEMPERATURE")
+        if not wait_cmd: raise self.error("_WAIT_TEMPERATURE doesn't exist!")
+        if "cancel" not in wait_cmd.variables: raise self.error("_WAIT_TEMPERATURE doesn't contain the 'cancel' variable!")
+        if "active" not in wait_cmd.variables: raise self.error("_WAIT_TEMPERATURE doesn't contain the 'active' variable!")
+        if not wait_cmd.variables["active"]: return self.respond_raw("There is no active _WAIT_TEMPERATURE process!")
+
+        # Set the "cancel" variable to True, which _WAIT_TEMPERATURE will later read
+        wait_cmd.variables = dict(wait_cmd.variables)
+        wait_cmd.variables["cancel"] = True
+        self.respond_raw("Set cancellation flag for _WAIT_TEMPERATURE!")
+
     def cmd_M110(self, gcmd):
         # Set Current Line Number
         pass
@@ -426,7 +449,7 @@ class GCodeIO:
                 self.gcode.request_restart('exit')
             pending_commands.append("")
         # Handle case where multiple commands pending
-        if self.is_processing_data or len(pending_commands) > 1:
+        if self.is_processing_data or len(pending_commands) >= 1:
             if len(pending_commands) < 20:
                 # Check for M112 out-of-order
                 for line in lines:
