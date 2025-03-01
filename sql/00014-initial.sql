@@ -213,7 +213,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             "color": "",
             "categoryId": "d83c5e21-865d-43fd-bf2f-2dfda34ff3af",
             "order": 8,
-            "name": "remove_soft"
+            "name": "remove_mod_soft"
         },
         {
             "alias": "",
@@ -895,7 +895,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                 },
                 {
                     "pos": 8,
-                    "name": "REMOVE_SOFT",
+                    "name": "REMOVE_MOD_SOFT",
                     "color": "group",
                     "showInStandby": true,
                     "showInPrinting": true,

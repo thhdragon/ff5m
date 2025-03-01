@@ -2,7 +2,7 @@
 
 To remove the mod, you have several options:
 
-**Warning**: Uninstalling the mod will remove all custom configurations and settings. If you plan to reinstall the mod later, consider using the SOFT_REMOVE option to preserve root access and configurations.
+**Warning**: Uninstalling the mod will remove all custom configurations and settings. If you plan to reinstall the mod later, consider using the `REMOVE_MOD_SOFT` option to preserve root access and configurations.
 
 ### Run Macro via Fluidd/Mainsail
 
