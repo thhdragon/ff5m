@@ -74,7 +74,7 @@ void TextDrawer::setDoubleBuffered(bool enable) {
 }
 
 void TextDrawer::setPosition(int32_t x, int32_t y) {
-    _cursorX = x;
+    _cursorX = _lineBeginningX = x;
     _cursorY = y;
 }
 
@@ -102,11 +102,14 @@ void TextDrawer::print(const char *text) {
             return std::string_view(rng.data(), rng.size());
         });
 
+    bool firstLine = true;
     for (const auto &line: lines) {
+        if (!firstLine) breakLine();
+        firstLine = false;
+
         auto b = calcTextBoundaries(line, _cursorX, _cursorY);
         if (b.left >= b.right && b.top >= b.bottom) {
             // Empty line or no supported glyphs
-            breakLine();
             continue;
         }
 
@@ -117,18 +120,16 @@ void TextDrawer::print(const char *text) {
             fillRect({b.left, b.baseline, b.right, b.baseline + 1}, 0xff0000ff);
         }
 
-        int32_t x = b.start;
-        int32_t y = b.baseline;
+        _cursorX = b.start;
 
         for (const auto &symbol: UTF8Reader{line}) {
-            x += _drawChar(symbol, x, y);
+            _cursorX += _drawChar(symbol, _cursorX, b.baseline);
         }
-
-        breakLine();
     }
 }
 
 void TextDrawer::breakLine() {
+    _cursorX = _lineBeginningX;
     _cursorY += font()->advanceY * _scaleY;
 }
 

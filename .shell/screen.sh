@@ -161,9 +161,9 @@ case "$1" in
         batches=(
             --batch fill -p 0 0 -s 800 40
             --batch text -p 30  "$y" -c "$bed_color"      -ha right  -va middle -f  "Typicons 12pt"      -t "$icon_bed"
-            --batch text -p 35  "$y" -c "$bed_color"      -ha left   -va middle -f  "JetBrainsMono 12pt" -t "$bed_temp"
-            --batch text -p 115 "$y" -c "$nozzle_color"   -ha right  -va middle -f  "Typicons 12pt"      -t "$icon_heater"
-            --batch text -p 120 "$y" -c "$nozzle_color"   -ha left   -va middle -f  "JetBrainsMono 12pt" -t "$nozzle_temp"
+            --batch text             -c "$bed_color"      -ha left   -va middle -f  "Roboto 12pt"        -t " $bed_temp  "
+            --batch text             -c "$nozzle_color"   -ha left   -va middle -f  "Typicons 12pt"      -t "$icon_heater"
+            --batch text             -c "$nozzle_color"   -ha left   -va middle -f  "Roboto 12pt"        -t " $nozzle_temp"
         )
 
         x=770

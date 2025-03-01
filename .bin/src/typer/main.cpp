@@ -135,7 +135,7 @@ void drawText(const argparse::ArgumentParser &opts, TextDrawer &drawer) {
 
     const Font *font = fonts[fontName];
 
-    drawer.setPosition(pos[0], pos[1]);
+    if (pos.size() == 2) drawer.setPosition(pos[0], pos[1]);
     drawer.setColor(color | 0xff000000);
     drawer.setBackgroundColor(opts.is_used("--bg-color") ? 0xff000000 | bgColor : 0);
     drawer.setFont(font);
@@ -264,8 +264,7 @@ std::unique_ptr<ProgramParser> build_parser() {
 
     result->text_command.add_argument("--pos", "-p")
         .nargs(2)
-        .scan<'d', int>()
-        .required();
+        .scan<'d', int>();
 
     result->text_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()

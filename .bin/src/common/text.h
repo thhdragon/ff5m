@@ -71,6 +71,7 @@ class TextDrawer {
     uint32_t _backgroundColor = 0;
     const Font *_font = nullptr;
 
+    int32_t _lineBeginningX = 0;
     int32_t _cursorX = 0;
     int32_t _cursorY = 0;
 
