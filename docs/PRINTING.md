@@ -22,6 +22,29 @@ It is controlled by the following mod's [parameters](docs/CONFIGURATION.md):
 > Don’t set `weight_check_max` too low. Legitimate situations, such as the nozzle scratching an overextruded model or the weight of the model itself, can trigger false stops.  
 > Over time, the bed's weight may also increase during long prints (weight of the model itself).
 
+## Bed Mesh Validation
+
+To prevent printing issues caused by an invalid bed mesh, the mod includes a **Bed Mesh Validation** feature. This feature checks the bed mesh before starting a print and ensures it matches the current printer configuration.   
+Common scenarios where this is useful include:
+- Using a bed mesh created for a different bed plate.
+- Printing without a bed plate installed.
+- Accidentally changing essential kinematics parameters that affect Z movement.
+
+It is controlled by the following mod's [parameters](docs/CONFIGURATION.md):
+- `bed_mesh_validation`: Enable or disable bed mesh validation. Set to 1 to enable.
+- `bed_mesh_validation_tolerance`: Set the maximum allowed Z-offset tolerance (in mm). The default value is 0.2.
+
+> [!NOTE]
+> Ensure the `bed_mesh_validation_tolerance` is set appropriately for your setup. A value too low may trigger false negatives, while a value too high may miss critical issues.
+
+### How it works:
+- Before starting a print, the mod compares the current bed mesh with the printer's expected Z movement.
+- If the Z-offset exceeds the configured tolerance (`bed_mesh_validation_tolerance`), the print is canceled to prevent potential damage.
+- A warning is logged, and the user is notified to recalibrate the bed mesh or check the printer configuration.
+
+> [!NOTE]
+> Bed Mesh Validation may produce false negatives if your nozzle is very dirty, as this can affect the accuracy of probing and the correct Z-offset position. Always ensure your nozzle is clean before starting a print.
+
 ## Sound
 You can customize sound indications or completely disable them. Additionally, you can configure MIDI playback for specific events. Available MIDI files are located in **Configuration -> mod_data -> midi**. You can also add your own MIDI files by uploading them to the **midi** folder.
 It is controlled by the following mod's [parameters](docs/CONFIGURATION.md):
