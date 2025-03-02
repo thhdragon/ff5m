@@ -36,6 +36,8 @@ class AsyncRunHelper:
 
         proc = None
 
+    _wait_interval = 5.0
+
     def __init__(self, printer, cmd):
         self.printer = printer
         self.cmd = cmd
@@ -53,8 +55,11 @@ class AsyncRunHelper:
 
         self._thread: Optional[threading.Thread] = None
         self._running = False
+        self._terminate = False
 
     def run(self, program: List[str], args: List[str]):
+        if self._terminate: raise InterruptedError("Async runner terminated")
+
         if self.mode == ShellMode.DAEMON:
             self._run_task(program, args)
             return
@@ -77,13 +82,25 @@ class AsyncRunHelper:
             elif self.cmd.debug:
                 self.gcode.respond_info(f"Add command {self.name} to Queue {program} {args}")
 
+    def shutdown(self):
+        logging.info(f"[gcode_shell_command {self.name}]: received shutdown request.")
+
+        if not self._thread: return
+        with self._lock:
+            self._queue.clear()
+            self._terminate = True
+            self._queue_event.set()
+
     @property
     def running(self):
         return self._running
 
     def _bg_thread(self):
+        logging.info(f"[gcode_shell_command {self.name}]: background thread started.")
+
         while True:
             self._queue_event.wait()
+            if self._terminate: break
 
             with self._lock:
                 if len(self._queue) == 0:
@@ -101,19 +118,26 @@ class AsyncRunHelper:
             if task.proc:
                 self._bg_process_task(task)
 
+        logging.info(f"[gcode_shell_command {self.name}]: background thread exit.")
+
     def _bg_process_task(self, task: Task):
         proc = task.proc
         proc_fd = proc.stdout.fileno()
         terminated = False
 
         try:
-            proc.wait(self.timeout)
-        except subprocess.TimeoutExpired:
+            wait_success = self._proc_wait(proc)
+        except InterruptedError as e:
+            logging.exception(f"[gcode_shell_command {self.name}]: Interrupted", exc_info=e)
+            proc.terminate()
+            raise e
+
+        if wait_success:
+            logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" done.")
+        else:
             logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" not finished within timeout. Terminated.")
             proc.terminate()
             terminated = True
-        else:
-            logging.info(f"[gcode_shell_command {self.name}]: process \"{proc.pid}\" done.")
 
         if self.cmd.verbose:
             output = self._read_stdout(proc_fd)
@@ -123,6 +147,23 @@ class AsyncRunHelper:
             self._async_response(f"!! Process {self.name} terminated due to timeout.")
         elif self.cmd.debug:
             self._async_response(f"// Process {self.name} done.")
+
+    def _proc_wait(self, proc):
+        remaining = self.timeout
+
+        while remaining > 0:
+            if self._terminate: raise InterruptedError("Requested shutdown. Terminate background process")
+
+            wait_time = min(self._wait_interval, remaining)
+            try:
+                proc.wait(wait_time)
+                return True
+            except subprocess.TimeoutExpired:
+                pass
+
+            remaining -= wait_time
+
+        return False
 
     def _run_task(self, program: List[str], args: List[str]):
         mode_str = self.mode.name.capitalize()
@@ -182,6 +223,7 @@ class ShellCommand:
         self._async_helper = None
         if self.mode in {ShellMode.BACKGROUND, ShellMode.QUEUE}:
             self._async_helper = AsyncRunHelper(self.printer, self)
+            self.printer.register_event_handler("klippy:disconnect", lambda: self._async_helper.shutdown())
 
         self.gcode.register_mux_command(
             "RUN_SHELL_COMMAND", "CMD", self.name,
