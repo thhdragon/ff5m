@@ -85,3 +85,8 @@ Thanks to the Klipper and Moonraker communities for their ongoing development.
 Special thanks to the Russian FlashForge Adventurer 5M Telegram Community: [@FF_5M_5M_Pro](https://t.me/FF_5M_5M_Pro)
 
 This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
+
+Thanks for the great open-source fonts:
+- [Roboto Font](https://fonts.google.com/specimen/Roboto)
+- [JetBrains Mono Font](https://www.jetbrains.com/lp/mono)
+- [Typicons Icons Font](https://www.s-ings.com/typicons/)
