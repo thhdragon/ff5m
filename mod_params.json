@@ -244,11 +244,18 @@
       "order": 12
     },
     {
+      "key": "bed_mesh_validation_clear",
+      "type": "bool",
+      "default": 0,
+      "label": "Clear before Bed Mesh Validation",
+      "order": 13
+    },
+    {
       "key": "bed_mesh_validation_tolerance",
       "type": "float",
       "default": 0.2,
       "label": "Bed Mesh Validation Z-Offset Tolerance",
-      "order": 13
+      "order": 14
     },
     {
       "key": "tune_config",

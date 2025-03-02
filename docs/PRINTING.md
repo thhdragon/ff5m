@@ -32,6 +32,7 @@ Common scenarios where this is useful include:
 
 It is controlled by the following mod's [parameters](docs/CONFIGURATION.md):
 - `bed_mesh_validation`: Enable or disable bed mesh validation. Set to 1 to enable.
+- `bed_mesh_validation_clear`: Enable or disable nozzle cleaning before bed mesh validation. Set to 1 to enable.
 - `bed_mesh_validation_tolerance`: Set the maximum allowed Z-offset tolerance (in mm). The default value is 0.2.
 
 > [!NOTE]
