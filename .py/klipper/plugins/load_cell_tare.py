@@ -55,7 +55,7 @@ class LoadCellTareGcode:
             self._reset_tare_confirmation()
             self._run_gcode("WAIT TIME=100")
         else:
-            raise gcmd.error("Tare conformation did not reset.")
+            return self._raise_error("Tare conformation did not reset.")
 
         # Check bed pressure to ensure no toolhead contact
         # Taring in that case would be incorrect
@@ -78,13 +78,13 @@ class LoadCellTareGcode:
 
             self._run_gcode("WAIT TIME=100")
             if abs(self.weight.last_temp) > threshold_weight:
-                raise gcmd.error(f"Load cell tare failed: weight {self.weight.last_temp} > threshold {threshold_weight}")
+                return self._raise_error(f"Load cell tare failed: weight {self.weight.last_temp} > threshold {threshold_weight}")
 
         elif self.config.getint("skip_tare_error", 0):
-            gcmd.respond_info(f"Load cell tared, but no confirmation from level_pin; configured to skip.")
+            return self._raise_error("Load cell tared, but no confirmation from level_pin; configured to skip.")
 
         else:
-            raise gcmd.error("Load cell tare failed. No tare confirmation received")
+            return self._raise_error("Load cell tare failed. No tare confirmation received")
 
         # If we are here - tare is considered successful
         logging.info("LOAD_CELL_TARE: Load cell tare finished!")
@@ -117,6 +117,16 @@ class LoadCellTareGcode:
 
         self.gcode.run_script_from_command("RESTORE_GCODE_STATE NAME=CELL_TARE")
         self.gcode.respond_raw("!! Detected bed pressure. Please ensure the bed is clean!")
+
+    def _raise_error(self, msg):
+        start_print_vars = self.printer.lookup_object('gcode_macro _START_PRINT').variables
+        if start_print_vars["print_active"]:
+            if self.mod_params.variables['display_off']:
+                self.gcode.run_script_from_command('CANCEL_PRINT REASON="Cell tare failed!"')
+            else:
+                self.gcode.run_script_from_command('CANCEL_PRINT')
+
+        raise self.gcode.error(msg)
 
     def _cell_tare(self):
         logging.info("LOAD_CELL_TARE: Send tare request.")
