@@ -35,7 +35,7 @@ case "$key" in
     display_off)
         if [ "$value" -eq 1 ]; then
             message "Do not turn off the screen unless you clearly understand how the bed mesh, z-offset, and the START_PRINT and END_PRINT macros work."
-            message "https://github.com/ghzserg/zmod/wiki/FAQ"
+            message "https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md"
             
             $SCRIPTS/commands/zdisplay.sh "off"
         else
