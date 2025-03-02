@@ -27,8 +27,11 @@ class PrinterSensorGeneric:
                                         minval=KELVIN_TO_CELSIUS)
         self.max_temp = config.getfloat('max_temp', 99999999.9,
                                         above=self.min_temp)
+
+        self.trigger_value = config.getfloat('trigger_value', None, above=self.min_temp, below=self.max_temp)
         self.gcode_throttle = config.getfloat("throttle", 1., minval=0)
         self.gcode_reschedule = config.getboolean("reschedule", False)
+        self.gcode_reschedule_cooldown = config.getfloat("reschedule_cooldown", 1., minval=0)
         gcode_macro = self.printer.load_object(config, "gcode_macro")
         self.exceed_gcode_present = config.get("exceed_gcode", None) is not None
         if self.exceed_gcode_present:
@@ -40,6 +43,8 @@ class PrinterSensorGeneric:
         self.last_temp = 0.
         self.measured_min = 99999999.
         self.measured_max = 0.
+        self._throttle_max_value = float("-inf")
+        self._callback_scheduled = False
         self._last_exceed = 0
 
     m112_r = re.compile(r"^(?:[nN][0-9]+)?\s*[mM]112(?:\s|$)", re.MULTILINE)
@@ -50,7 +55,7 @@ class PrinterSensorGeneric:
             self.measured_min = min(self.measured_min, temp)
             self.measured_max = max(self.measured_max, temp)
 
-            if self.exceed_gcode_present and (temp < self.min_temp or temp > self.max_temp):
+            if self.exceed_gcode_present and (temp >= self.trigger_value):
                 self._handle_exceed(temp)
 
     def _template(self, value):
@@ -68,34 +73,45 @@ class PrinterSensorGeneric:
             self.printer.invoke_shutdown("Shutdown due to sensor value exceeding the limit")
             return
 
-        when = self.reactor.NOW
         now = self.reactor.monotonic()
-        rescheduled = False
         next_event = self._last_exceed + self.gcode_throttle
-        if next_event > now:
-            if not self.gcode_reschedule or next_event - now > self.gcode_throttle:
-                logging.info(f"[temperature_sensor {self.name}]: Exceed event skipped")
-                return
+        delta = next_event - now
 
-            delta = next_event - now
+        if delta <= 0:
+            self._throttle_max_value = float("-inf")
+
+        if (
+                self._callback_scheduled
+                or (self.gcode_reschedule and delta > 0 and self.gcode_throttle - delta < self.gcode_reschedule_cooldown)
+                or (not self.gcode_reschedule and now < next_event and temp <= self._throttle_max_value)
+        ):
+            logging.info(f"[temperature_sensor {self.name}]: Exceed event skipped")
+            return
+
+        when = self.reactor.NOW
+        rescheduled = False
+
+        if self.gcode_reschedule and delta > 0:
             when = now + delta
             rescheduled = True
             logging.info(f"[temperature_sensor {self.name}]: Reschedule exceed event after {delta:.2f}")
 
-        # Avoid repeated calls before the callback is executed
-        self._last_exceed = self.reactor.NEVER
-        self.reactor.register_callback(lambda _: self._exceed_cb(template, temp, rescheduled), when)
+        self._callback_scheduled = True
+        self._throttle_max_value = max(temp, self._throttle_max_value)
+        self.reactor.register_callback(lambda _, rs=rescheduled, tp=template: self._exceed_cb(tp, rs), when)
 
-    def _exceed_cb(self, template, value, rescheduled):
+    def _exceed_cb(self, template, rescheduled):
         # Re-render, as variables may change
         if rescheduled:
-            template = self._template(value)
+            template = self._template(self._throttle_max_value)
 
         try:
+            logging.info(f"[temperature_sensor {self.name}]: Run exceed event gcode")
             self.gcode.run_script(template)
         except:
             logging.exception(f"[temperature_sensor {self.name}]: Script running error:\n{template}")
 
+        self._callback_scheduled = False
         self._last_exceed = self.reactor.monotonic()
 
     def get_temp(self, eventtime):
