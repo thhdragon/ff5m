@@ -54,15 +54,6 @@ This mod addresses these shortcomings by integrating modern tools and features.
 **Outdated Klipper with Unresolved Bugs:**
 The existing Klipper implementation for the AD5M is outdated and plagued with bugs. This mod focuses on fixing these long-standing issues, modifying Klipper plugins, and enhancing core functionality to better suit the specific requirements of the AD5M (Pro) printer. The goal is to provide a stable, feature-rich platform tailored to this printer's unique hardware and user needs.
 
-### The Vision Behind This Mod
-
-This mod is designed to empower users by providing a stable, customizable, and feature-rich alternative to the stock firmware and existing mods. It aims to:
-- Offer a reliable foundation for advanced users to build upon.
-- Fix long-standing bugs and optimize performance for the AD5M (Pro).
-- Introduce modern features and tools that enhance the 3D printing experience.
-- Ensure flexibility and openness for future improvements and community contributions.
-
-By addressing these challenges, this mod strives to unlock the full potential of the Flashforge AD5M (Pro) and provide users with a seamless, powerful, and customizable 3D printing platform.
 
 ## Documentation
 - [Installation](docs/INSTALL.md)
