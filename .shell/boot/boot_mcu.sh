@@ -11,11 +11,11 @@ TTY="/dev/ttyS1"
 BAUD=115200
 R_READY="Ready."
 R_ACK="\x06"
-R_OK="\x03"
+R_OK="\x01"
 CMD_BOOT="A"
 
 READY_RETRIES=10
-BOOT_RETRIES=5
+BOOT_RETRIES=10
 
 print_hex() {
     echo -n "$1" | xxd -p -u | tr -d '\n'
