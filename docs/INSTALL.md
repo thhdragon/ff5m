@@ -47,6 +47,7 @@ ssh root@$PRINTER_IP
 
 # Install the streamer packages
 cd /opt/packages/
+opkg update
 opkg install mjpg-streamer_1.0.1-1_armv7-3.2.ipk mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
 
 # Install additional packages
