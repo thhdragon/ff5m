@@ -16,10 +16,10 @@ Additionally, the mod includes a **dual-boot** feature as a failsafe measure. Th
 - Basic familiarity with command-line tools.
 
 
-### (Temporary) Install ZMOD 1.0.5
+### (Temporary) Install ZMOD 1.0.4
 
 The mod uses the same installation mechanism as the stock firmware:
-1) Download ZMOD [1.0.5](https://github.com/ghzserg/zmod/blob/main/%D0%A1%D1%82%D0%B0%D1%80%D1%8B%D0%B5_%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8/Adventurer5MPro-zmod-1.0.5.tgz) update file onto a USB flash drive.
+1) Download ZMOD [1.0.4](https://github.com/DrA1ex/zmod_docs/raw/refs/heads/main/Adventurer5MPro-zmod-1.0.4.tgz) update file onto a USB flash drive.
 2) Plug in the drive before starting the printer.
 3) Successful installation will be indicated on the display when finished.
 
