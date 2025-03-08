@@ -62,6 +62,7 @@ start() {
 
 stop() {
     start-stop-daemon -K -p $PID_FILE 2>/dev/null >/dev/null
+    rm -f "$CAMERA_F"
 }
 
 restart() {
@@ -77,6 +78,10 @@ reload() {
         v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast=${E_CONTRAST}
         v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma=${E_GAMMA}
         v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain=${E_GAIN}
+
+        touch "$CAMERA_F"
+    else
+        rm -f "$CAMERA_F"
     fi
 }
 
