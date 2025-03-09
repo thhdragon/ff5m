@@ -23,6 +23,8 @@ The mod uses the same installation mechanism as the stock firmware:
 2) Plug in the drive before starting the printer.
 3) Successful installation will be indicated on the display when finished.
 
+If you encounter any issues, you can see this [thread](https://github.com/DrA1ex/ff5m/issues/4#issuecomment-2708739454)
+
 **Note**: The mod installer currently requires the printer to be updated to at least version **2.6.5** of the stock Flashforge firmware.
 After installation, the printer will boot into the modified stock system by default.
 
