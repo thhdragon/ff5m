@@ -71,6 +71,9 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Uninstall](docs/UNINSTALL.md)
 - [Recovery guide](docs/RECOVERY.md)
 
+
+If you encounter any issues, feel free to join our Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
+
 ## Credits
 
 Thanks [Klipper Mod](https://github.com/xblax/flashforge_ad5m_klipper_mod) developers for their great work.
