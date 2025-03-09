@@ -35,7 +35,7 @@ Log in via SSH and create an empty file in the **/opt/config/mod** directory usi
 After that, reboot. The mod will uninstall itself.
 
 ## Flashing Factory Firmware  
-If you encounter uninstallation issues or firmware not working correctly, you **can** try to restore it by flashing the factory firmware.  
+If you encounter uninstallation issues or firmware not working correctly after removing the mod, you **can** try to restore it by flashing the factory firmware.  
 
 1. Download the factory image from [here](https://github.com/DrA1ex/zmod_docs/tree/main/%D0%A0%D0%BE%D0%B4%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0) or [here](https://github.com/ghzserg/zmod/tree/main/%D0%A0%D0%BE%D0%B4%D0%BD%D0%B0%D1%8F_%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 2. Copy it to a USB drive.  
