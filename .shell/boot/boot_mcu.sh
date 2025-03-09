@@ -10,8 +10,8 @@
 TTY="/dev/ttyS1"
 BAUD=115200
 R_READY="Ready."
-R_ACK="\x06"
-R_OK="\x01"
+R_ACK=$(printf "\x06")
+R_OK=$(printf "\x01")
 CMD_BOOT="A"
 
 READY_RETRIES=10

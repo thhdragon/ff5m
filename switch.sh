@@ -51,7 +51,7 @@ echo "Switching repository..."
 umount /data/.mod/
 RECOVER_RET=$(chroot /data/.mod/.zmod /bin/curl -X POST "http://localhost:7125/machine/update/recover?name=zmod&hard=true")
 
-if [ $RECOVER_RET != "OK" ]; then
+if [ $RECOVER_RET != '{"result":"ok"}' ]; then
     echo "Unable to switch repository: $RECOVER_RET"
     exit 3
 fi

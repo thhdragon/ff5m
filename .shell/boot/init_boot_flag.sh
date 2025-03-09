@@ -6,8 +6,9 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+source /opt/config/mod/.shell/common.sh
 
-FLAGS=("SKIP_MOD" "SKIP_MOD_SOFT" "REMOVE_MOD" "REMOVE_MOD_SOFT")
+FLAGS=("SKIP_MOD" "SKIP_MOD_SOFT" "REMOVE_MOD" "REMOVE_MOD_SOFT" "klipper_mod_skip" "klipper_mod_remove")
 
 check_special_boot_flag() {
     local path=$1
@@ -105,6 +106,19 @@ search_special_boot_flag_root() {
     return 1
 }
 
+search_for_klipper_mod() {
+    local callback=$1
+    echo "Searching for klipper mod files..."
+
+    if [ -f "/etc/init.d/S00klipper_mod" ]; then
+        echo "// Klipper mod found."
+        eval "$callback" "KLIPPER_MOD"
+        return 0
+    fi
+    
+    return 1
+}
+
 handle_special_boot_flag() {
     local name="$1"
     
@@ -132,7 +146,7 @@ handle_special_boot_flag() {
             echo "@@ Removing mod..."
             mount_data_partition
             
-            cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
+            cp -f /opt/config/mod/.shell/uninstall.sh /tmp/uninstall.sh
             /tmp/uninstall.sh
             
             exit 0
@@ -141,8 +155,19 @@ handle_special_boot_flag() {
             echo "@@ Removing mod in soft mode..."
         
             mount_data_partition
-            cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
+            cp -f /opt/config/mod/.shell/uninstall.sh /opt/uninstall.sh
             /opt/uninstall.sh --soft
+
+            exit 0
+            ;;
+        klipper_mod_skip)
+            echo "!! Klipper mod skipped. Continue boot"
+
+            exit 1
+        ;;
+        KLIPPER_MOD | klipper_mod_remove)
+            echo "@@ Skipping mod because of Klipper Mod..."
+            touch /tmp/SKIP_MOD
 
             exit 0
             ;;
@@ -152,11 +177,19 @@ handle_special_boot_flag() {
     esac
 }
 
+print_special_boot_flag() {
+    local name="$1"
+
+    echo "Flag: $name"
+    exit 0
+}
+
 search() {
     local callback=$1
 
     search_special_boot_flag_root "$callback" \
-        || search_special_boot_flag_usb "$callback"
+        || search_special_boot_flag_usb "$callback" \
+        || search_for_klipper_mod "$callback"
 
     ret=$?
     echo "// No special boot flag found."
@@ -166,8 +199,7 @@ search() {
 
 case "$1" in
     test)
-        search "echo Flag:"
-        echo "Done"
+        search "print_special_boot_flag"
     ;;
     apply)
         search "handle_special_boot_flag"

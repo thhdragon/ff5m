@@ -6,9 +6,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-MOD=/data/.mod/.zmod
-
-set -x
+source /opt/config/mod/.shell/common.sh
 
 revert_klipper_patches() {
     local SRC_DIR="/opt/config/mod/.py/klipper"
@@ -38,13 +36,13 @@ revert_klipper_patches() {
 }
 
 uninstall() {
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.cfg \
         --no_data \
         --params /opt/config/mod/.cfg/restore.cfg
     
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.base.cfg \
         --params /opt/config/mod/.cfg/restore.base.cfg \
@@ -68,20 +66,21 @@ uninstall() {
     umount /root/.oh-my-zsh
     
     rm -rf /data/.mod
-    rm /etc/init.d/S00fix
-    rm /etc/init.d/S00init
-    rm /etc/init.d/S55boot
-    rm /etc/init.d/S99root
-    rm /etc/init.d/S99moon
-    rm /etc/init.d/S98camera
-    rm /etc/init.d/S98zssh
-    rm /etc/init.d/K99moon
-    rm /etc/init.d/K99root
+    rm -f /etc/init.d/S00fix
+    rm -f /etc/init.d/S00init
+    rm -f /etc/init.d/S55boot
+    rm -f /etc/init.d/S99root
+    rm -f /etc/init.d/S99moon
+    rm -f /etc/init.d/S98camera
+    rm -f /etc/init.d/S98zssh
+    rm -f /etc/init.d/K99moon
+    rm -f /etc/init.d/K99root
     rm -rf /opt/config/mod/
     rm -rf /root/printer_data
     # REMOVE zsh
     rm -rf /root/.profile
     rm -rf /root/.zshrc
+    echo "" > /etc/motd
     # REMOVE ENTWARE
     rm -rf /opt/bin
     rm -rf /opt/etc
@@ -110,4 +109,4 @@ uninstall() {
     exit
 }
 
-uninstall "$1"  &> /data/logFiles/uninstall.log
+uninstall "$1" 2>&1 | logged "/data/logFiles/uninstall.log" --send-to-screen

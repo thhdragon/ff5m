@@ -14,6 +14,7 @@ CMDS=$SCRIPTS/commands
 BINS=/opt/config/mod/.bin/exec
 MOD_DATA=/opt/config/mod_data
 
+INIT_FLAG="/tmp/init_finished_f"
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch_f"
 CUSTOM_BOOT_F="/tmp/custom_boot_f"
 NETWORK_CONNECTED_F="/tmp/net_connected_f"
@@ -25,6 +26,26 @@ CFG_SCRIPT="$CMDS/zconf.sh"
 VAR_PATH="$MOD_DATA/variables.cfg"
 
 unset LD_PRELOAD
+
+mount_data_partition() {
+    # mount data - this would otherwise be mounted later by Flashforge's firmware
+    if ! mount | grep -q /dev/mmcblk0p7; then
+        echo "// Mounting /data partition..."
+        fsck -y /dev/mmcblk0p7 || true
+        mount /dev/mmcblk0p7 /data;
+    fi
+    
+    # local timeout=60
+    # while ! mount | grep -q /dev/mmcblk0p7 && [ $timeout -gt 0 ]; do
+    #     echo "Waiting /data..."; sleep 1;
+    #     timeout=$(( timeout - 1 ))
+    # done
+    
+    if ! mount | grep -q /dev/mmcblk0p7; then
+        echo "@@ Mounting /data failed."
+        exit 1
+    fi
+}
 
 save_array_to_file() {
     local array_name=$1
