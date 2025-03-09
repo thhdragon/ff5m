@@ -6,6 +6,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+source /opt/config/mod/.shell/common.sh
 
 FLAGS=("SKIP_MOD" "SKIP_MOD_SOFT" "REMOVE_MOD" "REMOVE_MOD_SOFT" "klipper_mod_skip" "klipper_mod_remove")
 
@@ -145,7 +146,7 @@ handle_special_boot_flag() {
             echo "@@ Removing mod..."
             mount_data_partition
             
-            cp -f /opt/config/mod_data/.shell/uninstall.sh /tmp/uninstall.sh
+            cp -f /opt/config/mod/.shell/uninstall.sh /tmp/uninstall.sh
             /tmp/uninstall.sh
             
             exit 0
@@ -154,7 +155,7 @@ handle_special_boot_flag() {
             echo "@@ Removing mod in soft mode..."
         
             mount_data_partition
-            cp -f /opt/config/mod_data/.shell/uninstall.sh /opt/uninstall.sh
+            cp -f /opt/config/mod/.shell/uninstall.sh /opt/uninstall.sh
             /opt/uninstall.sh --soft
 
             exit 0

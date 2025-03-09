@@ -6,29 +6,7 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-INIT_FLAG="/tmp/init_finished_f"
-
 source /opt/config/mod/.shell/common.sh
-
-mount_data_partition() {
-    # mount data - this would otherwise be mounted later by Flashforge's firmware
-    if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "// Mounting /data partition..."
-        fsck -y /dev/mmcblk0p7 || true
-        mount /dev/mmcblk0p7 /data;
-    fi
-    
-    # local timeout=60
-    # while ! mount | grep -q /dev/mmcblk0p7 && [ $timeout -gt 0 ]; do
-    #     echo "Waiting /data..."; sleep 1;
-    #     timeout=$(( timeout - 1 ))
-    # done
-    
-    if ! mount | grep -q /dev/mmcblk0p7; then
-        echo "@@ Mounting /data failed."
-        exit 1
-    fi
-}
 
 handle_special_boot_mode() {
     if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
