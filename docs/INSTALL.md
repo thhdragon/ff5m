@@ -21,7 +21,8 @@ Additionally, the mod includes a **dual-boot** feature as a failsafe measure. Th
 The mod uses the same installation mechanism as the stock firmware:
 1) Download ZMOD [1.0.4](https://github.com/DrA1ex/zmod_docs/raw/refs/heads/main/Adventurer5MPro-zmod-1.0.4.tgz) update file onto a USB flash drive.
 2) Plug in the drive before starting the printer.
-3) Successful installation will be indicated on the display when finished.
+3) The printer will automatically install the update and reboot upon successful installation.
+4) Once the installation is complete, you can verify it by accessing `Fluidd` at `http://PRINTER_IP`.
 
 If you encounter any issues, you can see this [thread](https://github.com/DrA1ex/ff5m/issues/4#issuecomment-2708739454)
 
