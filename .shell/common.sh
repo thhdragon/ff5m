@@ -53,6 +53,13 @@ init_chroot() {
     mount --rbind /dev $MOD/dev
     mount --bind /run $MOD/run
     mount --bind /tmp $MOD/tmp
+
+    # hwclock
+    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
+
+    # load datetime
+    echo "// Loading last saved time..."
+    chroot $MOD fake-hwclock load
 }
 
 save_array_to_file() {
@@ -75,10 +82,12 @@ load_array_from_file() {
     # Use name reference to create the array
     declare -n arr_ref="$array_name"
     
-    arr_ref=()
-    while IFS= read -r line; do
-        arr_ref+=("$line")
-    done < "$file_name"
+    if [ -f "$file_name" ]; then
+        arr_ref=()
+        while IFS= read -r line; do
+            arr_ref+=("$line")
+        done < "$file_name"
+    fi
 }
 
 logged() {

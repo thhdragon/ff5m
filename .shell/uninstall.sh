@@ -47,21 +47,23 @@ fail() {
 }
 
 uninstall() {
-    if [ ! -d "$MOD/sys" ]; then
+    if ! mount | grep -q "$MOD/sys"; then
         echo "// Init chroot..."
         init_chroot
+
+        mount --bind /opt/config $MOD/opt/config
     fi
 
     echo "// Restore config..."
     
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 /opt/config/mod/.py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.cfg \
         --no_data \
         --params /opt/config/mod/.cfg/restore.cfg \
     || fail "@@ Failed to restore printer.cfg"
     
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 /opt/config/mod/.py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.base.cfg \
         --params /opt/config/mod/.cfg/restore.base.cfg \
