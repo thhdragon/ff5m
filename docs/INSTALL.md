@@ -30,35 +30,17 @@ If you encounter any issues, you can see this [thread](https://github.com/DrA1ex
 **Note**: The mod installer currently requires the printer to be updated to at least version **2.6.5** of the stock Flashforge firmware.
 After installation, the printer will boot into the modified stock system by default.
 
-### (Temporary) Install dependencies
+### (Temporary) Run the Switching Script
 
-The mod comes with pre-installed **root** access, allowing you to connect via SSH using the credentials _root/root_.
+The mod includes pre-installed **root** access, allowing you to connect via SSH using the credentials: `root/root`.  
 
-As the mod is still in development, it does not have a firmware image yet.
-Therefore, you need to install the necessary dependencies on the printer:
-
-1. Download the patched `mjpeg-streamer` ***.ipk** files: [link](https://github.com/DrA1ex/mjpg-streamer/releases)
-2. Upload the files to the printer and install the dependencies as follows:
+To proceed, log in via SSH and run the switching script as follows:
 
 ```bash
-PRINTER_IP=<your printer IP>
-
-# Transfer the streamer files
-scp -O ./mjpg-streamer-* root@$PRINTER_IP:/opt/packages/
-
-# Log in via SSH
-ssh root@$PRINTER_IP
-
-# Install the streamer packages
-cd /opt/packages/
-opkg update
-opkg install mjpg-streamer_1.0.1-1_armv7-3.2.ipk mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
-
-# Install additional packages
-opkg install busybox htop nano zsh
+CURL=/opt/cloud/curl-*/bin/curl; $CURL -kfsSL https://raw.githubusercontent.com/DrA1ex/ff5m/refs/heads/main/switch.sh | bash
 ```
 
-### (Temporary) Run the Switching Script
+#### Alternatively, you can perform the steps manually
 
 Download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
 
@@ -76,7 +58,8 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
-After running the script, the printer will be rebooted. After that, you need to update the firmware manually via Fluidd's **Configuration -> Software Update -> zmod (Update)**.
+After the reboot, update the firmware manually via Fluidd:
+Navigate to **Configuration -> Software Update -> zmod (Update)**.  
 
 Finally, reboot your printer. The mod should now be installed.  
 From this point onward, you will receive OTA updates from this repository.
