@@ -4,7 +4,7 @@ If you’ve modified internal system files and something went wrong—your print
 
 ### Diagnostics
 
-To understand the problem, you’ll need a **UART-USB** adapter that supports **3.3V** logic levels. Using a 5V adapter can **damage** the motherboard, so be careful. Alternatively, you can use an ESP8266/ESP32 (do not use an Arduino, as it operates at 5V and could **fry the CPU**). Flash the ESP with the MultiSerial example from the Arduino IDE `(Examples -> Communications -> MultiSerial)`, but change Baud to 115200.
+To understand the problem, you’ll need a **UART-USB** adapter that supports **3.3V** logic levels. Using a 5V adapter can **damage** the motherboard, so be careful. Alternatively, you can use an ESP8266/ESP32 (do not use an Arduino, as it operates at 5V and could **fry the CPU**). Flash the ESP with the MultiSerial example from the Arduino IDE `(Examples -> Communications -> MultiSerial)`, but change the `Serial1` Baud to `115200`.
 
 Next, connect the UART adapter to the motherboard near the processor (next to USB0). Connect the wires as follows:
 - **RX** on the adapter to **TX** on the motherboard.
@@ -12,10 +12,19 @@ Next, connect the UART adapter to the motherboard near the processor (next to US
 - **GND** to **GND**.
 - Do **not** connect the power line.
 
+<p align="center">
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/458aad73-b224-43d3-aca0-e5998fccc44e" />
+<p align="center">Pic 1. Connection of the printer UART</p>
+</p>
+
+
 Connect the adapter to your PC and open a terminal program (e.g., PuTTY, Arduino IDE, or PlatformIO). Power on the printer and observe the logs. 
 These logs will help you determine how far the boot process goes. If the Linux kernel loads, the situation isn’t too bad, and you might be able to fix it without advanced procedures.
 
-For a detailed guide on UART connections, refer to this resource: [link](https://t.me/FF_5M_5M_Pro/441456/487025).
+<p align="center">
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/1e8ee6ff-836a-439d-a45a-613291416d3e" />
+<p align="center">Pic 2. Connection of the adapter (Wemos D1 Mini) UART</p>
+</p>
 
 ### The Easy Way
 
@@ -25,6 +34,11 @@ If the Linux kernel loads but the system fails to boot due to your modifications
 ```
 Hit any key to stop autoboot
 ```
+
+<p align="center">
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/dcfb3475-ac0d-4559-b79a-a709b3f46ea9" />
+<p align="center">Pic 3. Example of UART terminal</p>
+</p>
 
 3. Quickly press Enter.
 
@@ -42,7 +56,7 @@ mount -t proc proc /proc
 mount -o remount,rw /
 ```
 
-6 Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the community.
+6. Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the community.
 
 7. Once you’re done, reboot the system:
 
