@@ -63,13 +63,13 @@ opkg install busybox htop nano zsh
 Download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
 
 ```bash
-IP="<your_printer_IP>"
+PRINTER_IP="<your_printer_IP>"
 
 # Upload the script to the printer
-scp ./switch.sh "root@$IP:/opt"
+scp ./switch.sh "root@$PRINTER_IP:/opt"
 
 # Log in to the printer
-ssh "root@$IP"
+ssh "root@$PRINTER_IP"
 
 # Run the script
 cd /opt
