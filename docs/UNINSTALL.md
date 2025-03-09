@@ -42,6 +42,6 @@ If you encounter uninstallation issues or firmware not working correctly, you **
 3. Insert the USB drive **before powering up** the printer.  
 4. Wait **until** the firmware is installed. Don't reboot the printer **until the installation process is finished**.  
 5. Your printer's firmware should be restored to the stock version.  
-6. Don't forget to review the settings (or reset them in the settings) and recalibrate the printer if you are planning to use the stock firmware.  
+6. Don't forget to review the settings (or reset them using the Screen) and recalibrate the printer if you are planning to use the stock firmware.  
 
 In **hard** cases, join the [Telegram group](https://t.me/+ihE2Ry8kBNkwYzhi) to get help or refer to the [Recovery Guide](/docs/RECOVERY.md).  
