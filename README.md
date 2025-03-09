@@ -1,6 +1,6 @@
 <p align="center">
-<img width="400" src="https://github.com/user-attachments/assets/3bf83bca-d7de-4c8c-96ca-16560915c019" />
-<img width="400" src="https://github.com/user-attachments/assets/a4f6d3f9-abc6-4529-abf8-3fc9db3d9eed" />
+<img width="400" src="https://github.com/user-attachments/assets/c7ff5d09-3786-4b69-b8d5-1f254c809de7" />
+<img width="400" src="https://github.com/user-attachments/assets/6f3b9343-d3d1-4f0e-b4cf-9ac1041502b2" />
 </p>
 
 # Flashforge Adventurer 5M (Pro) Firmware Mod
@@ -83,3 +83,8 @@ Thanks to the Klipper and Moonraker communities for their ongoing development.
 Special thanks to the Russian FlashForge Adventurer 5M Telegram Community: [@FF_5M_5M_Pro](https://t.me/FF_5M_5M_Pro)
 
 This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
+
+Thanks for the great open-source fonts:
+- [Roboto Font](https://fonts.google.com/specimen/Roboto)
+- [JetBrains Mono Font](https://www.jetbrains.com/lp/mono)
+- [Typicons Icons Font](https://www.s-ings.com/typicons/)

@@ -59,6 +59,8 @@
 #define WIDTH 800
 #define HEIGHT 480
 
+bool DEBUG = false;
+
 std::map<std::string, const Font *> fonts{
     {Roboto8ptb4.name, &Roboto8ptb4},
     {Roboto12pt.name, &Roboto12pt},
@@ -221,18 +223,20 @@ struct ProgramParser {
     argparse::ArgumentParser stroke_command;
     argparse::ArgumentParser line_command;
     argparse::ArgumentParser clear_command;
+    argparse::ArgumentParser flush_command;
 };
 
-std::unique_ptr<ProgramParser> build_parser() {
+std::unique_ptr<ProgramParser> build_parser(argparse::default_arguments def = argparse::default_arguments::all) {
     auto result = std::unique_ptr<ProgramParser>( // NOLINT(*-make-unique)
         new ProgramParser{
-            .program = argparse::ArgumentParser("typer"),
+            .program = argparse::ArgumentParser("typer", "1.0", def),
             .batch_parser = argparse::ArgumentParser("batch"),
             .text_command = argparse::ArgumentParser("text"),
             .fill_command = argparse::ArgumentParser("fill"),
             .stroke_command = argparse::ArgumentParser("stroke"),
             .line_command = argparse::ArgumentParser("line"),
-            .clear_command = argparse::ArgumentParser("clear")
+            .clear_command = argparse::ArgumentParser("clear"),
+            .flush_command = argparse::ArgumentParser("flush"),
         }
     );
 
@@ -251,6 +255,10 @@ std::unique_ptr<ProgramParser> build_parser() {
         "    --batch fill <...> \\\n"
         "    --batch text <...>");
 
+    result->batch_parser.add_argument("--pipe")
+        .default_value("")
+        .help("A pipe with batches to read");
+
     result->batch_parser.add_argument("--batch")
         .help("Beginning of a batch")
         .remaining();
@@ -268,7 +276,7 @@ std::unique_ptr<ProgramParser> build_parser() {
 
     result->text_command.add_argument("--color", "-c")
         .scan<'X', uint32_t>()
-        .required();
+        .default_value(0xffffffff);
 
     result->text_command.add_argument("--bg-color", "-b")
         .scan<'X', uint32_t>()
@@ -281,7 +289,8 @@ std::unique_ptr<ProgramParser> build_parser() {
         .scan<'d', int>()
         .default_value(1);
 
-    result->text_command.add_argument("--text", "-t").required();
+    result->text_command.add_argument("--text", "-t")
+        .default_value("");
 
     result->text_command.add_argument("--h-align", "-ha")
         .choices("left", "center", "right")
@@ -372,13 +381,17 @@ std::unique_ptr<ProgramParser> build_parser() {
 
     result->program.add_subparser(result->clear_command);
 
+    // ************ Flush Parser
+    result->flush_command.add_description("Flush pending changes (for --double-buffered mode)");
+    result->program.add_subparser(result->flush_command);
+
     return result;
 }
 
 void run_program(const ProgramParser &args, TextDrawer &drawer) {
     auto &[
         program, batch_parser, text_command, fill_command,
-        stroke_command, line_command, clear_command
+        stroke_command, line_command, clear_command, flush_command
     ] = args;
 
     if (program.is_subcommand_used("fill")) {
@@ -391,8 +404,189 @@ void run_program(const ProgramParser &args, TextDrawer &drawer) {
         line(line_command, drawer);
     } else if (program.is_subcommand_used("clear")) {
         clear(clear_command, drawer);
+    } else if (program.is_subcommand_used("flush")) {
+        drawer.flush();
     } else {
         std::cerr << "Unknown program: " << program << std::endl;
+    }
+}
+
+void process_batch(TextDrawer &drawer, const std::vector<std::string> &batch) {
+    auto batch_parser = build_parser(argparse::default_arguments::none);
+
+    try {
+        batch_parser->program.parse_args(batch);
+        run_program(*batch_parser, drawer);
+    } catch (const std::exception &e) {
+        std::cerr << "Unable to process batch: ";
+        for (const auto &str: batch) { std::cerr << "\"" << str << "\" "; }
+        std::cerr << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+size_t read_char(int fd, char &out, size_t timeout_usec = 1000000) {
+    constexpr auto delay = 10000;
+
+    size_t elapsed = 0;
+    while (!read(fd, &out, 1)) {
+        usleep(delay);
+        elapsed += delay;
+
+        if (elapsed >= timeout_usec) {
+            if (DEBUG) std::cerr << "Timed out waiting for char" << std::endl;
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+size_t read_escaped_symbol(int fd, std::string &acc) {
+    char ch;
+    if (!read_char(fd, ch)) {
+        std::cerr << "Failed to read escaped symbol. No data available." << std::endl;
+        return 0;
+    }
+
+    if (ch == '"' || ch == '\'' || ch == '\\') {
+        acc += ch;
+
+        if (DEBUG) {
+            std::cout << "Read escaped: \"" << ch << "\"" << std::endl;
+        }
+
+        return 1;
+    }
+
+    std::cerr << "Failed to read escaped symbol. Invalid symbol: \"" << ch << "\""
+        << " (0x" << std::hex << (int) ch << std::dec << ")" << std::endl;
+    return 0;
+}
+
+size_t read_quoted_string(int fd, char open_quote, std::string &acc) {
+    size_t bytesRead = 0;
+    char ch;
+
+    while (read_char(fd, ch)) {
+        if (ch == '\\') {
+            bytesRead += read_escaped_symbol(fd, acc);
+        } else if (ch != open_quote) {
+            bytesRead += 1;
+            acc += ch;
+        } else {
+            if (DEBUG) {
+                std::cout << "Read quoted: \"" << acc << "\"" << std::endl;
+            }
+
+            return bytesRead;
+        }
+    }
+
+    std::cerr << "Failed to read quoted string. No data available." << std::endl;
+    return bytesRead;
+}
+
+size_t read_token(int fd, std::string &acc) {
+    acc.clear();
+    size_t bytesRead = 0;
+
+    char ch;
+    while (read_char(fd, ch)) {
+        if (ch == '"' || ch == '\'') {
+            bytesRead += read_quoted_string(fd, ch, acc);
+        } else if (ch == '\\') {
+            bytesRead += read_escaped_symbol(fd, acc);
+        } else if (ch != ' ' && ch != '\t' && ch != '\n' && ch != '\0') {
+            bytesRead += 1;
+            acc += ch;
+        } else if (bytesRead > 0) {
+            std::cout << "Token end: " << std::hex << (int) ch << std::dec << std::endl;
+            break;
+        }
+    }
+
+    if (DEBUG && bytesRead > 0) {
+        std::cout << "Read token: \"" << acc << "\"" << std::endl;
+    }
+
+    return bytesRead;
+}
+
+size_t read_pipe(int fd, std::vector<std::string> &result, bool &has_next_batch) {
+    result.clear();
+    if (has_next_batch) {
+        result.emplace_back("--batch");
+        has_next_batch = false;
+    }
+
+    size_t char_read = 0;
+    std::string acc;
+    while (auto bytes = read_token(fd, acc)) {
+        if (acc == "--end") {
+            return char_read;
+        }
+
+        if (result.empty() && acc != "--batch") {
+            std::cout << "Invalid batch! Expected first token --batch. Got: " << acc << std::endl;
+            return 0;
+        }
+
+        if (!result.empty() && acc == "--batch") {
+            has_next_batch = true;
+            return char_read;
+        }
+
+        char_read += bytes;
+        if (!acc.empty()) result.push_back(acc);
+    }
+
+    return char_read;
+}
+
+void process_pipe_batches(TextDrawer &drawer, const std::string &pipe) {
+    if (mkfifo(pipe.c_str(), 0666) == -1) {
+        if (errno != EEXIST) {
+            // Ignore error if the pipe already exists
+            throw std::runtime_error("Failed to create named pipe: " + pipe);
+        }
+    }
+
+    std::cout << "Pipe mode enabled!" << std::endl;
+    std::cout << "Usage:" << std::endl
+        << R"(  echo -e --batch clear -c ff0000)" << " > " << pipe << std::endl
+        << R"(  echo -e --batch text -p 400 200 -t \"Hello, World.\")" << " > " << pipe << std::endl
+        << R"(  echo -e --batch flush)" << " > " << pipe << std::endl
+        << R"(  echo -e --end)" << " > " << pipe << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Wait for pipe..." << std::endl;
+
+    int pipeFd = open(pipe.c_str(), O_RDONLY);
+    if (pipeFd < 0) {
+        std::cerr << "Error opening pipe: " << pipe << std::endl;
+        return;
+    }
+
+    std::cout << "Reading named pipe: " << pipe << std::endl;
+
+    bool has_next_batch = false;
+    std::vector<std::string> tokens;
+    while (true) {
+        auto count = read_pipe(pipeFd, tokens, has_next_batch);
+        if (count > 0) {
+            std::cout << "Process batch..." << std::endl;
+
+            try {
+                process_batch(drawer, tokens);
+            } catch (const std::exception &e) {
+                std::cerr << "Error while processing batch: " << e.what() << std::endl;
+            }
+
+            tokens.clear();
+        } else {
+            drawer.flush();
+        }
     }
 }
 
@@ -434,25 +628,22 @@ int main(int argc, char *argv[]) {
 
     TextDrawer drawer(fbp, WIDTH, HEIGHT);
     drawer.setDoubleBuffered(main->program.get<bool>("--double-buffered"));
-    drawer.setDebug(main->program.get<bool>("--debug"));
+
+    DEBUG = main->program.get<bool>("--debug");
+    drawer.setDebug(DEBUG);
 
     if (main->program.is_subcommand_used("batch")) {
-        auto batch_args = main->batch_parser.get<std::vector<std::string>>("--batch");
-        auto batches = parse_batch_args(batch_args);
+        auto pipe = main->batch_parser.get("--pipe");
 
-        for (auto &batch: batches) {
-            auto batch_parser = build_parser();
+        if (pipe.empty()) {
+            auto batch_args = main->batch_parser.get<std::vector<std::string>>("--batch");
+            auto batches = parse_batch_args(batch_args);
 
-            try {
-                batch_parser->program.parse_args(batch);
-            } catch (const std::exception &e) {
-                std::cerr << "Unable to parse batch: ";
-                for (const auto &str: batch) { std::cerr << "\"" << str << "\" "; }
-                std::cerr << std::endl;
-                std::cerr << "Error: " << e.what() << std::endl;
+            for (auto &batch: batches) {
+                process_batch(drawer, batch);
             }
-
-            run_program(*batch_parser, drawer);
+        } else {
+            process_pipe_batches(drawer, pipe);
         }
     } else {
         run_program(*main, drawer);

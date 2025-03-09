@@ -34,7 +34,7 @@ echo "Initialize network..."
 
 wpa_cli -i $INTERFACE enable_network all
 
-echo "Initialize Wi-Fi connection..."
+echo "// Initialize Wi-Fi connection..."
 for _ in $(seq 30); do
     STATUS=$(wpa_cli -i "$INTERFACE" status | grep wpa_state | awk -F= '{print $2}')
     
