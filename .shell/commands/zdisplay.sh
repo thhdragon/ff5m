@@ -26,7 +26,7 @@ display_off() {
 }
 
 test() {
-    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$VAR_PATH" --get "display_off")
+    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$VAR_PATH" --get "display_off" "0")
     return "$display_off"
 }
 

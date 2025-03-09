@@ -12,7 +12,16 @@ restore() {
     rm -f /etc/init.d/S00fix
     rm -f /etc/init.d/prepare.sh
 
+    mv /opt/config/mod_data/variables.cfg /opt/config/mod_data/variables.cfg.old
+    touch /opt/config/mod_data/variables.cfg
+
     ln -fs "/opt/config/mod/.shell/S00init" /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S55boot /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S60dropbear /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S98camera /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S98zssh /etc/init.d/
+    ln -fs /opt/config/mod/.shell/S99root /etc/init.d/
+    ln -fs /opt/config/mod/.shell/K99root /etc/init.d/
 
     sync
     reboot

@@ -41,7 +41,9 @@ fail() {
     if [ -n "$1" ]; then echo "$1"; fi
     echo "@@ Failed to remove mod. Reboot in 5 seconds..."
     sleep 5
+
     reboot
+    exit 1
 }
 
 uninstall() {

@@ -144,6 +144,8 @@ handle_special_boot_flag() {
             ;;
         REMOVE_MOD)
             echo "@@ Removing mod..."
+
+            rm -f /opt/config/mod/REMOVE_MOD
             mount_data_partition
             
             cp -f /opt/config/mod/.shell/uninstall.sh /tmp/uninstall.sh
@@ -154,7 +156,9 @@ handle_special_boot_flag() {
         REMOVE_MOD_SOFT)
             echo "@@ Removing mod in soft mode..."
         
+            rm -f /opt/config/mod/REMOVE_MOD_SOFT
             mount_data_partition
+
             cp -f /opt/config/mod/.shell/uninstall.sh /opt/uninstall.sh
             /opt/uninstall.sh --soft
 
@@ -187,8 +191,8 @@ print_special_boot_flag() {
 search() {
     local callback=$1
 
-    search_special_boot_flag_root "$callback" \
-        || search_special_boot_flag_usb "$callback" \
+    search_special_boot_flag_usb "$callback" \
+        || search_special_boot_flag_root "$callback" \
         || search_for_klipper_mod "$callback"
 
     ret=$?

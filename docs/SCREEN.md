@@ -48,7 +48,7 @@ This will disable the stock screen and activate the Feather screen immediately. 
 Then you can edit `variables.cfg` file and disable `display_off` parameter manually:
 
 ```bash
-# Enable stock sceen using script
+# Enable stock screen using script
 /opt/config/mod/.shell/commands/zdisplay.sh on
 
 # Or change parameter in variables.cfg using this script
