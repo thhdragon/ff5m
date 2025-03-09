@@ -54,6 +54,7 @@ start() {
         v4l2-ctl -d "${_VIDEO_P}" --set-fmt-video=width="${WIDTH}",height="${HEIGHT}"
         start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
         
+        touch "$CAMERA_F"
         reload
     else
         echo "Camera disabled in configuration"
