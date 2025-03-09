@@ -66,7 +66,7 @@ Download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) scr
 PRINTER_IP="<your_printer_IP>"
 
 # Upload the script to the printer
-scp ./switch.sh "root@$PRINTER_IP:/opt"
+scp -O ./switch.sh "root@$PRINTER_IP:/opt"
 
 # Log in to the printer
 ssh "root@$PRINTER_IP"
