@@ -13,7 +13,7 @@ restore() {
     rm -f /etc/init.d/prepare.sh
 
     mv /opt/config/mod_data/variables.cfg /opt/config/mod_data/variables.cfg.old
-    touch /opt/config/mod_data/variables.cfg
+    echo -e "[Variables]\n" > /opt/config/mod_data/variables.cfg
 
     ln -fs "/opt/config/mod/.shell/S00init" /etc/init.d/
     ln -fs /opt/config/mod/.shell/S55boot /etc/init.d/
