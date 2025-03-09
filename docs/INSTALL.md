@@ -58,7 +58,7 @@ opkg install mjpg-streamer_1.0.1-1_armv7-3.2.ipk mjpg-streamer-input-uvc_1.0.1-1
 opkg install busybox htop nano zsh
 ```
 
-### Run the Switching Script
+### (Temporary) Run the Switching Script
 
 Download the [switch.sh](https://github.com/DrA1ex/ff5m/blob/main/switch.sh) script, upload it to the printer, and execute it.
 
@@ -76,9 +76,9 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
-After running the script, the mod will either download the update automatically, or you may need to update the firmware manually via Fluidd's **Configuration -> Software Update -> zmod (Update)**.
+After running the script, the printer will be rebooted. After that, you need to update the firmware manually via Fluidd's **Configuration -> Software Update -> zmod (Update)**.
 
-Finally, reboot your printer. The mod should now be installed. 
+Finally, reboot your printer. The mod should now be installed.  
 From this point onward, you will receive OTA updates from this repository.
 
 You can reach services using these addresses:
