@@ -33,3 +33,15 @@ Log in via SSH and create an empty file in the **/opt/config/mod** directory usi
 - `touch /opt/config/mod/REMOVE_MOD_SOFT` to remove the mod but preserve the root, audio, and internal mod's configuration (in case you want to install it again).  
  
 After that, reboot. The mod will uninstall itself.
+
+## Flashing Factory Firmware  
+If you encounter uninstallation issues or firmware not working correctly, you **can** try to restore it by flashing the factory firmware.  
+
+1. Download the factory image from the FlashForge website (select your printer model and download the firmware): https://flashforge.com/pages/download-center  
+2. Copy it to a USB drive.  
+3. Insert the USB drive **before powering up** the printer.  
+4. Wait **until** the firmware is installed. Don't reboot the printer **until the installation process is finished**.  
+5. Your printer's firmware should be restored to the stock version.  
+6. Don't forget to review the settings (or reset them in the settings) and recalibrate the printer if you are planning to use the stock firmware.  
+
+In **hard** cases, join the [Telegram group](https://t.me/+ihE2Ry8kBNkwYzhi) to get help or refer to the [Recovery Guide](/docs/RECOVERY.md).  
