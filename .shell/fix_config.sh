@@ -6,10 +6,16 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-rm -f /etc/init.d/S00fix
-rm -f /etc/init.d/prepare.sh
+set -x
 
-ln -fs "/opt/config/mod/.shell/S00init" /etc/init.d/
+restore() {
+    rm -f /etc/init.d/S00fix
+    rm -f /etc/init.d/prepare.sh
 
-sync
-reboot
+    ln -fs "/opt/config/mod/.shell/S00init" /etc/init.d/
+
+    sync
+    reboot
+}
+
+restore &> /data/logFiles/fix.log

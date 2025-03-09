@@ -36,7 +36,7 @@ initialize() {
     /opt/config/mod/.shell/boot/init_swap.sh
 
     echo "// Buildroot Initialization..."
-    init_chroot
+    init_buildroot
 
     echo "// Update links..."
 
@@ -112,12 +112,8 @@ initialize() {
     echo "// Initialization step done!"
 }
 
-init_chroot() {
-    mount -t proc /proc $MOD/proc
-    mount --rbind /sys $MOD/sys
-    mount --rbind /dev $MOD/dev
-    mount --bind /run $MOD/run
-    mount --bind /tmp $MOD/tmp
+init_buildroot() {
+    init_chroot
     
     mkdir -p $MOD/data
     mkdir -p $MOD/opt/config
@@ -142,6 +138,7 @@ init_chroot() {
     ln -fns /opt/config/mod/.py /root/printer_data/py
     ln -fns /opt/config/mod/.shell /root/printer_data/scripts
     
+    ln -fns /opt/config/mod/moonraker.conf /root/printer_data/config/moonraker.conf
     ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     
     mount --bind /root/printer_data $MOD/root/printer_data
@@ -158,6 +155,7 @@ init_chroot() {
     [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
 
     ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
+    "$CMDS"/zhttp.sh apply
 
     # load datetime
     echo "// Loading last saved time..."

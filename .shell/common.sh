@@ -47,6 +47,14 @@ mount_data_partition() {
     fi
 }
 
+init_chroot() {
+    mount -t proc /proc $MOD/proc
+    mount --rbind /sys $MOD/sys
+    mount --rbind /dev $MOD/dev
+    mount --bind /run $MOD/run
+    mount --bind /tmp $MOD/tmp
+}
+
 save_array_to_file() {
     local array_name=$1
     local file_name=$2

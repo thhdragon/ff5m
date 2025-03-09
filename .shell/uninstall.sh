@@ -21,6 +21,8 @@ revert_klipper_patches() {
         local rel_file=${file#"$SRC_DIR/plugins/"}
         
         rm -f "$TARGET_DIR/extras/$rel_file"
+
+        echo "!! Removed \"$rel_file\""
     done
     
     # Klipper patches
@@ -29,43 +31,59 @@ revert_klipper_patches() {
         local target="$TARGET_DIR/$rel_file"
         
         if [ -f "$target.bak" ]; then
-            echo "Restore klipper backup: $target"
             mv -f "$target.bak" "$target"
+            echo "!! Restored \"$target\""
         fi
     done
 }
 
+fail() {
+    if [ -n "$1" ]; then echo "$1"; fi
+    echo "@@ Failed to remove mod. Reboot in 5 seconds..."
+    sleep 5
+    reboot
+}
+
 uninstall() {
+    if [ ! -d "$MOD/sys" ]; then
+        echo "// Init chroot..."
+        init_chroot
+    fi
+
+    echo "// Restore config..."
+    
     chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.cfg \
         --no_data \
-        --params /opt/config/mod/.cfg/restore.cfg
+        --params /opt/config/mod/.cfg/restore.cfg \
+    || fail "@@ Failed to restore printer.cfg"
     
     chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
         --mode restore \
         --config /opt/config/printer.base.cfg \
         --params /opt/config/mod/.cfg/restore.base.cfg \
-        --data /opt/config/mod/.cfg/data.restore.base.cfg
+        --data /opt/config/mod/.cfg/data.restore.base.cfg \
+    || fail "@@ Failed to restore printer.base.cfg"
     
     grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
     
+    echo "// Restore klipper..."
+    
     revert_klipper_patches
-
+    
+    echo "// Remove mod files..."
+    
     # Make sure to umount all mounted files
     # In case of accidentally run this script after init
-    umount /data/.mod/.zmod/sys
-    umount /data/.mod/.zmod/dev
-    umount /data/.mod/.zmod/tmp
-    umount /data/.mod/.zmod/opt/klipper
-    umount /data/.mod/.zmod/opt/config
-    umount /data/.mod/.zmod/data
-    umount /data/.mod/.zmod/proc 
-    umount /root/printer_data/scripts
-    umount /root/printer_data/py
-    umount /root/.oh-my-zsh
+    echo "// Unmount paths..."
+
+    mount | grep "/data/.mod" | awk '{print $3}' | xargs -n1 -I {} umount -lf "{}"
+    mount | grep " /root/printer_data" | awk '{print $3}' | xargs -n1 -I {} umount -lf "{}"
+    umount -lf /root/.oh-my-zsh &> /dev/null
+
+    echo "// Removing services..."
     
-    rm -rf /data/.mod
     rm -f /etc/init.d/S00fix
     rm -f /etc/init.d/S00init
     rm -f /etc/init.d/S55boot
@@ -75,13 +93,13 @@ uninstall() {
     rm -f /etc/init.d/S98zssh
     rm -f /etc/init.d/K99moon
     rm -f /etc/init.d/K99root
-    rm -rf /opt/config/mod/
-    rm -rf /root/printer_data
-    # REMOVE zsh
+
+    echo "// Removing zsh..."
     rm -rf /root/.profile
     rm -rf /root/.zshrc
     echo "" > /etc/motd
-    # REMOVE ENTWARE
+
+    echo "// Removing entware..."
     rm -rf /opt/bin
     rm -rf /opt/etc
     rm -rf /opt/home
@@ -93,20 +111,35 @@ uninstall() {
     rm -rf /opt/tmp
     rm -rf /opt/usr
     rm -rf /opt/var
+
+    echo "// Removing mod files..."
+
+    rm -rf /opt/config/mod/
+    rm -rf /root/printer_data
+    rm -rf /data/.mod
     
-    if [ ! "$1" != "--soft" ]; then
+    if [ "$1" != "--soft" ]; then
+        echo "// Hard remove step..."
         rm -rf /opt/config/mod_data
 
-        # Remove ROOT
+        echo "// Removing root access..."
         rm -rf /etc/init.d/S50sshd /etc/init.d/S55date /bin/dropbearmulti /bin/dropbear /bin/dropbearkey /bin/scp /etc/dropbear /etc/init.d/S60dropbear
-        # Remove BEEP
+
+        echo "// Removing Beep util..."
         rm -f /usr/bin/audio /usr/lib/python3.7/site-packages/audio.py /usr/bin/audio_midi.sh /opt/klipper/klippy/extras/gcode_shell_command.py
         rm -rf /usr/lib/python3.7/site-packages/mido/
     fi
     
+    echo "// Done!"
+    echo "// Printer will reboot in 5 seconds..."
+    
     sync
+    sleep 5
+    
     reboot
     exit
 }
+
+mv /data/logFiles/uninstall.log /data/logFiles/uninstall.log.1 &> /dev/null
 
 uninstall "$1" 2>&1 | logged "/data/logFiles/uninstall.log" --send-to-screen

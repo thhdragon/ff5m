@@ -6,6 +6,31 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+CURL=/opt/cloud/curl-*/bin/curl
+
+echo "Download requirements..."
+
+rm -rf /opt/packages
+mkdir -p /opt/packages
+
+cd /opt/packages || exit 2
+
+$CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1/mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk
+$CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1/mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
+$CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1/mjpg-streamer_1.0.1-1_armv7-3.2.ipk
+
+opkg update \
+    && opkg install \
+        mjpg-streamer_1.0.1-1_armv7-3.2.ipk \
+        mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk \
+        mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk \
+    && opkg install busybox htop nano zsh
+
+if [ "$?" -ne 0 ]; then
+  echo "Failed to install dependencies!"
+  exit 1
+fi
+
 echo "Remove old repository data..."
 
 rm -rf /opt/config/mod/.git
@@ -43,15 +68,27 @@ if [ $? -ne 0 ]; then echo "Unable to delete old repository information"; exit 2
 
 echo "Restarting Moonraker..."
 
-/etc/init.d/S99moon stop
-/etc/init.d/S99moon up
+/etc/init.d/S99moon stop &> /dev/null
+/etc/init.d/S99moon up &> /dev/null
+
+echo "Waiting moonraker to start..."
+
+started=0
+for _ in $(seq 0 30); do
+    $CURL http://localhost:7125 &> /dev/null && started=1 && break
+    sleep 1
+done
+
+if [ "$started" -eq 0 ]; then
+  echo "Moonraker not started. Try again later"
+  exit 2
+fi
 
 echo "Switching repository..."
 
-umount /data/.mod/
-RECOVER_RET=$(chroot /data/.mod/.zmod /bin/curl -X POST "http://localhost:7125/machine/update/recover?name=zmod&hard=true")
+RECOVER_RET=$($CURL -X POST "http://localhost:7125/machine/update/recover?name=zmod&hard=true" 2>/dev/null)
 
-if [ $RECOVER_RET != '{"result":"ok"}' ]; then
+if [[ "$RECOVER_RET" != '{"result":"ok"}' ]]; then
     echo "Unable to switch repository: $RECOVER_RET"
     exit 3
 fi

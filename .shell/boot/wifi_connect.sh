@@ -46,6 +46,8 @@ for _ in $(seq 30); do
         disown
 
         touch "$NETWORK_CONNECTED_F"
+        sync
+        
         exit 0
     elif [[ "$STATUS" == "SCANNING" ]]; then
         echo "Connecting..."
