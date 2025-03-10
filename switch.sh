@@ -19,12 +19,14 @@ $CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1
 $CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1/mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk
 $CURL -# -k -OL https://github.com/DrA1ex/mjpg-streamer/releases/download/v1.0.1/mjpg-streamer_1.0.1-1_armv7-3.2.ipk
 
-opkg update \
-    && opkg install \
+OPKG=/opt/bin/opkg
+
+$OPKG update \
+    && $OPKG install \
         mjpg-streamer_1.0.1-1_armv7-3.2.ipk \
         mjpg-streamer-input-uvc_1.0.1-1_armv7-3.2.ipk \
         mjpg-streamer-output-http_1.0.1-1_armv7-3.2.ipk \
-    && opkg install busybox htop nano zsh
+    && $OPKG install busybox htop nano zsh
 
 if [ "$?" -ne 0 ]; then
   echo "Failed to install dependencies!"
