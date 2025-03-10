@@ -87,7 +87,7 @@ case "$key" in
             message "${SSH_PUB}"
             message "In the authorized_keys file, remove the first 2 characters '# ' - this is a comment"
             
-            /etc/init.d/S98zssh zstart
+            /etc/init.d/S98zssh start
         else
             /etc/init.d/S98zssh stop
         fi
