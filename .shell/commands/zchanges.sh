@@ -104,4 +104,7 @@ case "$key" in
                 --config /opt/config/printer.cfg                         \
                 --params /opt/config/mod/.cfg/tuning.off.cfg
         fi
+
+        message "Klipper will be restarted to apply changes."
+        "$SCRIPTS"/restart_klipper.sh
 esac

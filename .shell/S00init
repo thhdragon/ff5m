@@ -266,7 +266,6 @@ fix_config() {
     echo "[" > $BATCH_FILE
 
     # 2. Move params from printer.base.cfg to printer.cfg
-    # shellcheck disable=SC2129
     echo "
     {
         \"mode\": \"restore\",
