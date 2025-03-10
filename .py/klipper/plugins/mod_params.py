@@ -130,7 +130,8 @@ class ModParamManagement:
 
         try:
             parser.read(self.filename)
-            if not parser.has_section("Variables"): return
+            if not parser.has_section("Variables"):
+                parser.add_section("Variables")
 
             parsed = dict()
             for key, value in parser.items("Variables"):
