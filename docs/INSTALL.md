@@ -58,6 +58,11 @@ cd /opt
 chmod +x ./switch.sh && ./switch.sh
 ```
 
+> [!NOTE]  
+> If the switching script fails with the error "_Unable to switch repository_", try rebooting the printer.  
+> Then you can check the Software Update section and run **Recover** for ZMod if this option appears.  
+> Otherwise, run the switching script again.  
+
 After the reboot, update the firmware manually via Fluidd:
 Navigate to **Configuration -> Software Update -> zmod (Update)**.  
 
@@ -68,4 +73,3 @@ You can reach services using these addresses:
 - **Moonraker**: http://<printer_ip>:7125/
 - **Fluidd**: http://<printer_ip>/fluidd/
 - **Mainsail**: http://<printer_ip>/mainsail/
-
