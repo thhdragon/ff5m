@@ -203,6 +203,8 @@ class FeatherScreen:
         self.printer.register_event_handler("klippy:shutdown", self._shutdown)
         self.printer.register_event_handler("klippy:disconnect", self._shutdown)
 
+        self.gcode.register_command("FEATHER_PRINT_STATUS", self.cmd_FEATHER_PRINT_STATUS)
+
     def _init(self):
         self.vcard = self.printer.lookup_object("virtual_sdcard")
         self.params = self.printer.lookup_object("mod_params")
@@ -231,6 +233,12 @@ class FeatherScreen:
             self._toolbar_timer = None
 
         self.feather.stop()
+
+    def cmd_FEATHER_PRINT_STATUS(self, gcmd):
+        status = gcmd.get("S")
+
+        if self.feather:
+            self.feather.print_status(status)
 
     def _change_state(self, new_state: ScreenState, eventtime):
         if self.state == ScreenState.DESTROYED: return
