@@ -59,9 +59,20 @@ It is controlled by the following mod's [parameters](docs/CONFIGURATION.md):
 Use the `LED S=<PERCENT>` macro to set LED brightness (e.g., LED S=75).
 Use `LED_ON` and `LED_OFF` to toggle the LED.
 
-Set the default LED brightness by modifying the [led chamber_light] section in user.cfg (see [Configuration](docs/CONFIGURATION.md)).
+The mod also includes a LED klipper's plugin, which allows inverting LED controls in cases where the LED is connected using a non-standard scheme.   
+To enable this feature, you need to add a parameter in the `user.cfg` file (see [Configuration](docs/CONFIGURATION.md)).  
+
+```ini
+[led chamber_light]  
+invert: True        ; Use inverted control when set to True.
+initial_WHITE: 0.2  ; Optional: Set the initial brightness value.
+```  
+
 > [!NOTE]
-> The stock firmware controls the LED by default. Disable this by setting the mod [parameter](docs/CONFIGURATION.md):
+> The stock firmware controls the LED by default. You can disable this behavior by configuring the mod (as described in [Configuration](docs/CONFIGURATION.md)).  
+> - If left enabled, you won’t be able to manage the initial brightness using user.cfg.  
+> - If disabled, LED control from the stock screen will no longer work.  
+
 
 ```bash
 SET_MOD_PARAM PARAM="disable_screen_led" VALUE=1
