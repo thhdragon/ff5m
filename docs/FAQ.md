@@ -11,9 +11,10 @@ By default, the printer boots into the Klipper mod. If you want to boot into the
 ### Can I install the Klipper Mod over the Forge-X mod?
 
 Yes, you can. The Klipper Mod does not interfere with the Forge-X mod, and you can use it alongside the Dual Boot feature.  
+
 To boot into the Forge-X mod, simply insert a USB drive containing the file `klipper_mod_skip`, as described in the Klipper Mod documentation under [Dual Boot](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/INSTALL.md#dual-boot).
 
---
+---
 
 ### Why am I not seeing a confirmation of the ZMod installation?
 
