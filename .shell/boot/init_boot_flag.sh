@@ -13,6 +13,19 @@ FLAGS=("SKIP_MOD" "SKIP_MOD_SOFT" "REMOVE_MOD" "REMOVE_MOD_SOFT" "klipper_mod_sk
 check_special_boot_flag() {
     local path=$1
 
+    # Check firmware image first
+    if ls "$path"/Adventurer5M*.tgz &> /dev/null; then
+        echo "FIRMWARE_IMAGE"
+        return 0
+    fi
+
+    # Check init script
+    if [ -f "$path/flashforge_init.sh" ]; then
+        echo "FIRMWARE_SCRIPT"
+        return 0
+    fi
+
+    # Check boot flags
     for file_name in "${FLAGS[@]}"; do
         if [ -f "$path/$file_name" ]; then
             echo "$file_name"
@@ -169,12 +182,18 @@ handle_special_boot_flag() {
 
             exit 1
         ;;
+        FIRMWARE_IMAGE | FIRMWARE_SCRIPT)
+            echo "!! Installation image found. Skipping the mod..."
+            touch /tmp/SKIP_MOD
+
+            exit 0
+        ;;
         KLIPPER_MOD | klipper_mod_remove)
             echo "@@ Skipping mod because of Klipper Mod..."
             touch /tmp/SKIP_MOD
 
             exit 0
-            ;;
+        ;;
         *)
             echo "@@ Unknown special boot flag \"$name\""
             exit 1
