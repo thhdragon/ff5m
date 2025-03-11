@@ -53,8 +53,7 @@ Alternatively, you can use the web control panel at:
 
 Some camera settings are not applied during boot-up. Instead, they are applied later—typically when a print starts.  
 
-To apply the changes manually at any time, use the macro:  
-`CAMERA_RELOAD`
+To apply the changes manually at any time, use the macro:  `CAMERA_RELOAD`
 
 ---
 
@@ -68,7 +67,8 @@ M190 S[bed_temperature_initial_layer_single]
 M104 S[nozzle_temperature_initial_layer]
 ```
 
-**If you are using the Feather screen, no changes are required.**
+
+If you are using the **Feather screen**, no changes are required.
 
 ---
 
@@ -139,6 +139,19 @@ NEW_SAVE_CONFIG
 ```
 
 Alternatively, enable the mod parameter `new_save_config`, which allows you to use standard macro `SAVE_CONFIG` and reload the screen gracefully.
+
+---
+
+### Feather Screen stuck on the "Finishing boot..."
+
+This happens if Klipper is not becoming ready.  
+Usually, the reason is a broken configuration or the MCU not becoming ready.
+
+If you reboot the printer using the `reboot` command and do not power it off and on, the MCU won't reset, which may also cause this issue.
+
+In that case, you need to perform a `FIRMWARE_RESET`.
+
+At this point, you should have network, Fluidd, and SSH access, so you can connect to the printer and figure out what happened.
 
 ---
 
