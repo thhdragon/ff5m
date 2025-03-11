@@ -72,17 +72,31 @@ If you are using the **Feather screen**, no changes are required.
 
 ---
 
-### Why am I getting a "weight exceeded" error?
+### Why am I Getting a "Weight Exceeded" Error?
 
-This safety feature prevents damage to the printer’s bed due to nozzle impact. By default, the weight limit is set to **1.2 kg**, but this can be adjusted using the `weight_check_max` parameter.
+This safety feature is designed to prevent damage to the printer’s bed caused by the nozzle impacting it. By default, the weight limit is set to **1.2 kg**, but this can be adjusted using the `weight_check_max` parameter.
 
-For more details, refer to the [Printing page](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md) and the [Configuration page](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md).
+The system has two stages:  
+1. **Warning**: Triggered if the weight exceeds `700g`. This serves as a precautionary notice.  
+2. **Error**: Triggered if the weight exceeds a more critical threshold (e.g., `1.2 kg`). At this stage, printing will stop to protect the printer.
 
-**Possible causes of this error include:**  
+To customize the warning limit, you can modify the `user.cfg` file by adding the following:
+
+```cfg
+[temperature_sensor weight_value]
+trigger_value: 700
+```
+
+Be careful: setting values greater than weight_check_max will increase the actual weight value when the error is triggered.
+
+For more information, refer to the [Printing Page](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md) and the [Configuration Page](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md).  
+
+
+#### Possible causes of this error include:  
 - **Weight cell calibration issues**: If you manually leveled the bed, it might require recalibration.  
 - **Hardware problems**: Printer-related hardware issues may also cause this error.  
 
-**To resolve the issue temporarily:**  
+#### To resolve the issue temporarily:
 You can either increase the threshold or disable the weight check feature using these commands:
 
 ```bash
@@ -95,7 +109,7 @@ SET_MOD_PARAM PARAM="weight_check" VALUE=0
 
 *Note:* It is strongly advised to investigate and fix any underlying hardware or kinematic issues after implementing these changes.
 
----
+--- 
 
 ### What should I do about the warning after an SSH connection: `wtmp_write: problem writing /dev/null/wtmp: Not a directory`?
 
