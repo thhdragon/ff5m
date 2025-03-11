@@ -10,19 +10,19 @@
 source /opt/config/mod/.shell/common.sh
 
 display_on() {
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-    --mode restore --avoid_writes \
-    --config /opt/config/printer.cfg \
-    --no_data \
-    --params /opt/config/mod/.cfg/init.display_on.cfg
+    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.cfg/init.display_on.cfg
 }
 
 display_off() {
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
-    --mode restore --avoid_writes \
-    --config /opt/config/printer.cfg \
-    --no_data \
-    --params /opt/config/mod/.cfg/init.display_off.cfg
+    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.cfg/init.display_off.cfg
 }
 
 test() {
