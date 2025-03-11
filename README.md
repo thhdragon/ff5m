@@ -39,6 +39,21 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - **Entware** package manager for additional software installation
 - **Dual boot** with stock Flashforge software
 
+## Get Started
+
+To begin, follow the instructions on the [Installation page](/docs/INSTALL.md). After the installation, you will need to update your slicer's starting and finishing G-code. Refer to the [Slicing page](/docs/SLICING.md) for guidance.
+
+> [!WARNING]   
+> **Important:** Make sure to review your printer settings and recalibrate the bed mesh and Z-offset. Some settings may change during installation, and failure to recalibrate could potentially damage your printer.
+
+This modification also includes additional features. It is highly recommended that you thoroughly read the [Printing](/docs/PRINTING.md) and [Configuration](/docs/CONFIGURATION.md) pages before getting started.
+
+For additional help, check out the [F.A.Q.](/docs/FAQ.md).
+
+If you encounter issues:  
+1. First, consult the documentation.
+2. If the issue persists, you can create an [issue](https://github.com/DrA1ex/ff5m/issues) on GitHub or join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group for assistance.
+ 
 
 ## Why This Mod Was Developed
 This mod was created to address several critical limitations and challenges faced by users of the Flashforge AD5M (Pro) 3D printer. Here are the key reasons behind its development:
@@ -64,6 +79,7 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Configuration](docs/CONFIGURATION.md)
 - [Slicing](docs/SLICING.md)
 - [Printing](docs/PRINTING.md)
+- [F.A.Q](/docs/FAQ.md)
 - [Alternative Screen](docs/SCREEN.md)
 - [Camera](docs/CAMERA.md)
 - [Telegram Bot and Timelapse](docs/TELEGRAM.md)
