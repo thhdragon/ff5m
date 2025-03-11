@@ -122,6 +122,26 @@ To download files, move them to `/data` and then download them via Fluidd.
 
 ---
 
+### Stock Screen Freezes: I Can't Print Anything
+
+This happens because the stock screen does not support Moonraker external control over the printer.
+
+You cannot run `SAVE_CONFIG`, `RESTART`, or `FIRMWARE_RESTART` without causing the stock screen to freeze.
+
+If this happens, you won't be able to print, as printing requires the stock screen to function. Simply reboot the printer if this occurs.
+
+Consider switching to Feather Screen. Refer to [this guide](/docs/SCREEN.md) for details.
+
+For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully. Run it yourself instead of `SAVE_CONFIG`:
+
+```
+NEW_SAVE_CONFIG
+```
+
+Alternatively, enable the mod parameter `new_save_config`, which allows you to use standard macro `SAVE_CONFIG` and reload the screen gracefully.
+
+---
+
 ### My printer is stuck on the Stock initialization screen. How can I fix it?
 
 This issue is likely caused by a bug in the newer Flashforge firmware (version `3.1.*`), where the firmware freezes if it fails to connect to a network during initialization.  
