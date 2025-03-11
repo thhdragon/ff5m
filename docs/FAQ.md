@@ -97,16 +97,6 @@ SET_MOD_PARAM PARAM="weight_check" VALUE=0
 
 ---
 
-### My printer is stuck on the initialization screen. How can I fix it?
-
-This issue is likely caused by a bug in the newer Flashforge firmware (version 3.1.*), where the firmware freezes if it fails to connect to a network during initialization.  
-
-For now, reboot the printer by powering it off and back on. This problem is intermittent—most of the time the firmware works fine, but occasionally it gets stuck.  
-
-To avoid this issue, you can downgrade the stock firmware to version 2.7.*, as this bug seems to occur only in version 3.1.*. Alternatively, switching to the Feather screen eliminates this issue entirely because the Feather screen operates independently and does not rely on the problematic firmware.
-
----
-
 ### What should I do about the warning after an SSH connection: `wtmp_write: problem writing /dev/null/wtmp: Not a directory`?
 
 You can safely ignore this warning. It indicates that a core system configuration in the firmware is incomplete, but it does not affect your printer’s functionality.
@@ -129,3 +119,58 @@ scp -O root@<printer-ip>:/path/to/file /path/to/directory
 If your version of `scp` does not support the `-O` flag, you can upload files directly via the Fluidd web interface. Files uploaded to Fluidd are stored in `/data`.  
 
 To download files, move them to `/data` and then download them via Fluidd.
+
+---
+
+### My printer is stuck on the Stock initialization screen. How can I fix it?
+
+This issue is likely caused by a bug in the newer Flashforge firmware (version `3.1.*`), where the firmware freezes if it fails to connect to a network during initialization.  
+
+For now, reboot the printer by powering it off and back on. This problem is flickering — most of the time the firmware works fine, but occasionally it gets stuck.  
+
+To avoid this issue, you can downgrade the stock firmware to version `2.7.*`, as this bug seems to occur only in version `3.1.*`. Alternatively, switching to the Feather screen eliminates this issue entirely because the Feather screen operates independently and does not rely on the problematic firmware.
+
+---
+
+### My printer is stuck on the screen with a black-and-white Flashforge logo. How can I fix it?
+
+If you encounter this issue, something may be preventing your printer from booting at all.  
+This is not a mod-related issue, as the mod only loads after the printer begins booting and displays its own splash screen.
+
+The problem could be hardware- or software-related. Contact FlashForge support, but do not mention any mods you may have installed, as doing so will likely void your warranty.
+
+You can try flashing the factory firmware image to resolve this. Refer to this [instruction guide](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#flashing-factory-firmware).
+
+---
+
+### My printer is stuck on the screen with the Forge-X logo. How can I fix it?
+
+In this case, the printer will display loading information. If it's a Wi-Fi issue, refer to the next section.  
+If it’s not a network issue, the resolution will depend on what actually caused the problem. Create an issue report if the problem persists.
+
+You can skip the mod during boot by following [this instruction](/docs/DUAL_BOOT.md).  
+Alternatively, you can uninstall the mod by following [this instruction](/docs/UNINSTALL.md).
+
+**Note:** It’s not recommended to flash over a different firmware version without first removing the mod, as this could brick your printer. If that happens, you may still be able to restore it. Refer to the [recovery guide](/docs/RECOVERY.md) for more information.
+
+---
+
+### The mod isn’t loading and is stuck at the network connection step.
+
+This can happen when you are using the Feather screen, and the mod cannot connect to the network.  
+Since the mod requires a network connection to function, it will keep attempting to connect until successful.
+
+Printers are often metal-shielded, meaning Wi-Fi signals may struggle to reach the antenna.  
+Consider switching to a 2.4 GHz Wi-Fi network. You can do this from the stock screen or by manually editing the `/etc/wpa_supplicant.conf` configuration file.
+
+If the mod still cannot connect within 5 minutes, the stock screen will load instead.
+
+If the mod doesn’t load at all, refer to [this instruction](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen) to switch back to the original stock screen.
+
+---
+
+### My printer won’t boot. I can’t skip the mod, flash firmware, or do anything.
+
+If this happens, something has gone seriously wrong. Don’t worry—there’s still a way to unbrick your printer.  
+Refer to the [recovery guide](/docs/RECOVERY.md) for detailed instructions on how to restore your printer.
+
