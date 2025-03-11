@@ -57,11 +57,11 @@ if [ "$DISPLAY_OFF" -eq 1 ]; then
     fi
 fi
 
-if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then    
-    echo "Start wifi reconnect daemon."    
+if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
+    echo "Start wifi reconnect daemon."
     killall "wpa_cli"
     wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
-
+    
     echo "// Network initialized!"
     touch "$CUSTOM_BOOT_F"
     
@@ -73,19 +73,19 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     mount -t debugfs none /sys/kernel/debug -o rw,relatime
     
     echo "// MCU booting..."
-    /opt/config/mod/.shell/boot/boot_mcu.sh
+    /opt/config/mod/.bin/exec/boot_mcu 2>&1
     
     echo "// Start klipper."
     /opt/klipper/start.sh &> /dev/null
-
+    
     echo "// Boot sequence done!"
 elif [ "$DISPLAY_OFF" -eq 1 ]; then
     if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
         echo "?? Switch config to enabled screen..."
         /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
     fi
-
+    
     echo "@@ Failed to initialize mod. Booting into stock firmware..."
-else 
-    echo "// Booting stock firmware..." 
+else
+    echo "// Booting stock firmware..."
 fi

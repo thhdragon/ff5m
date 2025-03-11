@@ -5,3 +5,4 @@ message(STATUS "CMake Build Type: ${CMAKE_BUILD_TYPE}")
 
 add_subdirectory(demo)
 add_subdirectory(typer)
+add_subdirectory(boot_mcu)
