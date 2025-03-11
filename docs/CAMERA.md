@@ -34,8 +34,10 @@ FPS=15
 VIDEO=auto
 
 # Image post-processing settings.
-# You can play with settings and choice the best for you in page:
+# You can adjust these settings to fine-tune the camera's image quality.
+# Visit the settings page at:
 # http://printer_ip:8080/control.htm
+# After testing, apply the desired values to the configuration fields below.
 
 E_SHARPNESS=255
 E_BRIGHTNESS=0
