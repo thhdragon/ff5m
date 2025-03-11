@@ -38,9 +38,9 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 
 - `camera`: Enables the alternative camera implementation if set to 1.
 
-- `weight_check`: Enables bed Mesh validation protection if set to 1.
+- `weight_check`: Enables bed collision protection if set to 1.
 
-- `bed_mesh_validation`: Enables bed collision protection if set to 1.
+- `bed_mesh_validation`: Enables bed Mesh validation protection if set to 1.
 
 - `tune_config`: Allows firmware parameter tuning for recommended settings: optimized motors/extruder rotation distance, better probbing, z-parking and more.  
 **Warning:** After changing this value, recreate the bed mesh, adjust Z-Offset, and optionally recalibrate flow and Pressure Advance.  
