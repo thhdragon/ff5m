@@ -7,8 +7,10 @@ To cancel a print, use the `CANCEL_PRINT` macro.
 If there is a pending temperature change operation (initiated by the mod only, Klipper's M109 and M190 won't work), you can cancel the wait using the `M108` macro.   
 This cancels any active wait and execute `CANCEL_PRINT` if printing is active.
 
+For detailed instructions on configuring your slicer, refer to the [Slicing](../docs/SLICING.md) section.
+
 > [!WARNING]
-> After uninstalling the mod, some printer parameters may revert to stock defaults. This can affect settings like Z-Offset and Mesh Bed Leveling. It is **strongly recommended** to review and recalibrate these settings to avoid potential damage.
+> After installing the mod, some printer parameters may revert to stock or change. This can affect settings like Z-Offset and Mesh Bed Leveling. It is **strongly recommended** to review and recalibrate these settings to avoid potential damage.
 
 
 ## Bed Collision Protection
