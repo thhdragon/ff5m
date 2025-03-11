@@ -53,13 +53,6 @@ init_chroot() {
     mount --rbind /dev $MOD/dev
     mount --bind /run $MOD/run
     mount --bind /tmp $MOD/tmp
-
-    # hwclock
-    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
-
-    # load datetime
-    echo "// Loading last saved time..."
-    chroot $MOD fake-hwclock load
 }
 
 save_array_to_file() {

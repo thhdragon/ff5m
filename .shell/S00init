@@ -114,8 +114,6 @@ initialize() {
 
 init_buildroot() {
     init_chroot
-
-    echo "// Finishing buildroot initialization..."
     
     mkdir -p $MOD/data
     mkdir -p $MOD/opt/config
@@ -144,6 +142,15 @@ init_buildroot() {
     ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     
     mount --bind /root/printer_data $MOD/root/printer_data
+
+    echo "// Finishing buildroot initialization..."
+
+    # hwclock
+    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
+
+    # load datetime
+    echo "// Loading last saved time..."
+    chroot $MOD fake-hwclock load
     
     # moon
     ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
