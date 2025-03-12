@@ -25,6 +25,8 @@ SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 CFG_SCRIPT="$CMDS/zconf.sh"
 VAR_PATH="$MOD_DATA/variables.cfg"
 
+PATH="$BINS:$PATH"
+
 unset LD_PRELOAD
 
 mount_data_partition() {
@@ -83,7 +85,7 @@ load_array_from_file() {
     fi
 }
 
-logged() {
+logged_() {
     local default_log_level="     "
     
     local print=true
