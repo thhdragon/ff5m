@@ -153,9 +153,3 @@ efex
 
 For step-by-step instructions, refer to this resource: [link](https://t.me/FF_5M_5M_Pro/441456/487025).
 
-### Important Notes
-
-Always double-check your connections when using UART to avoid damaging the hardware.
-If you’re unsure about any step, ask for help in the community before proceeding.
-
-Backup your system files before making any modifications to avoid recovery scenarios.
