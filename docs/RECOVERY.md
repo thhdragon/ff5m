@@ -6,11 +6,12 @@ If you’ve modified internal system files and something went wrong—your print
 
 To understand the problem, you’ll need a **UART-USB** adapter that supports **3.3V** logic levels. Using a 5V adapter can **damage** the motherboard, so be careful. Alternatively, you can use an ESP8266/ESP32 (do not use an Arduino, as it operates at 5V and could **fry the CPU**). Flash the ESP with the MultiSerial example from the Arduino IDE `(Examples -> Communications -> MultiSerial)`, but change the `Serial` and `Serial1` Baud to `115200`.
 
-Next, connect the UART adapter to the motherboard near the processor (next to USB0). Connect the wires as follows:
+Next, connect the UART adapter to the motherboard near the processor (next to USB0).   
+Connect the wires as follows:
 - **RX** on the adapter to **TX** on the motherboard.
 - **TX** on the adapter to **RX** on the motherboard.
 - **GND** to **GND**.
-- Do **not** connect the power line.
+- Do **NOT** connect the power line.
 
 <p align="center">
 <img width="400" alt="image" src="https://github.com/user-attachments/assets/458aad73-b224-43d3-aca0-e5998fccc44e" />
