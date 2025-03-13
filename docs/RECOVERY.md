@@ -51,7 +51,7 @@ Hit any key to stop autoboot
 
 4. You’ll now be in **U-Boot**. From here, you can redefine the kernel startup command to get a shell. Enter the following commands:
 
-```
+```bash
 setenv init /bin/sh
 boot
 ```
@@ -66,28 +66,47 @@ mount -t devtmpfs none /dev
 mount -o remount,rw /
 ```
 
-(Optional) Mount the USB
+(Optional) **Mount the USB**
 
 ```bash
 # Step 1: Create a mount point
 mkdir -p /mnt/usb
 
-# Step 2: List USB block devices
-lsblk
-
-# Step 3: Identify your USB device from the output (example: /dev/sda)
-# You can also list all block devices directly:
+# Step 2: List and identify your USB device from the output (example: /dev/sda)
 ls /dev/sd*
 
-# Step 4: Print detailed information about the detected device (for example, /dev/sda)
+# Step 3: Print detailed information about the detected device (for example, /dev/sda)
 fdisk -l /dev/sda
 
-# Step 5: Mount the specific partition of your USB device (example: /dev/sda1)
+# Step 4: Mount the specific partition of your USB device (example: /dev/sda1)
 # Make sure the filesystem type matches your USB's format (e.g., vfat for FAT32)
 mount -t vfat -o codepage=437,iocharset=utf8 /dev/sda1 /mnt/usb
 
-# Step 6: Verify that the USB device was mounted successfully:
+# Step 5: Verify that the USB device was mounted successfully:
 ls /mnt/usb
+```
+
+
+(Optional) **Run file recovery (assuming you have the image on the USB device)**
+
+```bash
+# Navigate to the USB device folder
+cd /mnt/usb
+
+# Ensure the recovery image is copied to a temporary folder
+mkdir -p /data/tmp
+cp ./Adventurer5M-3.x.x-2.2.3-recovery-full.tgz /data/tmp/
+
+# Switch to the temporary directory
+cd /data/tmp
+
+# Unpack the recovery image (this may take a while)
+tar -xvf Adventurer5M-3.x.x-2.2.3-recovery-full.tgz
+
+# Run the recovery script
+./flashforge_init.sh
+
+# Wait for the recovery process to complete
 ```
 
 6. Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the Support Telegram Group.
