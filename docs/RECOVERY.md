@@ -135,22 +135,21 @@ If this method doesn’t work, don’t lose hope. If the system partially boots,
 
 If the easy method doesn’t work and the system is completely unbootable, you’ll need to restore the firmware using FEL mode. This requires a firmware dump and some additional steps.
 
-1. Enter FEL Mode:
+You can download the necessary files and access the guide from this link: [Firmware Recovery Files and Guide](https://disk.yandex.ru/d/ZBONCfNZEEiDMg).
 
-- You don’t need to solder a button to a resistor. Instead, interrupt the boot process via UART (press Enter when prompted) to enter U-Boot.
-- From U-Boot, run the following command to enter FEL mode:
+#### Steps to Restore Firmware
 
-```
-efex
-```
+1. Enter FEL Mode:   
+   - You don’t need to solder a button to a resistor. Instead, interrupt the boot process via UART (press Enter when prompted) to enter U-Boot.   
+   - From U-Boot, run the following command to enter FEL mode:   
+   ```
+   efex
+   ```
 
-2. Prepare for Recovery:
+2. Prepare for Recovery:   
+   - You’ll need to desolder USB0. This is relatively simple, even for beginners.   
+   - Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
 
-- You’ll need to desolder USB0. This is relatively simple, even for beginners.
-
-- Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
-
-3. Follow the Detailed Guide:
-
-For step-by-step instructions, refer to this resource: [link](https://t.me/FF_5M_5M_Pro/441456/487025).
+3. Follow the Guide
+   - Carefully follow the instructions in the linked guide to complete the recovery process.  
 
