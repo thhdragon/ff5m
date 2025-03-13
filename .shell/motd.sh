@@ -8,7 +8,7 @@
 
 MOD_VERSION=${1-$(cat /opt/config/mod/version.txt)}
 FIRMWARE_VERSION=${2-$(cat /root/version)}
-VERSION_PATCH=${3-$(cat /tmp/version_patch)}
+VERSION_PATCH=${3-$(cat /tmp/version_patch 2> /dev/null || echo "")}
 
 centered() {
     local text="$1"; local width=$2; local offset=${3:-0}
