@@ -23,6 +23,7 @@ class FeatherScreenHelper:
 
         self._last_status_bar = None
         self._last_file_caption = None
+        self._last_print_status = None
         self._last_progress = None
         self._last_left_panel = None
 
@@ -125,6 +126,7 @@ class FeatherScreenHelper:
         ])
 
     def print_status(self, status: str):
+        self._last_print_status = status
         self._send_commands([
             f'--batch fill -p 205 425 -s 390 30 -c 0',
             f'--batch text -p 400 440 -ha center -va middle -c 00f0f0 -f "JetBrainsMono 8pt" -b 0 -t "{status}"'
@@ -145,6 +147,9 @@ class FeatherScreenHelper:
             f'--batch text     -c 00f0f0    -p 620 440 -va middle -b 0 -t "{value}%"'
         ])
 
+        if value == 0 and self._last_print_status:
+            self.print_status(self._last_print_status)
+
     def print_left_panel(self, text: str):
         if self._last_left_panel == text: return
         self._last_left_panel = text
@@ -157,6 +162,7 @@ class FeatherScreenHelper:
     def clear(self):
         self._last_status_bar = None
         self._last_file_caption = None
+        self._last_print_status = None
         self._last_left_panel = None
         self._last_progress = None
         self._send_commands([
@@ -203,6 +209,8 @@ class FeatherScreen:
         self.printer.register_event_handler("klippy:shutdown", self._shutdown)
         self.printer.register_event_handler("klippy:disconnect", self._shutdown)
 
+        self.gcode.register_command("FEATHER_PRINT_STATUS", self.cmd_FEATHER_PRINT_STATUS)
+
     def _init(self):
         self.vcard = self.printer.lookup_object("virtual_sdcard")
         self.params = self.printer.lookup_object("mod_params")
@@ -231,6 +239,12 @@ class FeatherScreen:
             self._toolbar_timer = None
 
         self.feather.stop()
+
+    def cmd_FEATHER_PRINT_STATUS(self, gcmd):
+        status = gcmd.get("S")
+
+        if self.feather:
+            self.feather.print_status(status)
 
     def _change_state(self, new_state: ScreenState, eventtime):
         if self.state == ScreenState.DESTROYED: return

@@ -12,3 +12,6 @@ cmake-build-*
 
 .bin/src/*/bin
 .bin/src/*/Testing
+
+__pycache__
+sql/version

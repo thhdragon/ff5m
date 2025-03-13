@@ -25,6 +25,8 @@ SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 CFG_SCRIPT="$CMDS/zconf.sh"
 VAR_PATH="$MOD_DATA/variables.cfg"
 
+PATH="$BINS:$PATH"
+
 unset LD_PRELOAD
 
 mount_data_partition() {
@@ -53,13 +55,6 @@ init_chroot() {
     mount --rbind /dev $MOD/dev
     mount --bind /run $MOD/run
     mount --bind /tmp $MOD/tmp
-
-    # hwclock
-    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
-
-    # load datetime
-    echo "// Loading last saved time..."
-    chroot $MOD fake-hwclock load
 }
 
 save_array_to_file() {
@@ -90,7 +85,7 @@ load_array_from_file() {
     fi
 }
 
-logged() {
+logged_() {
     local default_log_level="     "
     
     local print=true
@@ -135,6 +130,9 @@ logged() {
             ;;
             --screen-no-followup)
                 screen_followup=false
+            ;;
+            --screen-queue)
+                screen_queue_max="$1"; shift;
             ;;
             --benchmark)
                 benchmark=true
@@ -184,11 +182,14 @@ logged() {
     if $benchmark; then
         last_time=$(awk '{print $1}' < /proc/uptime)
     fi
+
+    local pid=$$
+    local script_name=$(basename "$0")
+
+    trap "kill -INT $pid" INT
     
     while IFS= read -r line; do
         local date_str="$(date '+%Y-%m-%d %H:%M:%S')"
-        local pid=$$
-        local script_name=$(basename "$0")
         local line_number=${BASH_LINENO[0]:-"n/a"}
         local func_name=${FUNCNAME[1]:-global}
         local line_log_level="$default_log_level"
@@ -240,6 +241,8 @@ logged() {
             printf "%s\n" "${line_bench}${log_entry}" >> "$log_file"
         fi
     done
+
+    trap SIGINT
     
     if $send_to_screen && $screen_followup; then
         save_array_to_file messages_queue $SCREEN_FOLLOW_UP_LOG
@@ -262,6 +265,7 @@ logged_help() {
     echo "                             Supported fields: %date%, %level%, %pid%, %func%,"
     echo "                             %line%, %script%, %message%"
     echo "  --send-to-screen           Send messages to the screen, not just log/print."
+    echo "  --screen-queue COUNT       Set screen lines to draw (integer). Default: 5."
     echo "  --screen-level LEVEL       Set screen verbosity level (integer). Default: 1."
     echo "  --screen-no-followup       Disable follow-up messages from other scripts."
     echo "  --benchmark                Enable benchmarking mode."

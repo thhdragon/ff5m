@@ -50,6 +50,7 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/printer.log
     /data/logFiles/moonraker.log
     /data/logFiles/console*.log
+    /data/logFiles/verification*.log
     /root/version
     /data/.mod/.zmod/etc/os-release
 )

@@ -27,6 +27,8 @@ restore() {
     ln -fs /opt/config/mod/.shell/S99root /etc/init.d/
     ln -fs /opt/config/mod/.shell/K99root /etc/init.d/
 
+    ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
+
     sync
     reboot
 }

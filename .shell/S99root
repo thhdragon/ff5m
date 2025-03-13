@@ -42,6 +42,7 @@ start() {
 
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ]; then
         echo "// Done. Loaded for $(awk '{print $1}' < /proc/uptime) sec."
+        echo "// Finishing boot..."
     else
         echo "// Done."
     fi
