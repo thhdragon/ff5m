@@ -18,7 +18,14 @@ Next, connect the UART adapter to the motherboard near the processor (next to US
 </p>
 
 
-Connect the adapter to your PC and open a terminal program (e.g., PuTTY, Arduino IDE, or PlatformIO). Power on the printer and observe the logs. 
+Connect the adapter to your PC and open a terminal program (e.g., PuTTY, Arduino IDE, or PlatformIO). 
+
+At Mac/Linux you can use `screeen`:
+```bash
+screen /dev/<device> 115200
+```
+
+Power on the printer and observe the logs. 
 These logs will help you determine how far the boot process goes. If the Linux kernel loads, the situation isn’t too bad, and you might be able to fix it without advanced procedures.
 
 <p align="center">
