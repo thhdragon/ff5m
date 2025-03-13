@@ -172,8 +172,8 @@ handle_special_boot_flag() {
             rm -f /opt/config/mod/REMOVE_MOD_SOFT
             mount_data_partition
 
-            cp -f /opt/config/mod/.shell/uninstall.sh /opt/uninstall.sh
-            /opt/uninstall.sh --soft
+            cp -f /opt/config/mod/.shell/uninstall.sh /tmp/uninstall.sh
+            /tmp/uninstall.sh --soft
 
             exit 0
             ;;
