@@ -111,7 +111,8 @@ cd /data/tmp
 tar -xvf Adventurer5M-3.x.x-2.2.3-recovery-full.tgz
 
 # 5. Execute the recovery script to begin the recovery process.
-./flashforge_init.sh
+# Note: Ensure the script is invoked using its full path.
+/data/tmp/flashforge_init.sh
 
 # 6. Wait for the recovery process to complete.
 # The script will perform all necessary recovery operations.
