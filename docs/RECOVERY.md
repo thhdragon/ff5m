@@ -68,6 +68,9 @@ mount -o remount,rw /
 
 6. Now, fix whatever changes caused the issue.  
 
+Note that the system isn’t fully booted, so some features may not work.  
+Search online for solutions or ask for help in the Support Telegram Group.
+
 (Optional) **Mount the USB**
 
 ```bash
@@ -113,9 +116,6 @@ tar -xvf Adventurer5M-3.x.x-2.2.3-recovery-full.tgz
 # 6. Wait for the recovery process to complete.
 # The script will perform all necessary recovery operations.
 ```
-
-Note that the system isn’t fully booted, so some features may not work.  
-Search online for solutions or ask for help in the Support Telegram Group.
 
 7. Once you’re done, reboot the system:
 
