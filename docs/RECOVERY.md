@@ -58,12 +58,39 @@ boot
 
 5. If done correctly, you’ll get a shell after the Linux kernel loads. The filesystem will be mounted as read-only, so remount it as read-write:
 
-```
+```bash
 mount -t proc proc /proc
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
 mount -o remount,rw /
 ```
 
-6. Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the community.
+(Optional) Mount the USB
+
+```bash
+# Step 1: Create a mount point
+mkdir -p /mnt/usb
+
+# Step 2: List USB block devices
+lsblk
+
+# Step 3: Identify your USB device from the output (example: /dev/sda)
+# You can also list all block devices directly:
+ls /dev/sd*
+
+# Step 4: Print detailed information about the detected device (for example, /dev/sda)
+fdisk -l /dev/sda
+
+# Step 5: Mount the specific partition of your USB device (example: /dev/sda1)
+# Make sure the filesystem type matches your USB's format (e.g., vfat for FAT32)
+mount -t vfat -o codepage=437,iocharset=utf8 /dev/sda1 /mnt/usb
+
+# Step 6: Verify that the USB device was mounted successfully:
+ls /mnt/usb
+```
+
+6. Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the Support Telegram Group.
 
 7. Once you’re done, reboot the system:
 
