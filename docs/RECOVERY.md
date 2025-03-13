@@ -66,6 +66,8 @@ mount -t devtmpfs none /dev
 mount -o remount,rw /
 ```
 
+6. Now, fix whatever changes caused the issue.  
+
 (Optional) **Mount the USB**
 
 ```bash
@@ -86,30 +88,33 @@ mount -t vfat -o codepage=437,iocharset=utf8 /dev/sda1 /mnt/usb
 ls /mnt/usb
 ```
 
-
-(Optional) **Run file recovery (assuming you have the image on the USB device)**
+(Optional) **Run file recovery using Forge-X recovery image (assuming you have the image on the USB device)**
 
 ```bash
-# Navigate to the USB device folder
+# 1. Navigate to the USB device directory where the recovery image is stored.
 cd /mnt/usb
 
-# Ensure the recovery image is copied to a temporary folder
+# 2. Copy the recovery image to a temporary folder.
+# This example uses Forge-X recovery image.
 mkdir -p /data/tmp
 cp ./Adventurer5M-3.x.x-2.2.3-recovery-full.tgz /data/tmp/
 
-# Switch to the temporary directory
+# 3. Switch to the temporary folder.
 cd /data/tmp
 
-# Unpack the recovery image (this may take a while)
+# 4. Unpack the recovery image.
+# Note: Extraction may take some time depending on the size of the image.
 tar -xvf Adventurer5M-3.x.x-2.2.3-recovery-full.tgz
 
-# Run the recovery script
+# 5. Execute the recovery script to begin the recovery process.
 ./flashforge_init.sh
 
-# Wait for the recovery process to complete
+# 6. Wait for the recovery process to complete.
+# The script will perform all necessary recovery operations.
 ```
 
-6. Now, fix whatever changes caused the issue. Note that the system isn’t fully booted, so some features may not work. Search online for solutions or ask for help in the Support Telegram Group.
+Note that the system isn’t fully booted, so some features may not work.  
+Search online for solutions or ask for help in the Support Telegram Group.
 
 7. Once you’re done, reboot the system:
 
