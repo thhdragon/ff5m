@@ -94,8 +94,9 @@ ls /mnt/usb
 # 1. Navigate to the USB device directory where the recovery image is stored.
 cd /mnt/usb
 
-# 2. Copy the recovery image to a temporary folder.
-# This example uses Forge-X recovery image.
+# 2. Copy the image to a temporary folder.
+# You can flash any other firmware image using this method.
+# For example, here we run the Forge-X Recovery
 mkdir -p /data/tmp
 cp ./Adventurer5M-3.x.x-2.2.3-recovery-full.tgz /data/tmp/
 
