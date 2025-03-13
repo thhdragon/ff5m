@@ -127,7 +127,6 @@ reboot -f
 ```
 
 The system should now boot normally. You can leave the UART connected if needed. If SSH isn’t working, you can log in via UART using the credentials root/root.   
-Note: The stock screen may not boot if the UART is connected. To test the boot process on the stock screen, disconnect the UART from the printer before powering on ther printer.
 
 If this method doesn’t work, don’t lose hope. If the system partially boots, you might still be able to recover files via UART.
 
