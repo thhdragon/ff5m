@@ -117,6 +117,7 @@ init_buildroot() {
     
     mkdir -p $MOD/data
     mkdir -p $MOD/opt/config
+    mkdir -p $MOD/opt/klipper
     mkdir -p $MOD/root/printer_data
     
     mount --bind /data $MOD/data
@@ -374,11 +375,11 @@ rotate_logs() {
     path="$1"
 
     echo "// Rotating logs: $path"
-    mv -f "$path.4"  "$path.5"
-    mv -f "$path.3"  "$path.4"
-    mv -f "$path.2"  "$path.3"
-    mv -f "$path.1"  "$path.2"
-    mv -f "$path"    "$path.1"
+    mv -f "$path.4"  "$path.5" &> /dev/null
+    mv -f "$path.3"  "$path.4" &> /dev/null
+    mv -f "$path.2"  "$path.3" &> /dev/null
+    mv -f "$path.1"  "$path.2" &> /dev/null
+    mv -f "$path"    "$path.1" &> /dev/null
 
     echo "// Created" | logged "$path" --no-print
 }

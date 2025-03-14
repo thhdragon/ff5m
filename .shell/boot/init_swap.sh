@@ -163,7 +163,7 @@ cleanup_mounts() {
     done
 }
 
-swap=$($CFG_SCRIPT  $CFG_PATH --get "use_swap" "OFF")
+swap=$($CFG_SCRIPT  $CFG_PATH --get "use_swap" "MMC")
 echo "SWAP: \"$swap\""
 
 case "$swap" in
