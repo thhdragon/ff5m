@@ -9,6 +9,9 @@
 
 echo "Starting services..."
 
+# Set HOME to /root to ensure git uses the correct .gitconfig
+export HOME=/root
+
 /opt/config/mod/.root/S65moonraker start
 /opt/config/mod/.root/S70httpd start
 /opt/config/mod/.root/S45ntpd start
