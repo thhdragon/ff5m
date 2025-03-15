@@ -156,16 +156,17 @@ You can download the necessary files and access the guide from this link: [Firmw
 
 #### Steps to Restore Firmware
 
-1. Enter FEL Mode:   
+1. Prepare for Recovery:   
+   - You’ll need to desolder USB0. This is relatively simple, even for beginners.   
    - You don’t need to solder a button to a resistor. Instead, interrupt the boot process via UART (press Enter when prompted) to enter U-Boot.   
+   - Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
+
+2. Enter FEL Mode:   
+   - Interrupt the boot process via UART (press Enter when prompted) to enter U-Boot
    - From U-Boot, run the following command to enter FEL mode:   
    ```
    efex
    ```
-
-2. Prepare for Recovery:   
-   - You’ll need to desolder USB0. This is relatively simple, even for beginners.   
-   - Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
 
 3. Follow the Guide
    - Carefully follow the instructions in the linked guide to complete the recovery process.  
