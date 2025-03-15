@@ -6,7 +6,7 @@ If you are still able to flash firmware using USB, you can try running a system 
 This process verifies all system files and restores them if they are corrupted.
 
 > [!NOTE]  
-> This image is intended for mods, as it also restores the files required for the mod's internal functionality to work. It does not affect stock functionality, so it's safe to use on unmodified stock firmware. However, you may need to flash the [uninstall image](/docs/UNINSTALL.md#using-uninstall-image) afterward to completely remove these files.
+> This image is intended for mods, as it also restores the files required for the mod's internal functionality to work. It does not affect stock functionality, so it's safe to use on unmodified stock firmware. However, you may need to flash the [Uninstall image](/docs/UNINSTALL.md#using-uninstall-image) afterward to completely remove these files.
 
 There are two versions of these images:  
 - **Dry Run:** This is the same as the full image but does not restore anything. It only prints information about corrupted files. Additionally, you can read the log created on the USB after uninstalling.  
