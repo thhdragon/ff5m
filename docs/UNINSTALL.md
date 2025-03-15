@@ -26,16 +26,21 @@ Format a USB drive to FAT32 and place an empty file in the root directory:
 
 Insert USB drive and reboot the printer. The mod will uninstall itself during boot.
 
-### Using SSH
+### Using Uninstall Image
 
-Log in via SSH and create an empty file in the **/opt/config/mod** directory using the following command:  
-- `touch /opt/config/mod/REMOVE_MOD` to completely remove the mod.  
-- `touch /opt/config/mod/REMOVE_MOD_SOFT` to remove the mod but preserve the root, audio, and internal mod's configuration (in case you want to install it again).  
- 
-After that, reboot. The mod will uninstall itself.
+This image is meant to restore mod functionality as a last resort; consider using other methods instead.  
+You can find the image here: [link](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-ForgeX-uninstall.tgz).
+
+1. Format a USB drive to FAT32 and place the Uninstall Image in the root directory (as you do when installing the mod).  
+2. Insert the USB drive and reboot the printer. The mod will be uninstalled (this also removes the ZMod files).  
+3. When the process is finished, a message will be displayed on the screen. You will also find a log file in your USB drive with information about the uninstallation.
+
+> [!NOTE]  
+> Uninstalling the mod will revert the configuration to stock settings, removing all custom configurations and settings. If you want to save your data, consider an alternative method for uninstalling the mod.  
 
 ## Flashing Factory Firmware  
 If you encounter uninstallation issues or firmware not working correctly after removing the mod, you **can** try to restore it by flashing the factory firmware.  
+It's **recommended** to flash the uninstall image first, to ensure there are no mod files left on the printer.
 
 1. Download the Factory Image:   
    Make sure to select the correct version for your printer (Pro or Non-Pro) based on your specific model. You can access the factory firmware here:  
@@ -54,4 +59,4 @@ If you encounter uninstallation issues or firmware not working correctly after r
 6. Your printer's firmware should be restored to the stock version.  
 7. Don't forget to review the settings (or reset them using the Screen) and recalibrate the printer if you are planning to use the stock firmware.  
 
-In **hard** cases, join the [Telegram group](https://t.me/+ihE2Ry8kBNkwYzhi) to get help or refer to the [Recovery Guide](/docs/RECOVERY.md).  
+In **hard** cases, refer to the [Recovery Guide](/docs/RECOVERY.md) or join the [Telegram group](https://t.me/+ihE2Ry8kBNkwYzhi) to get help.  
