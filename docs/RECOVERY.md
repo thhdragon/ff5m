@@ -1,4 +1,22 @@
-## Firmware Recovery Guide
+# Firmware Recovery Guide
+
+## Recovery Using Flashing Image
+
+If you are still able to flash firmware using USB, you can try running a system file integrity check.  
+This process verifies all system files and restores them if they are corrupted.
+
+> [!NOTE]  
+> This image is intended for mods, as it also restores the files required for the mod's internal functionality to work. It does not affect stock functionality, so it's safe to use on unmodified stock firmware. However, you may need to flash the [uninstall image](/docs/UNINSTALL.md#using-uninstall-image) afterward to completely remove these files.
+
+There are two versions of these images:  
+- **Dry Run:** This is the same as the full image but does not restore anything. It only prints information about corrupted files. Additionally, you can read the log created on the USB after uninstalling.  
+- **Full Recovery:** This contains a full system data backup and restores corrupted files from it.
+
+If recovery doesn't work, try flashing the [Uninstall image](/docs/UNINSTALL.md#using-uninstall-image), and then the [Factory image](/docs/UNINSTALL.md#flashing-factory-firmware).  
+In most cases, this should restore your printer's functionality.
+
+
+## Recovery using UART
 
 If you’ve modified internal system files and something went wrong—your printer no longer responds to a USB drive (you can’t flash the Factory firmware), and it doesn’t progress past the boot screen—don’t worry. This is fixable, and it doesn’t require advanced skills. Let’s start by diagnosing the issue.
 
@@ -34,7 +52,7 @@ These logs will help you determine how far the boot process goes. If the Linux k
 <p align="center">Pic 2. Connection of the adapter (Wemos D1 Mini) UART</p>
 </p>
 
-### The Easy Way
+### Recovery using UBoot
 
 If the Linux kernel loads but the system fails to boot due to your modifications, you can try rolling back those changes. Here’s how:
 1. Connect to the printer via UART as described above.
@@ -130,7 +148,7 @@ The system should now boot normally. You can leave the UART connected if needed.
 
 If this method doesn’t work, don’t lose hope. If the system partially boots, you might still be able to recover files via UART.
 
-### The Hard Way
+### Recovery using FEL
 
 If the easy method doesn’t work and the system is completely unbootable, you’ll need to restore the firmware using FEL mode. This requires a firmware dump and some additional steps.
 
