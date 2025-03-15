@@ -16,11 +16,6 @@ To boot into the Forge-X mod, simply insert a USB drive containing the file `kli
 
 ---
 
-### Why am I not seeing a confirmation of the ZMod installation?
-
-The ZMod installation process no longer waits for a confirmation screen. After installation, the system will reboot automatically after 10 seconds and delete the firmware image file from the USB drive.
-
----
 
 ### Why can't I SSH into the printer after installing the mod?
 
@@ -35,7 +30,7 @@ Remove the entry using Regedit (for PuTTY):
 **On Linux/macOS:**  
 Edit the file located at `~/.ssh/known_hosts` and delete the line corresponding to your printer's IP.
 
-Once removed, you should be able to reconnect via SSH. Forge-X (and ZMod) use the default credentials: `root/root`.
+Once removed, you should be able to reconnect via SSH. Forge-X use the default credentials: `root/root`.
 
 ---
 
@@ -181,12 +176,16 @@ To avoid this issue, you can downgrade the stock firmware to version `2.7.*`, as
 
 ### My printer is stuck on the screen with a black-and-white Flashforge logo. How can I fix it?
 
-If you encounter this issue, something may be preventing your printer from booting at all.  
+If you encounter this issue, something may be preventing your printer from booting properly.  
 This is not a mod-related issue, as the mod only loads after the printer begins booting and displays its own splash screen.
 
-The problem could be hardware- or software-related. Contact FlashForge support, but do not mention any mods you may have installed, as doing so will likely void your warranty.
+The problem could be hardware- or software-related.
 
-You can try flashing the factory firmware image to resolve this. Refer to this [instruction guide](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#flashing-factory-firmware).
+You can try flashing the [Factory image](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#flashing-factory-firmware) to resolve this.  
+If it doesn't work, try flashing the [Recovery image](/docs/RECOVERY.md#recovery-using-flashing-image), [Uninstall image](/docs/UNINSTALL.md#using-uninstall-image), and then the [Factory image](/docs/UNINSTALL.md#flashing-factory-firmware).  
+Also, refer to the [Recovery Guide](/docs/RECOVERY.md) — there are plenty of ways to restore your printer's functionality.
+
+If nothing works or if this happens periodically, it is more likely a hardware issue. Contact FlashForge support if the steps fail, but do not mention any mods or recovery images you may have flashed (as they are not relevant to them anyway), since doing so will likely void your warranty.
 
 ---
 
