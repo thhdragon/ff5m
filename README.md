@@ -37,7 +37,7 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 - Easy **Bed Level Screw Tuning**.
 - Customized dedicated Linux environment based on **Buildroot**
 - **Entware** package manager for additional software installation
-- **Dual boot** with stock Flashforge software
+- **Dual boot** with stock Flashforge software or Klipper Mod
 
 ## Get Started
 
