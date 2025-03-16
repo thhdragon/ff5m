@@ -97,7 +97,15 @@ For more information, refer to the [Printing Page](https://github.com/DrA1ex/ff5
 - **Weight cell calibration issues**: If you manually leveled the bed, it might require recalibration.  
 - **Hardware problems**: Printer-related hardware issues may also cause this error.  
 
-#### To resolve the issue temporarily:
+
+#### Resolving the Issue by Calibrating the Load Cell  
+
+To resolve the issue, recalibrate the load cell by following Flashforge's support instructions. You can access the detailed guide via the following [link](https://docs.google.com/document/d/1Oou4A56g5HTrxBAMoH-bTnTZZ3IZyGr_3jL9tUYYiow/edit?usp=drivesdk).
+
+You may need to calibrate the weight cell at the typical temperature you are using during printing (e.g., 70ºC).
+
+#### Temporarily Disabling the Check  
+
 You can either increase the threshold or disable the weight check feature using these commands:
 
 ```bash
@@ -226,3 +234,36 @@ If the mod doesn’t load at all, refer to [this instruction](https://github.com
 If this happens, something has gone seriously wrong. Don’t worry—there’s still a way to unbrick your printer.  
 Refer to the [recovery guide](/docs/RECOVERY.md) for detailed instructions on how to restore your printer.
 
+
+### Shaper Calibration Stops with Error "MCU 'mcu' Shutdown: Timer Too Close"
+
+This error may occur due to memory limitations or overheating issues on your printer. Here's how you can troubleshoot and resolve it:
+
+#### **1. Memory Issues**
+- To check the memory usage, run the `MEM` macro in your printer firmware.  
+- High memory consumption is often caused by the camera functionality.  
+  - Consider switching to an alternative [Camera Implementation](/docs/CAMERA.md) that uses fewer resources.
+
+#### **2. Overheating Issues**
+- Inspect the driver fan located on the motherboard to ensure it's functioning properly:  
+  - Remove the printer’s back plate by unscrewing it.  
+  - Verify that the fan is operational and not obstructed.  
+
+Both of these issues can halt the calibration process, so addressing memory or cooling problems should resolve the error.
+
+---
+
+
+#### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
+
+Yes, it will work. The stock screen interacts with Klipper directly, so anything you do with Klipper will also be reflected in both the stock firmware and the mod.
+
+The key difference is that the mod allows you to set the temperature for calibration, a feature not available on the stock screen.
+
+---
+
+#### Unable to Access Stock Debug Console for Load Cell Calibration
+
+If you're having trouble, try pressing the console button using a stylus or a thin object. This may resolve the issue.
+
+---
