@@ -96,6 +96,17 @@ class GitDeploy(AppDeploy):
         self.cmd_helper.notify_update_response(
             f"Updating Application {self.name}...")
         dep_info = await self._collect_dependency_info()
+
+        try:
+            if self.managed_services:
+                machine = self.server.lookup_component("machine")
+                await machine.do_service_action("verify", self.managed_services[0])
+        except:
+            self.notify_status("Verification step failed!")
+            raise
+
+        self.notify_status("Verification step passed.")
+
         await self._pull_repo()
         # Check Semantic Versions
         await self._update_dependencies(dep_info)

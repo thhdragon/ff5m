@@ -6,26 +6,39 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-SKIP_REBOOT_F="/tmp/zmod_skip_reboot"
+
+set -x
+
+SKIP_REBOOT_F="/tmp/mod_skip_reboot"
+
+message() {
+    local text="$1"
+    local prefix="${2:-"info"}"
+    
+    echo "RESPOND PREFIX='$prefix' MSG='$text'" > /tmp/printer
+}
+
+command() {
+    local value="$1"
+    
+    echo "RESPOND TYPE=command MSG='$value'" > /tmp/printer
+}
 
 restart() {
     echo "Received restart signal."
-
     
     # Mount rootfs
     mkdir -p /_root
     mount /dev/mmcblk0p6 /_root
-
+    
     # Make sure boot scripts at it's place
     rm -f /_root/etc/init.d/S00fix
     ln -s /opt/config/mod/.shell/S00init /_root/etc/init.d/S00init
-
+    
     umount /_root
-
+    
     if [ -f "$SKIP_REBOOT_F" ]; then
-        echo "Skip."
-        rm -f $SKIP_REBOOT_F
-        
+        echo "Skip reboot because of skip flag."
         exit 0
     fi
     
@@ -34,12 +47,38 @@ restart() {
 }
 
 case "$1" in
+    verify)
+        GIT_BRANCH=$(git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+        VERSION="$(cat /opt/config/mod/version.txt)"
+        NEW_VERSION=$(curl --location 'https://api.github.com/repos/dra1ex/ff5m/contents/version.txt?ref='"$GIT_BRANCH" \
+             --header 'Accept: application/vnd.github.raw+json')
+        
+        if [ -z "$NEW_VERSION" ]; then
+            echo "Unable to get the new version"
+            exit 1
+        fi
+        
+        if [ "${VERSION%.*}" != "${NEW_VERSION%.*}" ]; then
+            message "This version cannot be updated via OTA." "!!"
+            message "Please update your firmware by downloading the latest image from the Releases page." "!!"
+            message "Visit: https://github.com/drA1ex/ff5m/releases" "!!"
+
+            command "action:prompt_begin OTA Update"
+            command "action:prompt_text This version cannot be updated via OTA."
+            command "action:prompt_text Please update your firmware by downloading the latest image from the Releases page."
+            command "action:prompt_text Visit: https://github.com/drA1ex/ff5m/releases"
+            command "action:prompt_end"
+            command "action:prompt_show"
+            
+            exit 1
+        fi
+    ;;
     restart)
-        restart
+        mv /data/logFiles/service.log.1 /data/logFiles/service.log.2 &> /dev/null
+        mv /data/logFiles/service.log /data/logFiles/service.log.1 &> /dev/null
+        restart 2>&1 | tee /data/logFiles/service.log
     ;;
     *)
         echo "Usage: $0 (restart)}"
         exit 1
 esac
-
-exit 0

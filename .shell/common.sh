@@ -25,6 +25,9 @@ SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 CFG_SCRIPT="$CMDS/zconf.sh"
 VAR_PATH="$MOD_DATA/variables.cfg"
 
+FLASHED_VERSION_F="$MOD"/version.txt
+VERSION_F=/opt/config/mod/version.txt
+
 PATH="$BINS:$PATH"
 
 unset LD_PRELOAD
@@ -55,6 +58,19 @@ init_chroot() {
     mount --rbind /dev $MOD/dev
     mount --bind /run $MOD/run
     mount --bind /tmp $MOD/tmp
+}
+
+message() {
+    local text="$1"
+    local prefix="${2:-"info"}"
+    
+    echo "RESPOND PREFIX='$prefix' MSG='$text'" > /tmp/printer
+}
+
+command() {
+    local value="$1"
+    
+    echo "RESPOND TYPE=command MSG='$value'" > /tmp/printer
 }
 
 save_array_to_file() {

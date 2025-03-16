@@ -47,10 +47,11 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/ssh.log*
     /data/logFiles/wifi.log*
     /data/logFiles/mod/*.log*
+    /data/logFiles/service.log*
+    /data/logFiles/verification.log*
     /data/logFiles/printer.log
     /data/logFiles/moonraker.log
     /data/logFiles/console*.log
-    /data/logFiles/verification*.log
     /root/version
     /data/.mod/.zmod/etc/os-release
 )

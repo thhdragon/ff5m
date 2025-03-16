@@ -1620,7 +1620,7 @@ class SimpleProvider(BaseProvider):
     ) -> None:
         path = os.path.join(self.script_path, service_name)
         cmd = f"{path} {action}"
-        return await self.shell_cmd.exec_cmd(cmd, timeout=self.script_timeout)
+        await self.shell_cmd.exec_cmd(cmd, timeout=self.script_timeout)
 
 
 # Install validation

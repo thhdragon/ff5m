@@ -63,13 +63,12 @@ initialize() {
     echo "// Update version..."
     
     # version
-    # TODO: Handle case when freshly installed from binary file    
     GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
     GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
     GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
     
     FIRMWARE_VERSION=$(cat /root/version)
-    MOD_VERSION=$(cat /opt/config/mod/version.txt)
+    MOD_VERSION=$(cat "$VERSION_F")
     PATCH_VERSION="$GIT_BRANCH-$GIT_COMMIT_ID @ $GIT_COMMIT_DATE"
 
     if [ -f /opt/config/mod/patch.txt ]; then
@@ -78,10 +77,23 @@ initialize() {
         echo "$GIT_BRANCH-$GIT_COMMIT_ID" > /tmp/version_patch
     fi
     
-    chroot $MOD /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+    chroot "$MOD" /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
 
     # Print version onto the screen
     "$SCRIPTS/screen.sh" draw_loading --no-clear
+
+    # Check core version and ota version compatibility
+    if ! "$CMDS"/zversion.sh test; then
+        echo "@@ Current version is not compatible with flashed core version."
+        echo "@@ Flash firmware via USB."
+
+        echo "// It's safe to power off the printer now."
+        echo "// Boot will continue in 30 seconds..."
+
+        "$PY"/tone.py 440:70 140 349:70 140 262:140
+
+        sleep 30
+    fi
 
     echo "// Apply klipper patches..."
     apply_klipper_patches
