@@ -32,6 +32,10 @@ All of these macros are available in the Fluidd/Mainsail main screen in the sect
 
 You can read more about Klipper calibration in the Klipper documentation: [https://www.klipper3d.org/](https://www.klipper3d.org/)
 
+> [!NOTE]  
+> You can't use the standard Klipper macro for calibration, since AD5M uses non-standard features, which need special preparation steps, and the default macro will not work as expected.  
+> For example: the standard Klipper macro `BED_MESH_CALIBRATE` doesn’t perform the weight sensor reset, as it’s a non-standard step specific to AD5M, which may lead to weight exceed warnings or incorrect bed meshing altogether.
+
 
 ## Bed Collision Protection
 
