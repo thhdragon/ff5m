@@ -12,6 +12,26 @@ For detailed instructions on configuring your slicer, refer to the [Slicing](../
 > [!WARNING]
 > After installing the mod, some printer parameters may revert to stock or change. This can affect settings like Z-Offset and Mesh Bed Leveling. It is **strongly recommended** to review and recalibrate these settings to avoid potential damage.
 
+## Calibration
+
+To calibrate the printer, use only these macros (or the Stock screen).  
+All of these macros are available in the Fluidd/Mainsail main screen in the section **Calibration**:
+
+- `AUTO_FULL_BED_LEVEL`: Bed meshing.  
+  - `EXTRUDER_TEMP` temperature of the nozzle (default `240`)  
+  - `BED_TEMP` temperature of the bed (default `80`)  
+  - `PROFILE` profile to save (default `auto`)  
+
+- `PID_TUNE_BED`: Bed PID calibration.  
+  - `TEMPERATURE` temperature of the bed (default `80`)  
+
+- `PID_TUNE_EXTRUDER`: Extruder PID calibration.  
+  - `TEMPERATURE` temperature of the nozzle (default `245`)  
+
+- `ZSHAPER`: Shaper calibration  
+
+You can read more about Klipper calibration in the Klipper documentation: [https://www.klipper3d.org/](https://www.klipper3d.org/)
+
 
 ## Bed Collision Protection
 
