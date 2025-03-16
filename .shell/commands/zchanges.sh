@@ -20,7 +20,7 @@ fi
 
 message() {
     local text="$1"
-    local prefix="${2-"info"}"
+    local prefix="${2:-"info"}"
     
     echo "RESPOND PREFIX='$prefix' MSG='$text'" > /tmp/printer
 }
@@ -28,7 +28,7 @@ message() {
 command() {
     local value="$1"
     
-    RESPOND "TYPE=command MSG='$value'" > /tmp/printer
+    echo "RESPOND TYPE=command MSG='$value'" > /tmp/printer
 }
 
 case "$key" in
@@ -55,9 +55,9 @@ case "$key" in
             ss -tuln | grep -q ":8080"; STREAM_ACTIVE=$(( $? == 0 ))
             [ -f "$cam_pid_file" ] && kill -0 "$(cat $cam_pid_file)" 2>/dev/null; STREAM_ACTIVE=$(( $? == 0 ))
             
-            if (( STREAM_ACTIVE && !STREAM_ACTIVE )); then
+            if [ "$STREAM_ACTIVE" -eq 1 ]; then
                 command "action:prompt_begin Camera"
-                command "action:prompt_text Camera already in use! Turn it off on the printer's screen settings and try again!"
+                command 'action:prompt_text The camera is currently in use! Disable it in the Stock Screen settings and try again.'
                 command "action:prompt_end"
                 command "action:prompt_show"
                 
