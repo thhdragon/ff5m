@@ -18,19 +18,6 @@ if [ -z "$key" ]; then
     exit 1
 fi
 
-message() {
-    local text="$1"
-    local prefix="${2:-"info"}"
-    
-    echo "RESPOND PREFIX='$prefix' MSG='$text'" > /tmp/printer
-}
-
-command() {
-    local value="$1"
-    
-    echo "RESPOND TYPE=command MSG='$value'" > /tmp/printer
-}
-
 case "$key" in
     display_off)
         if [ "$value" -eq 1 ]; then

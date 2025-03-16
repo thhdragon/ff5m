@@ -60,15 +60,13 @@ case "$1" in
         
         if [ "${VERSION%.*}" != "${NEW_VERSION%.*}" ]; then
             message "This version cannot be updated via OTA." "!!"
-            message "Please visit the Releases page to download the Firmware Image." "!!"
-            message "You can then flash the firmware using a USB Drive." "!!"
-            message "Releases Link: https://github.com/drA1ex/ff5m/releases" "!!"
+            message "Please update your firmware by downloading the latest image from the Releases page." "!!"
+            message "Visit: https://github.com/drA1ex/ff5m/releases" "!!"
 
             command "action:prompt_begin OTA Update"
-            command "action:prompt_text This version cannot be updated via OTA." 
-            command "action:prompt_text Please visit the Releases page to download the Firmware Image." 
-            command "action:prompt_text You can then flash the firmware using a USB Drive." 
-            command "action:prompt_text Releases Link: https://github.com/drA1ex/ff5m/releases" 
+            command "action:prompt_text This version cannot be updated via OTA."
+            command "action:prompt_text Please update your firmware by downloading the latest image from the Releases page."
+            command "action:prompt_text Visit: https://github.com/drA1ex/ff5m/releases"
             command "action:prompt_end"
             command "action:prompt_show"
             
