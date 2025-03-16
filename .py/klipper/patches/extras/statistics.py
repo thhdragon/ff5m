@@ -55,10 +55,8 @@ class PrinterStats:
         self.disabled = config.getboolean("disabled", False)
         reactor = self.printer.get_reactor()
         self.stats_cb = []
-        if not self.disabled:
-            self.stats_timer = reactor.register_timer(self.generate_stats)
-            self.printer.register_event_handler("klippy:ready", self.handle_ready)
-
+        self.stats_timer = reactor.register_timer(self.generate_stats)
+        self.printer.register_event_handler("klippy:ready", self.handle_ready)
     def handle_ready(self):
         self.stats_cb = [o.stats for n, o in self.printer.lookup_objects()
                          if hasattr(o, 'stats')]
@@ -66,10 +64,13 @@ class PrinterStats:
             reactor = self.printer.get_reactor()
             reactor.update_timer(self.stats_timer, reactor.NOW)
     def generate_stats(self, eventtime):
+        # We should call actual callbacks, otherwise data will be queued untill overflow
         stats = [cb(eventtime) for cb in self.stats_cb]
-        if max([s[0] for s in stats]):
-            logging.info("Stats %.1f: %s", eventtime,
-                         ' '.join([s[1] for s in stats]))
+
+        if not self.disabled:
+            if max([s[0] for s in stats]):
+                logging.info("Stats %.1f: %s", eventtime,' '.join([s[1] for s in stats]))
+
         return eventtime + 1.
 
 def load_config(config):
