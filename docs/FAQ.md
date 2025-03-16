@@ -1,5 +1,11 @@
 # Frequently Asked Questions
 
+To quickly find answers, use the GitHub navigation button at the top-right corner (as shown in the image below).
+
+<p align="center"> <img width="250" src="https://github.com/user-attachments/assets/b9d8e8bd-fcb2-4d9c-afaf-c75306573c55"> </p>
+
+---
+
 ### Do I need to uninstall the earlier Klipper mod before installing the new mod?
 
 It is recommended to uninstall the earlier Klipper mod before installing the new mod. However, the two mods can work together in a dual-boot setup.
