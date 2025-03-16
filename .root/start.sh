@@ -1,6 +1,6 @@
 #!/bin/sh
 
-## Starting zmod services
+## Starting forge-x services
 ##
 ## Copyright (C) 2025, Alexander K <https://github.com/drA1ex>
 ## Copyright (C) 2025, Sergei Rozhkov <https://github.com/ghzserg>
