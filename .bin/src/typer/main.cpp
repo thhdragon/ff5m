@@ -5,14 +5,15 @@
 // This file may be distributed under the terms of the GNU GPLv3 license
 
 #include <algorithm>
+#include <csignal>
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <ranges>
 #include <string>
 #include <unistd.h>
 #include <vector>
-#include <map>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -21,36 +22,36 @@
 #include "../common/text.h"
 
 
-#include "../common/fonts/JetBrainsMono8ptb4.h"
 #include "../common/fonts/JetBrainsMono12pt.h"
 #include "../common/fonts/JetBrainsMono16pt.h"
 #include "../common/fonts/JetBrainsMono20pt.h"
 #include "../common/fonts/JetBrainsMono28pt.h"
-#include "../common/fonts/JetBrainsMonoBold8ptb4.h"
+#include "../common/fonts/JetBrainsMono8ptb4.h"
 #include "../common/fonts/JetBrainsMonoBold12pt.h"
 #include "../common/fonts/JetBrainsMonoBold16pt.h"
 #include "../common/fonts/JetBrainsMonoBold20pt.h"
 #include "../common/fonts/JetBrainsMonoBold28pt.h"
-#include "../common/fonts/JetBrainsMonoThin8ptb4.h"
+#include "../common/fonts/JetBrainsMonoBold8ptb4.h"
 #include "../common/fonts/JetBrainsMonoThin12ptb4.h"
 #include "../common/fonts/JetBrainsMonoThin16ptb2.h"
 #include "../common/fonts/JetBrainsMonoThin20ptb2.h"
 #include "../common/fonts/JetBrainsMonoThin28ptb2.h"
-#include "../common/fonts/Roboto8ptb4.h"
+#include "../common/fonts/JetBrainsMonoThin8ptb4.h"
 #include "../common/fonts/Roboto12pt.h"
 #include "../common/fonts/Roboto16pt.h"
 #include "../common/fonts/Roboto20pt.h"
 #include "../common/fonts/Roboto28pt.h"
-#include "../common/fonts/RobotoBold8ptb4.h"
+#include "../common/fonts/Roboto8ptb4.h"
 #include "../common/fonts/RobotoBold12pt.h"
 #include "../common/fonts/RobotoBold16pt.h"
 #include "../common/fonts/RobotoBold20pt.h"
 #include "../common/fonts/RobotoBold28pt.h"
-#include "../common/fonts/RobotoThin8ptb4.h"
+#include "../common/fonts/RobotoBold8ptb4.h"
 #include "../common/fonts/RobotoThin12ptb4.h"
 #include "../common/fonts/RobotoThin16ptb2.h"
 #include "../common/fonts/RobotoThin20ptb2.h"
 #include "../common/fonts/RobotoThin28ptb2.h"
+#include "../common/fonts/RobotoThin8ptb4.h"
 #include "../common/fonts/Typicons12ptb2.h"
 #include "../common/fonts/Typicons16ptb2.h"
 #include "../common/fonts/Typicons28ptb2.h"
@@ -60,6 +61,12 @@
 #define HEIGHT 480
 
 bool DEBUG = false;
+
+volatile sig_atomic_t TERMINATED = false;
+void terminate_handler(int) {
+    std::cerr << "Terminating..." << std::endl;
+    TERMINATED = true;
+}
 
 std::map<std::string, const Font *> fonts{
     {Roboto8ptb4.name, &Roboto8ptb4},
@@ -430,6 +437,8 @@ size_t read_char(int fd, char &out, size_t timeout_usec = 1000000) {
 
     size_t elapsed = 0;
     while (!read(fd, &out, 1)) {
+        if (TERMINATED) return 0;
+
         usleep(delay);
         elapsed += delay;
 
@@ -501,7 +510,9 @@ size_t read_token(int fd, std::string &acc) {
             bytesRead += 1;
             acc += ch;
         } else if (bytesRead > 0) {
-            std::cout << "Token end: " << std::hex << (int) ch << std::dec << std::endl;
+            if (DEBUG) {
+                std::cout << "Token end: " << std::hex << (int) ch << std::dec << std::endl;
+            }
             break;
         }
     }
@@ -568,11 +579,15 @@ void process_pipe_batches(TextDrawer &drawer, const std::string &pipe) {
         return;
     }
 
+    signal(SIGTERM, terminate_handler);
+    signal(SIGINT, terminate_handler);
+
+
     std::cout << "Reading named pipe: " << pipe << std::endl;
 
     bool has_next_batch = false;
     std::vector<std::string> tokens;
-    while (true) {
+    while (!TERMINATED) {
         auto count = read_pipe(pipeFd, tokens, has_next_batch);
         if (count > 0) {
             std::cout << "Process batch..." << std::endl;
@@ -588,7 +603,13 @@ void process_pipe_batches(TextDrawer &drawer, const std::string &pipe) {
             drawer.flush();
         }
     }
+
+    close(pipeFd);
+    unlink(pipe.c_str());
+
+    exit(SIGTERM);
 }
+
 
 int main(int argc, char *argv[]) {
     auto main = build_parser();
