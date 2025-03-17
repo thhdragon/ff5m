@@ -320,7 +320,7 @@ class FeatherScreen:
             self.feather.print_left_panel(self._get_time_estimation_str(eventtime))
 
         if self.debug:
-            logging.info(f"[feather_screen] Loop time: {time.time() - t:0.3f}")
+            logging.info(f"[feather_screen] Loop time: {time.time() - t:0.4f}")
 
         return eventtime + REFRESH_TIME
 
