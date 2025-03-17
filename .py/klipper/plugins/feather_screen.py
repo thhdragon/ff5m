@@ -6,7 +6,7 @@
 
 import enum
 import logging
-import os.path
+import os
 import subprocess
 import time
 from typing import List
@@ -19,7 +19,7 @@ class FeatherScreenHelper:
     def __init__(self, debug=False):
         self.debug = debug
         self._process = None
-        self._pipe = None
+        self._pipe_fd = None
 
         self._last_status_bar = None
         self._last_file_caption = None
@@ -29,6 +29,10 @@ class FeatherScreenHelper:
 
     def start(self):
         os.system("killall typer")
+
+        # Create FIFO before starting to guarantee obtaining the file descriptor
+        if not os.path.exists(PIPE_NAME):
+            os.mkfifo(PIPE_NAME, 0o666)
 
         self._process = subprocess.Popen(
             [
@@ -41,14 +45,14 @@ class FeatherScreenHelper:
             stderr=subprocess.STDOUT
         )
 
-        self._pipe = open(PIPE_NAME, "w")
+        self._pipe_fd = os.open(PIPE_NAME, os.O_WRONLY)
 
     def stop(self):
         if self._process:
-            self._pipe.close()
+            os.close(self._pipe_fd)
             self._process.terminate()
             self._process = None
-            self._pipe = None
+            self._pipe_fd = None
 
     icon_extruder = '\ue119'
     icon_bed = '\ue003'
@@ -170,15 +174,13 @@ class FeatherScreenHelper:
         ])
 
     def _send_commands(self, commands: List[str]):
-        if not self._pipe: return
+        if not self._pipe_fd: return
 
-        self._pipe.write('\n'.join([
+        os.write(self._pipe_fd, '\n'.join([
             *commands,
             "--batch flush",
             "--end\n",
-        ]))
-
-        self._pipe.flush()
+        ]).encode())
 
 
 class ScreenState(enum.Enum):
