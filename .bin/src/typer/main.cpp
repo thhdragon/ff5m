@@ -14,6 +14,7 @@
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -579,9 +580,14 @@ void process_pipe_batches(TextDrawer &drawer, const std::string &pipe) {
         return;
     }
 
+    if (flock(pipeFd, LOCK_EX | LOCK_NB) == -1) {
+        std::cerr << "Pipe already in use: " << pipe << std::endl;
+        close(pipeFd);
+        return;
+    }
+
     signal(SIGTERM, terminate_handler);
     signal(SIGINT, terminate_handler);
-
 
     std::cout << "Reading named pipe: " << pipe << std::endl;
 
