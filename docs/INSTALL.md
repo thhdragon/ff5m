@@ -24,12 +24,10 @@ The mod uses the same installation mechanism as the stock firmware:
 3) Insert the USB flash drive into the printer before powering it on.  
 4) The printer will automatically install the update. After the installation is finished, you will see a message at the end of the screen.  
 5) Eject the USB drive and reboot the printer.  
-6) Once the installation is complete, you can verify it by accessing `Fluidd` at `http://PRINTER_IP`.
 
 **Note**: The mod installer currently requires the printer to be updated to at least version **2.6.5** of the stock Flashforge firmware.  
-After installation, the printer will boot into the modified stock system by default.
+After installation, the printer will boot into the modified firmware by default.
 
-Finally, reboot your printer. The mod should now be installed.  
 From this point onward, you will receive OTA updates from this repository.
 
 You can reach services using these addresses:  
