@@ -36,7 +36,7 @@ Download the appropriate image for your printer model:
 
 Next, you can proceed to flash the uninstall image:
 1. Format a USB drive to FAT32 and place the Uninstall Image in the root directory (as you do when installing the mod).  
-2. Insert the USB drive and reboot the printer. The mod will be uninstalled (this also removes the ZMod files).  
+2. Insert the USB drive and reboot the printer. The mod will be uninstalled (this also removes the ZMod files, but it's a last-resort measure. It's better to use the ZMod uninstallation macro instead).  
 3. When the process is finished, a message will be displayed on the screen. You will also find a log file in your USB drive with information about the uninstallation.
 
 > [!NOTE]  
