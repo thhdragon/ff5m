@@ -13,6 +13,9 @@ restore() {
     rm -f /etc/init.d/prepare.sh
     rm -f /etc/init.d/S99camera
 
+    rm -f /opt/klipper/klippy/extras/zmod.py
+    rm -f /opt/klipper/klippy/extras/zmod_color.py
+
     mv /opt/config/mod_data/camera.cfg /opt/config/mod_data/camera.cfg.old
     mv /opt/config/mod_data/ssh.cfg /opt/config/mod_data/ssh.cfg.old
     mv /opt/config/mod_data/web.cfg /opt/config/mod_data/web.cfg.old

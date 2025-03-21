@@ -22,7 +22,7 @@ revert_klipper_patches() {
         
         rm -f "$TARGET_DIR/extras/$rel_file"
         
-        echo "!! Removed \"$rel_file\""
+        echo "?? Removed \"$rel_file\""
     done
     
     # Klipper patches
@@ -32,7 +32,7 @@ revert_klipper_patches() {
         
         if [ -f "$target.bak" ]; then
             mv -f "$target.bak" "$target"
-            echo "!! Restored \"$target\""
+            echo "?? Restored \"$target\""
         fi
     done
 }
