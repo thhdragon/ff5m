@@ -11,6 +11,7 @@ set -x
 restore() {
     rm -f /etc/init.d/S00fix
     rm -f /etc/init.d/prepare.sh
+    rm -f /etc/init.d/S99camera
 
     mv /opt/config/mod_data/camera.cfg /opt/config/mod_data/camera.cfg.old
     mv /opt/config/mod_data/ssh.cfg /opt/config/mod_data/ssh.cfg.old
