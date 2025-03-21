@@ -9,6 +9,11 @@
 source /opt/config/mod/.shell/common.sh
 
 test() {
+    if [ -f "$MOD"/ZMOD ]; then
+        echo "Found core version from ZMod!"
+        return 1
+    fi
+    
     if [ ! -f "$FLASHED_VERSION_F" ]; then
         echo "Core version is missing!"
         return 1

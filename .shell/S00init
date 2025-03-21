@@ -83,9 +83,10 @@ initialize() {
     "$SCRIPTS/screen.sh" draw_loading --no-clear
 
     # Check core version and ota version compatibility
-    if ! "$CMDS"/zversion.sh test; then
+    if ! MSG=$("$CMDS"/zversion.sh test); then
         echo "@@ Current version is not compatible with flashed core version."
         echo "@@ Flash firmware via USB."
+        echo "@@ $MSG"
 
         echo "// It's safe to power off the printer now."
         echo "// Boot will continue in 30 seconds..."
