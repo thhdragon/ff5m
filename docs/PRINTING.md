@@ -36,6 +36,17 @@ You can read more about Klipper calibration in the Klipper documentation: [https
 > You can't use the standard Klipper macro for calibration, since AD5M uses non-standard features, which need special preparation steps, and the default macro will not work as expected.  
 > For example: the standard Klipper macro `BED_MESH_CALIBRATE` doesn’t perform the weight sensor reset, as it’s a non-standard step specific to AD5M, which may lead to weight exceed warnings or incorrect bed meshing altogether.
 
+## Bed Mesh
+
+The printer uses different bed meshes depending on the scenario:
+
+- When using the Stock UI, the firmware will load the `MESH_DATA` profile.
+- When using the Feather Screen, the mod will load the `default` profile.
+- When using the option to [force leveling](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#parameters), the mod will save the mesh to the `auto` profile. After the print is completed, the profile will be deleted.
+
+> [!NOTE]  
+> If no profile with the required name exists, the printer will perform leveling before the print begins.    
+> Make sure to use the `SAVE_CONFIG` command after leveling to save the mesh properly.
 
 ## Bed Collision Protection
 
