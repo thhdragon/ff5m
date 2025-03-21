@@ -29,8 +29,12 @@ Insert USB drive and reboot the printer. The mod will uninstall itself during bo
 ### Using Uninstall Image
 
 This image is meant to restore mod functionality as a last resort; consider using other methods instead.  
-You can find the image here: [link](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-ForgeX-uninstall.tgz).
+You can find the image here: 
+Download the appropriate image for your printer model:  
+- **Non-Pro printer version:** [Adventurer5M-ForgeX-uninstall.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-ForgeX-uninstall.tgz)  
+- **Pro printer version:** [Adventurer5MPro-ForgeX-uninstall.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5MPro-ForgeX-uninstall.tgz)   
 
+Next, you can proceed to flash the uninstall image:
 1. Format a USB drive to FAT32 and place the Uninstall Image in the root directory (as you do when installing the mod).  
 2. Insert the USB drive and reboot the printer. The mod will be uninstalled (this also removes the ZMod files).  
 3. When the process is finished, a message will be displayed on the screen. You will also find a log file in your USB drive with information about the uninstallation.
