@@ -28,7 +28,7 @@ Insert USB drive and reboot the printer. The mod will uninstall itself during bo
 
 ### Using Uninstall Image
 
-This image is meant to restore mod functionality as a last resort; consider using other methods instead.  
+This image is meant to restore printer functionality as a last resort; consider using other methods instead.  
 You can find the image here: 
 Download the appropriate image for your printer model:  
 - **Non-Pro printer version:** [Adventurer5M-ForgeX-uninstall.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-ForgeX-uninstall.tgz)  
