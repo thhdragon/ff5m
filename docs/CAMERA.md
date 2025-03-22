@@ -41,7 +41,7 @@ REDUCE_MEMORY=1
 
 # Image post-processing settings.
 # Enable this to use image post-processing
-E_POST_PROCESSING=1
+POST_PROCESSING=1
 
 # You can adjust these settings to fine-tune the camera's image quality.
 # Visit the settings page at:
