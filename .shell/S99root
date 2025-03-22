@@ -35,9 +35,7 @@ start() {
         if [ -n "$midi_file" ]; then
             audio midi -m "/opt/config/mod_data/midi/$midi_file" &
         fi
-    fi
 
-    if [ ! -f "$NOT_FIRST_LAUNCH_F" ]; then
         mount --rbind /dev/pts "$MOD"/dev/pts
     fi
     
