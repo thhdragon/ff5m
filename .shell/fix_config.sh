@@ -15,6 +15,7 @@ restore() {
 
     rm -f /opt/klipper/klippy/extras/zmod.py
     rm -f /opt/klipper/klippy/extras/zmod_color.py
+    rm -f /root/printer_data/logs/zmod
 
     mv /opt/config/mod_data/camera.cfg /opt/config/mod_data/camera.cfg.old
     mv /opt/config/mod_data/ssh.cfg /opt/config/mod_data/ssh.cfg.old
