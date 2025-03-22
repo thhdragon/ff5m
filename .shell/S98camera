@@ -24,16 +24,15 @@ fi
 
 VIDEO="video0"
 
-E_SHARPNESS=255
-E_BRIGHTNESS=0
-E_CONTRAST=255
-E_GAMMA=10
-E_GAIN=1
-
 PID_FILE=/run/camera.pid
 source "/opt/config/mod_data/camera.conf"
 
 _VIDEO_P="/dev/${VIDEO}"
+
+_REDUCE_MEM_PARAMS=""
+if [ -z "$REDUCE_MEMORY" ] || [ "$REDUCE_MEMORY" == "1" ]; then
+    _REDUCE_MEM_PARAMS="-fs $(( WIDTH * HEIGHT * 2 ))"
+fi
 
 if [ "$VIDEO" = "auto" ]; then
     _VIDEO_P="/dev/video0"
@@ -49,10 +48,10 @@ if [ "$VIDEO" = "auto" ]; then
 fi
 
 start() {
-    enabled=$($CFG_SCRIPT $VAR_PATH --get "camera" "0")
+    enabled=$($CFG_SCRIPT "$VAR_PATH" --get "camera" "0")
     if [ "$enabled" -eq 1 ]; then
         v4l2-ctl -d "${_VIDEO_P}" --set-fmt-video=width="${WIDTH}",height="${HEIGHT}"
-        start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
+        start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 ${_REDUCE_MEM_PARAMS}"
         
         touch "$CAMERA_F"
         reload
@@ -73,16 +72,28 @@ restart() {
 }
 
 reload() {
-    if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness=${E_SHARPNESS}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl brightness=${E_BRIGHTNESS}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast=${E_CONTRAST}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma=${E_GAMMA}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain=${E_GAIN}
+    if [ -f $PID_FILE ] && ! kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
+        restart
+    fi
 
-        touch "$CAMERA_F"
-    else
-        rm -f "$CAMERA_F"
+    local effects_on="$($CFG_SCRIPT "$CFG_PATH" --get "E_POST_PROCESSING" "1")"
+    if [ "$effects_on" -eq 1 ]; then
+        [ -n "$E_BRIGHTNESS" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl brightness="${E_BRIGHTNESS}"
+        [ -n "$E_CONTRAST" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast="${E_CONTRAST}"
+        [ -n "$E_GAIN" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain="${E_GAIN}"
+        [ -n "$E_GAMMA" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma="${E_GAMMA}"
+        [ -n "$E_HUE" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl hue="${E_HUE}"
+        [ -n "$E_SATURATION" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl saturation="${E_SATURATION}"
+        [ -n "$E_SHARPNESS" ] && \
+            v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness="${E_SHARPNESS}"
+
+        echo "Effects applied"
     fi
 }
 
@@ -99,7 +110,6 @@ case "$1" in
     ;;
     reload)
         reload
-        echo "OK"
     ;;
     *)
         echo "Usage: $0 {start|stop|restart|reload}"

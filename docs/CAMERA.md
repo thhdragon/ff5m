@@ -33,17 +33,29 @@ FPS=15
 # Video device: 'auto' or video<N> (like video0)
 VIDEO=auto
 
+# Reduce camera memory usage
+# This may be handy if your camera consumes too much memory.
+# For example, even for 640x480 resolution, it may uses memory as it 1080p stream.
+# Disable it if you expericencing issues with your camera
+REDUCE_MEMORY=1
+
 # Image post-processing settings.
+# Enable this to use image post-processing
+E_POST_PROCESSING=1
+
 # You can adjust these settings to fine-tune the camera's image quality.
 # Visit the settings page at:
 # http://printer_ip:8080/control.htm
 # After testing, apply the desired values to the configuration fields below.
+# Don’t forget to uncomment the parameters by removing the '#'.
 
-E_SHARPNESS=255
-E_BRIGHTNESS=0
-E_CONTRAST=255
-E_GAMMA=10
-E_GAIN=1
+# E_BRIGHTNESS=0
+# E_CONTRAST=35
+# E_GAIN=1
+# E_GAMMA=100
+# E_HUE=300
+# E_SATURATION=42  
+# E_SHARPNESS=7
 ```
 
 You can adjust these parameters to suit your needs. For example, you might want set better resolution or FPS.

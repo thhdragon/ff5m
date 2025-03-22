@@ -40,9 +40,9 @@ case "$key" in
             
             cam_pid_file="/run/camera.pid"
             ss -tuln | grep -q ":8080"; STREAM_ACTIVE=$(( $? == 0 ))
-            [ -f "$cam_pid_file" ] && kill -0 "$(cat $cam_pid_file)" 2>/dev/null; STREAM_ACTIVE=$(( $? == 0 ))
+            [ -f "$cam_pid_file" ] && kill -0 "$(cat $cam_pid_file)" 2>/dev/null; MOD_CAM_ACTIVE=$(( $? == 0 ))
             
-            if [ "$STREAM_ACTIVE" -eq 1 ]; then
+            if [ "$STREAM_ACTIVE" -eq 1 ] && [ "$MOD_CAM_ACTIVE" -eq 0 ]; then
                 command "action:prompt_begin Camera"
                 command 'action:prompt_text The camera is currently in use! Disable it in the Stock Screen settings and try again.'
                 command "action:prompt_end"
