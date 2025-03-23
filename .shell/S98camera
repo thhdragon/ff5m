@@ -47,6 +47,8 @@ if [ "$VIDEO" = "auto" ]; then
     done
 fi
 
+[[ " $* " =~ " --silent " ]] && SILENT=1 || SILENT=0
+
 start() {
     echo "Starting camera..."
 
@@ -60,7 +62,7 @@ start() {
 
         apply_effects
     else
-        echo "Camera disabled in configuration"
+        [ "$SILENT" -eq 0 ] && echo "Camera disabled in configuration"
     fi
 }
 
@@ -84,7 +86,7 @@ reload() {
     local enabled=$($CFG_SCRIPT "$VAR_PATH" --get "camera" "0")
 
     if [ "$enabled" -eq "0" ]; then
-        if [ "$1" != "--silent" ]; then
+        if [ "$SILENT" -eq 0 ]; then
             echo "Camera disabled in configuration."
             echo "To enable the camera, run: SET_MOD_PARAM PARAM='camera' VALUE=1"
             echo "A detailed guide can be found here: https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md"
@@ -98,8 +100,8 @@ reload() {
         exit 0
     fi
 
-    if apply_effects && [ "$1" != "--silent" ]; then
-        echo "Effects applied"
+    if apply_effects; then
+        [ "$SILENT" -eq 0 ] && echo "Effects applied"
     fi
 }
 

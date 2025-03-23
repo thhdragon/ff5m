@@ -33,10 +33,12 @@ source /opt/config/mod_data/ssh.conf
 
 PID_FILE=/run/zssh.pid
 
+[[ " $* " =~ " --silent " ]] && SILENT=1 || SILENT=0
+
 start() {
-    enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
+    enabled=$($CFG_SCRIPT "$VAR_PATH" --get "zssh" "0")
     if [ "$enabled" -eq 0 ]; then
-        echo "@@ SSH is disabled"
+        [ "$SILENT" -eq 0 ] && echo "@@ SSH is disabled"
         return
     fi
     
@@ -100,10 +102,12 @@ stop() {
 }
 
 restart() {
-    echo "// Restarting SSH tunnel"
+    echo "// Restarting SSH tunnel..."
     
-    stop
-    while is_running; do sleep 1; done
+    if is_running; then
+        stop
+        while is_running; do sleep 1; done
+    fi
     
     start
 }
@@ -117,10 +121,10 @@ is_running() {
 }
 
 reload() {
-    enabled=$($CFG_SCRIPT $VAR_PATH --get "zssh" "0")
+    enabled=$($CFG_SCRIPT "$VAR_PATH" --get "zssh" "0")
     if [ "$enabled" -eq 1 ]; then
         if ! is_running; then
-            echo "?? SSH connection lost."
+            [ "$SILENT" -eq 0 ] && echo "?? SSH connection lost."
             restart
         fi
     fi
@@ -147,9 +151,11 @@ switch() {
         ;;
         test)
             if is_running; then
-                echo "SSH Tunnel is running"
+                [ "$SILENT" -eq 0 ] && echo "SSH Tunnel is running"
+                return 0
             else
-                echo "SSH Tunnel is not running"
+                [ "$SILENT" -eq 0 ] && echo "SSH Tunnel is not running"
+                return 1
             fi
         ;;
         *)
