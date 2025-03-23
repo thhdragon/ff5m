@@ -30,7 +30,7 @@ To configure the printer for SSH access, edit the configuration file located in 
 
 ```cfg
 # Remote SSH server
-SSH_SERVER=127.0.0.1
+SSH_SERVER=your_server_host
 
 # SSH server port (default is 22)
 SSH_PORT=22
