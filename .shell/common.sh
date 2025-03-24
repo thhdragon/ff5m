@@ -19,6 +19,10 @@ NOT_FIRST_LAUNCH_F="/tmp/not_first_launch_f"
 CUSTOM_BOOT_F="/tmp/custom_boot_f"
 NETWORK_CONNECTED_F="/tmp/net_connected_f"
 CAMERA_F="/tmp/camera_f"
+WLAN_IP_F="/tmp/wlan_ip"
+
+BOOT_FAILURE_F="/opt/config/mod/BOOT_FLAG_FAILURE"
+BOOT_SKIP_F="/opt/config/mod/BOOT_FLAG_SKIP"
 
 SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 

@@ -14,6 +14,32 @@ handle_special_boot_mode() {
     fi
 }
 
+handle_boot_options() {
+    if [ -f "$BOOT_SKIP_F" ]; then 
+        echo "?? The mod was skipped by request!" | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+
+        rm -f "$BOOT_SKIP_F"
+        touch /tmp/SKIP_MOD
+
+        sync
+
+        return 1
+    fi
+
+    if [ -f "$BOOT_FAILURE_F" ]; then 
+        echo "?? The mod was skipped due to a boot failure!" | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+
+        rm -f "$BOOT_FAILURE_F"
+        touch /tmp/SKIP_MOD
+
+        sync
+
+        return 1
+    fi
+
+    return 0
+}
+
 initialize() {
     echo "// Initialization started"
     
@@ -402,17 +428,47 @@ rotate_logs() {
 
 case "$1" in
     start)
-        if [ -f $INIT_FLAG ]; then
-            echo "?? Already initialized!"
+        if [ -f "$INIT_FLAG" ]; then
+            echo "Already initialized!"
             exit 1
         fi
 
+        # Check for special boot options
+        if ! handle_boot_options; then 
+            # If any exist, remove other options and skip the boot.
+            rm -f /opt/config/mod/BOOT_FLAG*
+
+            # Pause so the user can see what happened
+            sync
+            sleep 3
+
+            exit 0
+        fi
+
+        # Print skipping prompt, create flag file, wait, then delete flag
+        # If the user reboots the printer, the file persists
+        # We'll process it in the next boot
+        xzcat /opt/config/mod/skip.img.xz > /dev/fb0
+        touch "$BOOT_SKIP_F"
+
+        sync
+        sleep 3
+
+        rm -f "$BOOT_SKIP_F"
+        sync
+
+        cat /root/boot.img > /dev/fb0
+
+        # The failure flag will be deleted in S99root if the boot succeeds
+        touch "$BOOT_FAILURE_F"
+        sync
+        
         mkdir -p /opt/config/mod_data/log/
         rotate_logs "/opt/config/mod_data/log/init.log"
         
         initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --send-to-screen
 
-        touch $INIT_FLAG
+        touch "$INIT_FLAG"
         
         sync
     ;;

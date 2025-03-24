@@ -50,6 +50,7 @@ start() {
     fi
 
     rm -f "$SCREEN_FOLLOW_UP_LOG"
+    rm -f "$BOOT_FAILURE_F"
     touch "$NOT_FIRST_LAUNCH_F"
 }
 
