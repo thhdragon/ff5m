@@ -10,6 +10,7 @@
 
 if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
     echo "Buildroot services disabled due to SKIP_MOD mode"
+    touch "$NOT_FIRST_LAUNCH_F"
     exit 0
 fi
 

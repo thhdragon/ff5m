@@ -466,7 +466,9 @@ case "$1" in
         sync
         
         mkdir -p /opt/config/mod_data/log/
+
         rotate_logs "/opt/config/mod_data/log/init.log"
+        rotate_logs "/opt/config/mod_data/log/skip.log"
         
         initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --send-to-screen
 
