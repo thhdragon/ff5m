@@ -10,6 +10,8 @@ source /opt/config/mod/.shell/common.sh
 
 handle_special_boot_mode() {
     if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
+        rm -f "$BOOT_FAILURE_F"
+        
         exit 0
     fi
 }
