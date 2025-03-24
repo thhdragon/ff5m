@@ -37,10 +37,9 @@ apply_display_off() {
     
     killall "wpa_cli" &> /dev/null
     if wpa_cli status -i  wlan0 &> /dev/null; then
+        wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
         touch "$NETWORK_CONNECTED_F"
     fi
-    
-    wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
     
     "$SCRIPTS"/screen.sh backlight 0
     "$SCRIPTS"/screen.sh draw_splash
