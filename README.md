@@ -17,6 +17,24 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 > This mod is currently in development. While it is functional, you may encounter bugs or print failures during use.  
 > If you experience any issues, please report them by creating an [issue](https://github.com/DrA1ex/ff5m/issues).
 
+## Disclamer
+
+The printer has Linux, but it’s not the Linux you’re used to.   
+**It’s not** like Ubuntu, Fedora, or other Linux distributions.   
+The printer **isn’t a desktop**. It uses firmware with a Linux core as its base. It’s more like a smart microwave.   
+
+**Don’t flash one firmware over another** unless you clearly understand what you are doing.   
+**Don’t delete** installation, uninstallation, or recovery **logs** — it’s may help to restore your printer.   
+
+**If nothing’s working** and you **don’t understand why** or what you can do, you’re not an experienced user and not a professional.    
+**It’s better to ask for help** before you do anything that **completely bricks** your printer.    
+
+So, **read the documentation** before doing anything. Because you risk **completely bricking** your printer.   
+It’s restorable, but **it requires additional hardware** or soldering in exceptional cases.   
+
+There is also a probability that **you would need to buy a new motherboard** (this probability is almost zero, but there is a very small chance).    
+**You don’t need that**, it takes your time and mine. So better carefully **read the docs first**.
+
 ## Features
 - **Stock** Screen with option to disable it completely and switch to feather screen version to reduce resource consumption
 - **Klipper** with many patches/fixes/plugins specially adapted for AD5M
