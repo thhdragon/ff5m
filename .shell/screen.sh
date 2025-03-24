@@ -133,6 +133,10 @@ case "$1" in
         "$BINS/typer" -db batch \
             --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+
+        if [ -f "$WLAN_IP_F" ]; then
+            print_prepare_status "IP: $(cat "$WLAN_IP_F")"
+        fi
     ;;
 
     draw_status_bar)

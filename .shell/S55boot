@@ -24,6 +24,8 @@ fi
 start() {
     /opt/config/mod/.shell/boot/boot.sh
 
+    ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1 > "$WLAN_IP_F"
+
     fstrim -v /root
     fstrim -v /data
 }
