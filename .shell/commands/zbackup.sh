@@ -131,5 +131,4 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
-# TODO: klipper sets LD_PRELOAD variable, idkw
-LD_PRELOAD="" chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py $PARAMS
+chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py $PARAMS

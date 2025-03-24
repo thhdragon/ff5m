@@ -11,7 +11,7 @@ source /opt/config/mod/.shell/common.sh
 handle_special_boot_mode() {
     if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
         rm -f "$BOOT_FAILURE_F"
-        
+
         exit 0
     fi
 }
@@ -90,9 +90,9 @@ initialize() {
     echo "// Update version..."
     
     # version
-    GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
-    GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
-    GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
+    GIT_BRANCH=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_ID=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
+    GIT_COMMIT_DATE=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
     
     FIRMWARE_VERSION=$(cat /root/version)
     MOD_VERSION=$(cat "$VERSION_F")
@@ -155,15 +155,15 @@ initialize() {
 init_buildroot() {
     init_chroot
     
-    mkdir -p $MOD/dev/pts
-    mkdir -p $MOD/data
-    mkdir -p $MOD/opt/config
-    mkdir -p $MOD/opt/klipper
-    mkdir -p $MOD/root/printer_data
+    mkdir -p "$MOD"/dev/pts
+    mkdir -p "$MOD"/data
+    mkdir -p "$MOD"/opt/config
+    mkdir -p "$MOD"/opt/klipper
+    mkdir -p "$MOD"/root/printer_data
     
-    mount --bind /data $MOD/data
-    mount --bind /opt/config $MOD/opt/config
-    mount --bind /opt/klipper $MOD/opt/klipper
+    mount --bind /data "$MOD"/data
+    mount --bind /opt/config "$MOD"/opt/config
+    mount --bind /opt/klipper "$MOD"/opt/klipper
     
     mkdir -p /root/printer_data
     mkdir -p /root/printer_data/certs
@@ -183,29 +183,29 @@ init_buildroot() {
     ln -fns /opt/config/mod/moonraker.conf /root/printer_data/config/moonraker.conf
     ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     
-    mount --bind /root/printer_data $MOD/root/printer_data
+    mount --bind /root/printer_data "$MOD"/root/printer_data
 
     echo "// Finishing buildroot initialization..."
 
     # hwclock
-    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
+    ln -fs /opt/config/mod/.root/fake-hwclock "$MOD"/usr/sbin/
 
     # load datetime
     echo "// Loading last saved time..."
-    chroot $MOD fake-hwclock load
+    chroot "$MOD" fake-hwclock load
     
     # moon
-    ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
+    ln -fns /opt/config/mod/.root/moonraker "$MOD"/root/moonraker-env/moonraker
 
     # web
-    mkdir -p $MOD/root/www
-    [ -d $MOD/root/fluidd ] && mv $MOD/root/fluidd $MOD/root/www/
-    [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
+    mkdir -p "$MOD"/root/www
+    [ -d "$MOD"/root/fluidd ] && mv "$MOD"/root/fluidd "$MOD"/root/www/
+    [ -d "$MOD"/root/mainsail ] && mv "$MOD"/root/mainsail "$MOD"/root/www/
 
     # Mainsail
-    ln -fs /opt/config/mod/.root/mainsail.json $MOD/root/www/mainsail/config.json
+    ln -fs /opt/config/mod/.root/mainsail.json "$MOD"/root/www/mainsail/config.json
 
-    ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
+    ln -fs /opt/config/mod/.root/config.json "$MOD"/root/www/
     "$CMDS"/zhttp.sh apply
 }
 
@@ -300,7 +300,7 @@ fix_config() {
     BATCH_FILE=/tmp/cfg_backup_batch.json
 
     # 1. Create dump with parameters from printer.base.cfg
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode backup \
         --config /opt/config/printer.base.cfg \
         --data $TMP_CFG_PATH \
@@ -409,7 +409,7 @@ fix_config() {
     echo "]" >> $BATCH_FILE
 
     # Run the batch file
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py --batch $BATCH_FILE
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py --batch $BATCH_FILE
 
     # Clean up the temporary files
     rm -f $BATCH_FILE $TMP_CFG_PATH

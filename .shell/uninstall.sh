@@ -51,7 +51,7 @@ uninstall() {
         echo "// Init chroot..."
         init_chroot
         
-        mount --bind /opt/config $MOD/opt/config
+        mount --bind /opt/config "$MOD"/opt/config
     fi
     
     echo "// Restore config..."

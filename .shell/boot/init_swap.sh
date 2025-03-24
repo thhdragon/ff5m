@@ -171,7 +171,7 @@ case "$swap" in
         echo "Swap disabled."
         
         swapoff -a
-        rm -f $MOD/root/swap
+        rm -f "$MOD"/root/swap
         
         exit 0
     ;;

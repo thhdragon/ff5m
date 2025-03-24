@@ -81,12 +81,12 @@ case "$key" in
     ;;
     tune_config)
         if [ "$value" -eq 1 ]; then
-            chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+            chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
                 --mode restore --avoid_writes --no_data                  \
                 --config /opt/config/printer.cfg                         \
                 --params /opt/config/mod/.cfg/tuning.cfg
         else
-            chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+            chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
                 --mode restore --avoid_writes --no_data                  \
                 --config /opt/config/printer.cfg                         \
                 --params /opt/config/mod/.cfg/tuning.off.cfg

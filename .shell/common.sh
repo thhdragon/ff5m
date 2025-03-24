@@ -57,11 +57,19 @@ mount_data_partition() {
 }
 
 init_chroot() {
-    mount -t proc /proc $MOD/proc
-    mount --rbind /sys $MOD/sys
-    mount --rbind /dev $MOD/dev
-    mount --bind /run $MOD/run
-    mount --bind /tmp $MOD/tmp
+    mount -t proc /proc "$MOD"/proc
+    mount --rbind /sys "$MOD"/sys
+    mount --rbind /dev "$MOD"/dev
+    mount --bind /run "$MOD"/run
+    mount --bind /tmp "$MOD"/tmp
+}
+
+dispose_chroot() {
+    umount -lf "$MOD"/proc
+    umount -lf "$MOD"/sys
+    umount -lf "$MOD"/dev
+    umount -lf "$MOD"/run
+    umount -lf "$MOD"/tmp
 }
 
 message() {
