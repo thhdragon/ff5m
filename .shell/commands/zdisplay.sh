@@ -10,7 +10,7 @@
 source /opt/config/mod/.shell/common.sh
 
 display_on() {
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
@@ -18,7 +18,7 @@ display_on() {
 }
 
 display_off() {
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
@@ -26,7 +26,7 @@ display_off() {
 }
 
 test() {
-    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$VAR_PATH" --get "display_off" "0")
+    local display_off=$("$CMDS"/zconf.sh "$VAR_PATH" --get "display_off" "0")
     return "$display_off"
 }
 

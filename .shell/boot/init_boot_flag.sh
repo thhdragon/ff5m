@@ -25,13 +25,20 @@ check_special_boot_flag() {
         return 0
     fi
 
-    # Check boot flags
+    # Check boot flags (supported FLAG or FLAG.ext)
     for file_name in "${FLAGS[@]}"; do
-        if [ -f "$path/$file_name" ]; then
-            echo "$file_name"
-            return 0
+        if ! compgen -G "$path/$file_name*" > /dev/null; then
+            continue
         fi
+
+        for file in "$path/$file_name"*; do
+            if [[ "$file" =~ ^$path/$file_name(\.[^/]*)?$ ]]; then
+                echo "$file_name"
+                return 0
+            fi
+        done
     done
+
 
     return 1
 }
