@@ -67,7 +67,14 @@ search_special_boot_flag_usb() {
         if is_usb_disk "$device"; then
             echo "// Found USB disk: $device"
             
-            partitions=$(fdisk -l "$device" | awk '/^ *[0-9]+/ {print $1 " " $4}' | sort -k2,2nr)
+            device_name=$(basename "$device")
+            partitions=$(
+                awk -v dev="$device_name" \
+                    '$4 ~ dev"[0-9]+$" {print substr($4,length(dev)+1) " " $3/2048 "M"}'\
+                    /proc/partitions \
+                    | sort -k2,2n
+            )
+            
             if [ -z "$partitions" ]; then
                 echo "No partitions found on $device."
                 continue
