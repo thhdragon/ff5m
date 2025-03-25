@@ -56,10 +56,15 @@ POST_PROCESSING=1
 # E_HUE=300
 # E_SATURATION=42  
 # E_SHARPNESS=7
+# E_POWER_LINE_FREQUENCY=0
+# E_WHITE_BALANCE_TEMPERATURE=4500
+# E_BACKLIGHT_COMPENSATION=0
+# E_EXPOSURE_AUTO="3"
+# E_EXPOSURE_ABSOLUTE=80
 ```
 
 You can adjust these parameters to suit your needs. For example, you might want set better resolution or FPS.
-But be carefull since, check actual camera ram usage after that, using `MEM` macros in Fluidd's console.
+But be careful since, check actual camera ram usage after that, using `MEM` macros in Fluidd's console.
 
 #### Step 2: Disable Stock Camera
 To ensure the mod's camera is used, you need to disable the stock camera functionality. Here’s how:

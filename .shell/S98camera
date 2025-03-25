@@ -125,6 +125,16 @@ apply_effects() {
         v4l2-ctl -d "${_VIDEO_P}" --set-ctrl saturation="${E_SATURATION}"
     [ -n "$E_SHARPNESS" ] && \
         v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness="${E_SHARPNESS}"
+    [ -n "$E_POWER_LINE_FREQUENCY" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl power_line_frequency="${E_POWER_LINE_FREQUENCY}"
+    [ -n "$E_WHITE_BALANCE_TEMPERATURE" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl white_balance_temperature="${E_WHITE_BALANCE_TEMPERATURE}"
+    [ -n "$E_BACKLIGHT_COMPENSATION" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl backlight_compensation="${E_BACKLIGHT_COMPENSATION}"
+    [ -n "$E_EXPOSURE_AUTO" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl exposure_auto="${E_EXPOSURE_AUTO}"
+    [ -n "$E_EXPOSURE_ABSOLUTE" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl exposure_absolute="${E_EXPOSURE_ABSOLUTE}"
 
     return 0
 }
