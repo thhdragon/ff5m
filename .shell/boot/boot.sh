@@ -22,10 +22,7 @@ fi
 "$CMDS"/zdisplay.sh test
 DISPLAY_OFF=$?
 
-if [ "$DISPLAY_OFF" -eq 1 ]; then
-    # Init Network
-    
-    echo "// Network initialization..."
+wifi_init() {
     if [ -f "/etc/wpa_supplicant.conf" ]; then
         echo "Configuration found"
         
@@ -55,17 +52,52 @@ if [ "$DISPLAY_OFF" -eq 1 ]; then
         
         #TODO: Create AP if no active network configuration
     fi
+
+    if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
+        echo "Start wifi reconnect daemon."
+        killall "wpa_cli" 2> /dev/null
+        wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
+    fi
+}
+
+ethernet_init() {
+    echo "// Initializing Ethernet connection..."
+
+    echo "Killing processes..."
+    killall wpa_supplicant
+    killall udhcpc
+    
+    # shellcheck disable=SC2015
+    ip link set eth0 up && udhcpc eth0 \
+        || { echo "@@ Failed to initialize connection!"; return 1; }
+    
+    echo "// Ethernet connection initialized with DHCP"
+    MOD_CUSTOM_BOOT=1
+}
+
+if [ "$DISPLAY_OFF" -eq 1 ]; then
+    # Init Network
+    
+    echo "// Network initialization..."
+    CONFIG_FILE=$(ls /opt/config/Adventurer5M*.json 2>/dev/null)
+    
+    if [ -f "$CONFIG_FILE" ]; then
+        ETHERNET_STATUS=$(grep "ethernetStatus" < "$CONFIG_FILE" | sed 's/.*"ethernetStatus"[ ]*:[ ]*\([^,]*\).*/\1/')
+        if [ "$ETHERNET_STATUS" = "true" ]; then
+            ethernet_init
+        else
+            wifi_init
+        fi
+    else
+        echo "@@ Config file not found"
+    fi
 fi
 
 if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
-    echo "Start wifi reconnect daemon."
-    killall "wpa_cli"
-    wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
-    
     echo "// Network initialized!"
-    touch "$CUSTOM_BOOT_F"
     
-    sleep 1
+    touch "$CUSTOM_BOOT_F"
+    sync
     
     mkdir -p /dev/pts
     mount -t devpts devpts /dev/pts
@@ -80,12 +112,14 @@ if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
     
     echo "// Boot sequence done!"
 elif [ "$DISPLAY_OFF" -eq 1 ]; then
-    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
-        echo "?? Switch config to enabled screen..."
-        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
-    fi
+    # If we're here, we can't initialize network connection
+    # This means Feather is useless without network - skip it
     
+    echo "?? Switch config to enabled screen..."
+    /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+
     echo "@@ Failed to initialize mod. Booting into stock firmware..."
+    sleep 1
 else
     echo "// Booting stock firmware..."
 fi
