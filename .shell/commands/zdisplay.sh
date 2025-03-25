@@ -35,11 +35,17 @@ apply_display_off() {
     killall "ffstartup-arm" &> /dev/null
     killall "firmwareExe" &> /dev/null
     
-    killall "wpa_cli" &> /dev/null
-    if wpa_cli status -i  wlan0 &> /dev/null; then
+    if ip addr show wlan0 | grep -q "inet "; then
+        killall "wpa_cli" &> /dev/null
         wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
-        touch "$NETWORK_CONNECTED_F"
+        touch "$WIFI_CONNECTED_F"
+    elif ip addr show eth0 | grep -q "inet "; then
+        touch "$ETHERNET_CONNECTED_F"
     fi
+
+    IP="$(ip addr show wlan0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -z "$IP" ] && IP="$(ip addr show eth0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -n "$IP" ] && echo "$IP" > "$NET_IP_F"
     
     "$SCRIPTS"/screen.sh backlight 0
     "$SCRIPTS"/screen.sh draw_splash

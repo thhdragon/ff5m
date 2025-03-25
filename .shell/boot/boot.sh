@@ -54,7 +54,11 @@ wifi_init() {
     fi
 
     if [ "$MOD_CUSTOM_BOOT" -eq 1 ]; then
+        touch "$WIFI_CONNECTED_F"
+        sync
+
         echo "Start wifi reconnect daemon."
+
         killall "wpa_cli" 2> /dev/null
         wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
     fi
@@ -70,9 +74,12 @@ ethernet_init() {
     # shellcheck disable=SC2015
     ip link set eth0 up && udhcpc eth0 \
         || { echo "@@ Failed to initialize connection!"; return 1; }
-    
-    echo "// Ethernet connection initialized with DHCP"
+
+    touch "$ETHERNET_CONNECTED_F"
+    sync
+
     MOD_CUSTOM_BOOT=1
+    echo "// Ethernet connection initialized with DHCP"
 }
 
 if [ "$DISPLAY_OFF" -eq 1 ]; then

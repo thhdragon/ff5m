@@ -57,13 +57,14 @@ class FeatherScreenHelper:
     icon_extruder = '\ue119'
     icon_bed = '\ue003'
     icon_wifi = '\uE146'
+    icon_ethernet = '\uE059'
     icon_servo = '\ue050'
     icon_active = '\ue076'
     icon_camera = '\ue03b'
 
     toolbar_y = 25
 
-    def draw_toolbar(self, *, wifi: bool, camera: bool, motors: bool, idle: bool, extruder_temp: float, bed_temp: float):
+    def draw_toolbar(self, *, wifi: bool, ethernet: bool, camera: bool, motors: bool, idle: bool, extruder_temp: float, bed_temp: float):
         if not self._process or self._process.poll() is not None:
             raise RuntimeError("Screen is not running")
 
@@ -77,7 +78,8 @@ class FeatherScreenHelper:
         extruder_color = "ff0000" if extruder_temp >= 50 else "ffffff"
         bed_color = "ff0000" if bed_temp >= 40 else "ffffff"
 
-        wifi_color = "ffffff" if wifi else "606060"
+        net_icon = self.icon_ethernet if ethernet else self.icon_wifi
+        net_color = "ffffff" if wifi or ethernet else "606060"
         active_color = "ea00ff"
         servo_color = "ff9000"
         camera_color = "ffffff"
@@ -85,8 +87,8 @@ class FeatherScreenHelper:
         offset_x = 770
         icon_width = 40
         icons = [
-            f'--batch text -p {offset_x} {self.toolbar_y} -c {wifi_color}  -ha right '
-            + f'-va middle -f  "Typicons 12pt" -t "{self.icon_wifi}"',
+            f'--batch text -p {offset_x} {self.toolbar_y} -c {net_color}  -ha right '
+            + f'-va middle -f  "Typicons 12pt" -t "{net_icon}"',
         ]
 
         if camera:
@@ -292,7 +294,8 @@ class FeatherScreen:
 
         idle_state = self.idle_timeout.get_status(eventtime)["state"]
         self.feather.draw_toolbar(
-            wifi=os.path.exists("/tmp/net_connected_f"),
+            wifi=os.path.exists("/tmp/wifi_connected_f"),
+            ethernet=os.path.exists("/tmp/ethernet_connected_f"),
             camera=os.path.exists("/tmp/camera_f"),
             idle=idle_state == "Idle",
             motors=len(self.toolhead.get_status(eventtime)["homed_axes"]) > 0,

@@ -153,7 +153,7 @@ case "$1" in
         bed_temp="$2"
         camera_active=$( ps | grep -q "[m]jpg_streamer"; echo $(($? == 0)) )
 
-        wifi_color=$( [ -f "$NETWORK_CONNECTED_F" ] && echo "ffffff" || echo "606060" )
+        wifi_color=$( [ -f "$WIFI_CONNECTED_F" ] && echo "ffffff" || echo "606060" )
         nozzle_color=$( [ "$nozzle_temp" -ge 50 ] && echo "ff0000" || echo "ffffff" )
         bed_color=$( [ "$bed_temp" -ge 40 ] && echo "ff0000" || echo "ffffff" )
         active_color="ea00ff"
