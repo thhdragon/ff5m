@@ -550,9 +550,6 @@ def restore(file_path: str, saved_data: SavedData, cfg: Configuration, dry=False
 
         # Add missing sections/props
         for name, section_data_ in state.data.items():
-            if len(section_data_) == 0:
-                continue
-
             _maybe_write_blank_line()
             out_f.write(f"{name}\n")
             state.is_changed = True
@@ -808,9 +805,6 @@ def has_changes(file_path: str, saved_data: SavedData, cfg: Configuration, loggi
 
             # Check missing sections/props
             for name, section_data_ in state.data.items():
-                if len(section_data_) == 0:
-                    continue
-
                 logging(f"To Add Section {name}")
 
                 for prop_key, prop_value in section_data_.items():
