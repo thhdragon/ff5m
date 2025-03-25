@@ -198,13 +198,13 @@ handle_special_boot_flag() {
         ;;
         FIRMWARE_IMAGE | FIRMWARE_SCRIPT)
             echo "!! Installation image found. Skipping the mod..."
-            touch /tmp/SKIP_MOD
+            touch /tmp/SKIP_MOD_HARD
 
             exit 0
         ;;
         KLIPPER_MOD | klipper_mod_remove)
             echo "@@ Skipping mod because of Klipper Mod..."
-            touch /tmp/SKIP_MOD
+            touch /tmp/SKIP_MOD_HARD
 
             exit 0
         ;;

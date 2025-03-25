@@ -18,10 +18,13 @@ handle_special_boot_mode() {
 
 handle_boot_options() {
     if [ -f "$BOOT_SKIP_F" ]; then 
-        echo "?? The mod was skipped by request!" | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+        {
+            echo "?? The mod was skipped by request!" 
+            echo "?? The stock firmware will be loaded now..."
+        } | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
 
         rm -f "$BOOT_SKIP_F"
-        touch /tmp/SKIP_MOD
+        touch /tmp/SKIP_MOD_SOFT
 
         sync
 
@@ -29,10 +32,14 @@ handle_boot_options() {
     fi
 
     if [ -f "$BOOT_FAILURE_F" ]; then 
-        echo "?? The mod was skipped due to a boot failure!" | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+        { 
+            echo "?? The mod was skipped due to a boot failure!"
+            echo "?? Reboot the printer now to skip failsafe mode."
+            echo "?? The stock firmware will be loaded now..."
+        } | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
 
         rm -f "$BOOT_FAILURE_F"
-        touch /tmp/SKIP_MOD
+        touch /tmp/SKIP_MOD_HARD
 
         sync
 

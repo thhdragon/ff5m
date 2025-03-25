@@ -6,6 +6,10 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
+if [ -f /tmp/SKIP_MOD_HARD ]; then
+    echo "Skipping mod hard."
+    exit 0
+fi
 
 source /opt/config/mod/.shell/common.sh
 
