@@ -38,7 +38,7 @@ start() {
     
     IP="$(ip addr show wlan0 | awk '/inet / {print $2}' | cut -d'/' -f1 2> /dev/null)"
     [ -z "$IP" ] && IP="$(ip addr show eth0 | awk '/inet / {print $2}' | cut -d'/' -f1 2> /dev/null)"
-    [ -n "$IP" ] && echo "$IP" > "$WLAN_IP_F"
+    [ -n "$IP" ] && echo "$IP" > "$NET_IP_F"
     
     fstrim -v /root
     fstrim -v /data

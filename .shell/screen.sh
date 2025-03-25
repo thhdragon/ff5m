@@ -134,8 +134,8 @@ case "$1" in
             --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
 
-        if [ -f "$WLAN_IP_F" ]; then
-            print_prepare_status "IP: $(cat "$WLAN_IP_F")"
+        if [ -f "$NET_IP_F" ]; then
+            print_prepare_status "IP: $(cat "$NET_IP_F")"
         fi
     ;;
 
