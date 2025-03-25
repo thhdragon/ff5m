@@ -133,6 +133,15 @@ Macros:
 - `LOAD_GCODE_OFFSET`: Load and apply Z-Offset from mod's parameter
 - `SET_GCODE_OFFSET`: It's standard Klipper macro to apply Z-Offset, but it's also save value to the mod's parameter
 
+Example:
+```bash
+# Enable global Z-offset management
+SET_MOD_PARAM PARAM="load_zoffset" VALUE=1
+
+# Set custom Z-offset (loaded in START_PRINT only if `load_zoffset` enabled)
+SET_MOD_PARAM PARAM="z_offset" VALUE=0.25
+```
+
 ## Nozzle Cleaning
 
 The mod provides several options for priming line and nozzle cleaning before a print.   
