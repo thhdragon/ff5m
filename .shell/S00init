@@ -10,9 +10,43 @@ source /opt/config/mod/.shell/common.sh
 
 handle_special_boot_mode() {
     if /opt/config/mod/.shell/boot/init_boot_flag.sh apply; then
-        echo "?? Mod skipped."
+        rm -f "$BOOT_FAILURE_F"
+
         exit 0
     fi
+}
+
+handle_boot_options() {
+    if [ -f "$BOOT_SKIP_F" ]; then 
+        {
+            echo "?? The mod was skipped by request!" 
+            echo "?? The stock firmware will be loaded now..."
+        } | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+
+        rm -f "$BOOT_SKIP_F"
+        touch /tmp/SKIP_MOD_SOFT
+
+        sync
+
+        return 1
+    fi
+
+    if [ -f "$BOOT_FAILURE_F" ]; then 
+        { 
+            echo "?? The mod was skipped due to a boot failure!"
+            echo "?? Reboot the printer now to skip failsafe mode."
+            echo "?? The stock firmware will be loaded now..."
+        } | logged "/opt/config/mod_data/log/init.log.emergency" --send-to-screen --screen-no-followup
+
+        rm -f "$BOOT_FAILURE_F"
+        touch /tmp/SKIP_MOD_HARD
+
+        sync
+
+        return 1
+    fi
+
+    return 0
 }
 
 initialize() {
@@ -23,7 +57,7 @@ initialize() {
     
     # If we are here: mod loading not skipped
 
-    xzcat /opt/config/mod/load.img.xz > /dev/fb0
+    xzcat "$LOAD_IMG_XZ" > /dev/fb0
 
     echo "// Mounting partition..."
     mount_data_partition
@@ -63,9 +97,9 @@ initialize() {
     echo "// Update version..."
     
     # version
-    GIT_BRANCH=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
-    GIT_COMMIT_ID=$(chroot $MOD git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
-    GIT_COMMIT_DATE=$(chroot $MOD git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
+    GIT_BRANCH=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_ID=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git rev-parse --short HEAD)
+    GIT_COMMIT_DATE=$(chroot "$MOD" git --git-dir=/opt/config/mod/.git show -s HEAD --format=%cd --date=format:'%d.%m.%Y %H:%M:%S')
     
     FIRMWARE_VERSION=$(cat /root/version)
     MOD_VERSION=$(cat "$VERSION_F")
@@ -83,9 +117,10 @@ initialize() {
     "$SCRIPTS/screen.sh" draw_loading --no-clear
 
     # Check core version and ota version compatibility
-    if ! "$CMDS"/zversion.sh test; then
+    if ! MSG=$("$CMDS"/zversion.sh test); then
         echo "@@ Current version is not compatible with flashed core version."
         echo "@@ Flash firmware via USB."
+        echo "@@ $MSG"
 
         echo "// It's safe to power off the printer now."
         echo "// Boot will continue in 30 seconds..."
@@ -127,14 +162,15 @@ initialize() {
 init_buildroot() {
     init_chroot
     
-    mkdir -p $MOD/data
-    mkdir -p $MOD/opt/config
-    mkdir -p $MOD/opt/klipper
-    mkdir -p $MOD/root/printer_data
+    mkdir -p "$MOD"/dev/pts
+    mkdir -p "$MOD"/data
+    mkdir -p "$MOD"/opt/config
+    mkdir -p "$MOD"/opt/klipper
+    mkdir -p "$MOD"/root/printer_data
     
-    mount --bind /data $MOD/data
-    mount --bind /opt/config $MOD/opt/config
-    mount --bind /opt/klipper $MOD/opt/klipper
+    mount --bind /data "$MOD"/data
+    mount --bind /opt/config "$MOD"/opt/config
+    mount --bind /opt/klipper "$MOD"/opt/klipper
     
     mkdir -p /root/printer_data
     mkdir -p /root/printer_data/certs
@@ -154,26 +190,29 @@ init_buildroot() {
     ln -fns /opt/config/mod/moonraker.conf /root/printer_data/config/moonraker.conf
     ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
     
-    mount --bind /root/printer_data $MOD/root/printer_data
+    mount --bind /root/printer_data "$MOD"/root/printer_data
 
     echo "// Finishing buildroot initialization..."
 
     # hwclock
-    ln -fs /opt/config/mod/.root/fake-hwclock $MOD/usr/sbin/
+    ln -fs /opt/config/mod/.root/fake-hwclock "$MOD"/usr/sbin/
 
     # load datetime
     echo "// Loading last saved time..."
-    chroot $MOD fake-hwclock load
+    chroot "$MOD" fake-hwclock load
     
     # moon
-    ln -fns /opt/config/mod/.root/moonraker $MOD/root/moonraker-env/moonraker
+    ln -fns /opt/config/mod/.root/moonraker "$MOD"/root/moonraker-env/moonraker
 
     # web
-    mkdir -p $MOD/root/www
-    [ -d $MOD/root/fluidd ] && mv $MOD/root/fluidd $MOD/root/www/
-    [ -d $MOD/root/mainsail ] && mv $MOD/root/mainsail $MOD/root/www/
+    mkdir -p "$MOD"/root/www
+    [ -d "$MOD"/root/fluidd ] && mv "$MOD"/root/fluidd "$MOD"/root/www/
+    [ -d "$MOD"/root/mainsail ] && mv "$MOD"/root/mainsail "$MOD"/root/www/
 
-    ln -fs /opt/config/mod/.root/config.json $MOD/root/www/
+    # Mainsail
+    ln -fs /opt/config/mod/.root/mainsail.json "$MOD"/root/www/mainsail/config.json
+
+    ln -fs /opt/config/mod/.root/config.json "$MOD"/root/www/
     "$CMDS"/zhttp.sh apply
 }
 
@@ -268,7 +307,7 @@ fix_config() {
     BATCH_FILE=/tmp/cfg_backup_batch.json
 
     # 1. Create dump with parameters from printer.base.cfg
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode backup \
         --config /opt/config/printer.base.cfg \
         --data $TMP_CFG_PATH \
@@ -377,7 +416,7 @@ fix_config() {
     echo "]" >> $BATCH_FILE
 
     # Run the batch file
-    chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py --batch $BATCH_FILE
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py --batch $BATCH_FILE
 
     # Clean up the temporary files
     rm -f $BATCH_FILE $TMP_CFG_PATH
@@ -398,17 +437,49 @@ rotate_logs() {
 
 case "$1" in
     start)
-        if [ -f $INIT_FLAG ]; then
-            echo "?? Already initialized!"
+        if [ -f "$INIT_FLAG" ]; then
+            echo "Already initialized!"
             exit 1
         fi
 
+        # Check for special boot options
+        if ! handle_boot_options; then 
+            # If any exist, remove other options and skip the boot.
+            rm -f /opt/config/mod/BOOT_FLAG*
+
+            # Pause so the user can see what happened
+            sync
+            sleep 3
+
+            exit 0
+        fi
+
+        # Print skipping prompt, create flag file, wait, then delete flag
+        # If the user reboots the printer, the file persists
+        # We'll process it in the next boot
+        xzcat /opt/config/mod/skip.img.xz > /dev/fb0
+        touch "$BOOT_SKIP_F"
+
+        sync
+        sleep 3
+
+        rm -f "$BOOT_SKIP_F"
+        sync
+
+        cat /root/boot.img > /dev/fb0
+
+        # The failure flag will be deleted in S99root if the boot succeeds
+        touch "$BOOT_FAILURE_F"
+        sync
+        
         mkdir -p /opt/config/mod_data/log/
+
         rotate_logs "/opt/config/mod_data/log/init.log"
+        rotate_logs "/opt/config/mod_data/log/skip.log"
         
         initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --send-to-screen
 
-        touch $INIT_FLAG
+        touch "$INIT_FLAG"
         
         sync
     ;;

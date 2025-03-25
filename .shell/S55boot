@@ -6,24 +6,44 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-
-source /opt/config/mod/.shell/common.sh
-
-if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
-    echo "Boot disabled due to SKIP_MOD mode"
-
-    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
-        echo "?? Reverting configuration to be suitable with the enabled screen"
-
-        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
-    fi
-    
+if [ -f /tmp/SKIP_MOD_HARD ]; then
+    echo "Skipping mod hard."
     exit 0
 fi
 
-start() {
-    /opt/config/mod/.shell/boot/boot.sh
+source /opt/config/mod/.shell/common.sh
 
+skip_mod() {
+    echo "Boot disabled due to SKIP_MOD mode"
+
+    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
+        echo "// Reverting configuration to be suitable with the enabled screen"
+        
+        mount_data_partition
+
+        # Need to mount config directory for chroot
+        mount --bind /opt/config "$MOD/opt/config"
+        init_chroot
+        
+        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+
+        echo "// Cleaning up..."
+        
+        dispose_chroot
+        umount "$MOD/opt/config"
+        umount /data
+        
+        echo "// Done. Continue boot..."
+    fi
+}
+
+start() {    
+    /opt/config/mod/.shell/boot/boot.sh
+    
+    IP="$(ip addr show wlan0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -z "$IP" ] && IP="$(ip addr show eth0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -n "$IP" ] && echo "$IP" > "$NET_IP_F"
+    
     fstrim -v /root
     fstrim -v /data
 }
@@ -41,6 +61,12 @@ start() {
 case "$1" in
     start)
         if [ -f "$NOT_FIRST_LAUNCH_F" ]; then echo "start() method meant to be only for fresh start!"; exit 0; fi
+
+        if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+            skip_mod 2>&1 | logged "/opt/config/mod_data/log/skip.log" --send-to-screen
+        
+            exit 0
+        fi
         
         start 2>&1 | logged "/data/logFiles/boot.log" --send-to-screen
         # wait_for_internet &
@@ -49,3 +75,5 @@ case "$1" in
         echo "Usage $0 start"
     ;;
 esac
+
+touch "/tmp/boot_$1"

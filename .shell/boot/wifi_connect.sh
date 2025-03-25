@@ -44,9 +44,6 @@ for _ in $(seq 30); do
         
         (set -m; udhcpc -i $INTERFACE 2>&1 | logged /data/logFiles/wifi.log --no-print) &> /dev/null &
         disown
-
-        touch "$NETWORK_CONNECTED_F"
-        sync
         
         exit 0
     elif [[ "$STATUS" == "SCANNING" ]]; then

@@ -17,8 +17,13 @@ MOD_DATA=/opt/config/mod_data
 INIT_FLAG="/tmp/init_finished_f"
 NOT_FIRST_LAUNCH_F="/tmp/not_first_launch_f"
 CUSTOM_BOOT_F="/tmp/custom_boot_f"
-NETWORK_CONNECTED_F="/tmp/net_connected_f"
+WIFI_CONNECTED_F="/tmp/wifi_connected_f"
+ETHERNET_CONNECTED_F="/tmp/ethernet_connected_f"
 CAMERA_F="/tmp/camera_f"
+NET_IP_F="/tmp/net_ip"
+
+BOOT_FAILURE_F="/opt/config/mod/BOOT_FLAG_FAILURE"
+BOOT_SKIP_F="/opt/config/mod/BOOT_FLAG_SKIP"
 
 SCREEN_FOLLOW_UP_LOG="/tmp/logged_message_queue"
 
@@ -27,6 +32,12 @@ VAR_PATH="$MOD_DATA/variables.cfg"
 
 FLASHED_VERSION_F="$MOD"/version.txt
 VERSION_F=/opt/config/mod/version.txt
+
+LOAD_IMG_XZ="/opt/config/mod/load.img.xz"
+[ -f /opt/config/mod_data/load.img.xz ] && LOAD_IMG_XZ="/opt/config/mod_data/load.img.xz"
+
+SPLASH_IMG_XZ="/opt/config/mod/splash.img.xz"
+[ -f /opt/config/mod_data/splash.img.xz ] && SPLASH_IMG_XZ="/opt/config/mod_data/splash.img.xz"
 
 PATH="$BINS:$PATH"
 
@@ -53,11 +64,19 @@ mount_data_partition() {
 }
 
 init_chroot() {
-    mount -t proc /proc $MOD/proc
-    mount --rbind /sys $MOD/sys
-    mount --rbind /dev $MOD/dev
-    mount --bind /run $MOD/run
-    mount --bind /tmp $MOD/tmp
+    mount -t proc /proc "$MOD"/proc
+    mount --rbind /sys "$MOD"/sys
+    mount --rbind /dev "$MOD"/dev
+    mount --bind /run "$MOD"/run
+    mount --bind /tmp "$MOD"/tmp
+}
+
+dispose_chroot() {
+    umount -lf "$MOD"/proc
+    umount -lf "$MOD"/sys
+    umount -lf "$MOD"/dev
+    umount -lf "$MOD"/run
+    umount -lf "$MOD"/tmp
 }
 
 message() {

@@ -10,7 +10,7 @@
 source /opt/config/mod/.shell/common.sh
 
 display_on() {
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
@@ -18,7 +18,7 @@ display_on() {
 }
 
 display_off() {
-    chroot "$MOD" /bin/python3 /root/printer_data/py/cfg_backup.py \
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
@@ -26,7 +26,7 @@ display_off() {
 }
 
 test() {
-    local display_off=$(/opt/config/mod/.shell/commands/zconf.sh "$VAR_PATH" --get "display_off" "0")
+    local display_off=$("$CMDS"/zconf.sh "$VAR_PATH" --get "display_off" "0")
     return "$display_off"
 }
 
@@ -35,12 +35,17 @@ apply_display_off() {
     killall "ffstartup-arm" &> /dev/null
     killall "firmwareExe" &> /dev/null
     
-    killall "wpa_cli" &> /dev/null
-    if wpa_cli status -i  wlan0 &> /dev/null; then
-        touch "$NETWORK_CONNECTED_F"
+    if ip addr show wlan0 | grep -q "inet "; then
+        killall "wpa_cli" &> /dev/null
+        wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
+        touch "$WIFI_CONNECTED_F"
+    elif ip addr show eth0 | grep -q "inet "; then
+        touch "$ETHERNET_CONNECTED_F"
     fi
-    
-    wpa_cli -B -a "$SCRIPTS/boot/wifi_reconnect.sh" -i wlan0
+
+    IP="$(ip addr show wlan0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -z "$IP" ] && IP="$(ip addr show eth0 2> /dev/null | awk '/inet / {print $2}' | cut -d'/' -f1)"
+    [ -n "$IP" ] && echo "$IP" > "$NET_IP_F"
     
     "$SCRIPTS"/screen.sh backlight 0
     "$SCRIPTS"/screen.sh draw_splash

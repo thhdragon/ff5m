@@ -38,11 +38,12 @@ This will disable the stock screen and activate the Feather screen immediately. 
 
 
 > [!NOTE]
-> You must configure **Wi-Fi** before disabling the stock screen.  
-> After a reboot, the mod connects to a network automatically, but it uses the configuration created by the stock screen: `/etc/wpa_supplicant.conf`
+> You must configure **Wi-Fi** or **Ethernet** before disabling the stock screen.  
+> After a reboot, the mod connects to a network automatically, but it uses the configuration created by the stock screen.   
+> **For Wi-Fi** configuration stored here: `/etc/wpa_supplicant.conf`   
 
 > [!WARNING]
-> Ethernet networking has not been tested and may not work.
+> Only DHCP mode is supported!
 
 **If you lose access** to the printer after disabling the screen, you can temporarily prevent the mod from booting using the [Dual Boot](/docs/DUAL_BOOT.md) option.  
 Then you can edit `variables.cfg` file and disable `display_off` parameter manually:
@@ -74,3 +75,23 @@ It's not suitable for a full UI, but it consumes almost no resources and allows 
 
 
 For examples you can view [display_off.cfg](/display_off.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
+Implementation of Feather itself you can find in [feather_screen.py](/.py/klipper/plugins/feather_screen.py)
+
+### Custom Loading and Splash Screens
+
+Set any image as your splash/loading screen.
+
+- Create PNG image (800×480)
+- Convert to raw bgra with xz compression:
+
+#### Example of Conversion (ImageMagick)
+
+```sh
+convert -size 800x480 xc:none ./splash.png -geometry +0+0 -composite -depth 8 bgra:- | xz -c > "splash.img.xz"
+```
+
+#### Installation
+
+Place in `Fluidd Config → mod_data`:   
+- Loading screen: `load.img.xz`   
+- Splash screen: `splash.img.xz`   

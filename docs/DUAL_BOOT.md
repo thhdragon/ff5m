@@ -7,6 +7,14 @@ The mod implements a failsafe mechanism to boot the stock firmware before execut
 
 To use this feature, you have several options:
 
+### Using the Boot Skip Option
+
+When you see this message during startup:   
+
+```
+TO SKIP THE MOD, REBOOT THE PRINTER RIGHT NOW!
+```
+
 ### Using USB Drive
 
 Format a USB drive to FAT32 and place an empty file in the root directory:  

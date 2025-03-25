@@ -6,7 +6,7 @@
 
 import enum
 import logging
-import os.path
+import os
 import subprocess
 import time
 from typing import List
@@ -19,7 +19,7 @@ class FeatherScreenHelper:
     def __init__(self, debug=False):
         self.debug = debug
         self._process = None
-        self._pipe = None
+        self._pipe_fd = None
 
         self._last_status_bar = None
         self._last_file_caption = None
@@ -29,6 +29,10 @@ class FeatherScreenHelper:
 
     def start(self):
         os.system("killall typer")
+
+        # Create FIFO before starting to guarantee obtaining the file descriptor
+        if not os.path.exists(PIPE_NAME):
+            os.mkfifo(PIPE_NAME, 0o666)
 
         self._process = subprocess.Popen(
             [
@@ -41,25 +45,26 @@ class FeatherScreenHelper:
             stderr=subprocess.STDOUT
         )
 
-        self._pipe = open(PIPE_NAME, "w")
+        self._pipe_fd = os.open(PIPE_NAME, os.O_WRONLY)
 
     def stop(self):
         if self._process:
-            self._pipe.close()
+            os.close(self._pipe_fd)
             self._process.terminate()
             self._process = None
-            self._pipe = None
+            self._pipe_fd = None
 
     icon_extruder = '\ue119'
     icon_bed = '\ue003'
     icon_wifi = '\uE146'
+    icon_ethernet = '\uE059'
     icon_servo = '\ue050'
     icon_active = '\ue076'
     icon_camera = '\ue03b'
 
     toolbar_y = 25
 
-    def draw_toolbar(self, *, wifi: bool, camera: bool, motors: bool, idle: bool, extruder_temp: float, bed_temp: float):
+    def draw_toolbar(self, *, wifi: bool, ethernet: bool, camera: bool, motors: bool, idle: bool, extruder_temp: float, bed_temp: float):
         if not self._process or self._process.poll() is not None:
             raise RuntimeError("Screen is not running")
 
@@ -73,7 +78,8 @@ class FeatherScreenHelper:
         extruder_color = "ff0000" if extruder_temp >= 50 else "ffffff"
         bed_color = "ff0000" if bed_temp >= 40 else "ffffff"
 
-        wifi_color = "ffffff" if wifi else "606060"
+        net_icon = self.icon_ethernet if ethernet else self.icon_wifi
+        net_color = "ffffff" if wifi or ethernet else "606060"
         active_color = "ea00ff"
         servo_color = "ff9000"
         camera_color = "ffffff"
@@ -81,8 +87,8 @@ class FeatherScreenHelper:
         offset_x = 770
         icon_width = 40
         icons = [
-            f'--batch text -p {offset_x} {self.toolbar_y} -c {wifi_color}  -ha right '
-            + f'-va middle -f  "Typicons 12pt" -t "{self.icon_wifi}"',
+            f'--batch text -p {offset_x} {self.toolbar_y} -c {net_color}  -ha right '
+            + f'-va middle -f  "Typicons 12pt" -t "{net_icon}"',
         ]
 
         if camera:
@@ -170,15 +176,13 @@ class FeatherScreenHelper:
         ])
 
     def _send_commands(self, commands: List[str]):
-        if not self._pipe: return
+        if not self._pipe_fd: return
 
-        self._pipe.write('\n'.join([
+        os.write(self._pipe_fd, '\n'.join([
             *commands,
             "--batch flush",
             "--end\n",
-        ]))
-
-        self._pipe.flush()
+        ]).encode())
 
 
 class ScreenState(enum.Enum):
@@ -290,7 +294,8 @@ class FeatherScreen:
 
         idle_state = self.idle_timeout.get_status(eventtime)["state"]
         self.feather.draw_toolbar(
-            wifi=os.path.exists("/tmp/net_connected_f"),
+            wifi=os.path.exists("/tmp/wifi_connected_f"),
+            ethernet=os.path.exists("/tmp/ethernet_connected_f"),
             camera=os.path.exists("/tmp/camera_f"),
             idle=idle_state == "Idle",
             motors=len(self.toolhead.get_status(eventtime)["homed_axes"]) > 0,
@@ -320,7 +325,7 @@ class FeatherScreen:
             self.feather.print_left_panel(self._get_time_estimation_str(eventtime))
 
         if self.debug:
-            logging.info(f"[feather_screen] Loop time: {time.time() - t:0.3f}")
+            logging.info(f"[feather_screen] Loop time: {time.time() - t:0.4f}")
 
         return eventtime + REFRESH_TIME
 

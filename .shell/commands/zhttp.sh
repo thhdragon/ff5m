@@ -37,7 +37,7 @@ switch() {
 }
 
 apply() {
-    cat > $MOD/root/www/index.html <<EOF
+    cat > "$MOD"/root/www/index.html <<EOF
 <html>
 <body>
     <script>window.location.href = './$WEB';</script>
@@ -51,7 +51,7 @@ EOF
 
 restart() {
     unset LD_PRELOAD
-    chroot $MOD /opt/config/mod/.root/S70httpd restart
+    chroot "$MOD" /opt/config/mod/.root/S70httpd restart
 }
 
 

@@ -44,6 +44,7 @@ TAR_DEBUG_PARAMS=(
     "${COMMON_CFG_PARAMS[@]}"
     ./mod/sql/version
     /data/logFiles/boot.log*
+    /data/logFiles/skip.log*
     /data/logFiles/ssh.log*
     /data/logFiles/wifi.log*
     /data/logFiles/mod/*.log*
@@ -131,5 +132,4 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
-# TODO: klipper sets LD_PRELOAD variable, idkw
-LD_PRELOAD="" chroot $MOD /bin/python3 /root/printer_data/py/cfg_backup.py $PARAMS
+chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py $PARAMS

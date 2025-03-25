@@ -116,7 +116,7 @@ case "$1" in
         load_version
 
         if [ "$2" != "--no-clear" ]; then
-            xzcat /opt/config/mod/load.img.xz > /dev/fb0
+            xzcat "$LOAD_IMG_XZ" > /dev/fb0
         fi
         
         "$BINS/typer" -db batch \
@@ -127,12 +127,16 @@ case "$1" in
     draw_splash)
         load_version
         if [ "$2" != "--no-clear" ]; then
-            xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+            xzcat "$SPLASH_IMG_XZ" > /dev/fb0
         fi
 
         "$BINS/typer" -db batch \
             --batch text -ha center -p 236 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$VERSION_STRING" \
             --batch text -ha center -p 592 300 -c 2b8787 -f "JetBrainsMono Bold 12pt" -t "v$FIRMWARE_VERSION"
+
+        if [ -f "$NET_IP_F" ]; then
+            print_prepare_status "IP: $(cat "$NET_IP_F")"
+        fi
     ;;
 
     draw_status_bar)
@@ -149,7 +153,7 @@ case "$1" in
         bed_temp="$2"
         camera_active=$( ps | grep -q "[m]jpg_streamer"; echo $(($? == 0)) )
 
-        wifi_color=$( [ -f "$NETWORK_CONNECTED_F" ] && echo "ffffff" || echo "606060" )
+        wifi_color=$( [ -f "$WIFI_CONNECTED_F" ] && echo "ffffff" || echo "606060" )
         nozzle_color=$( [ "$nozzle_temp" -ge 50 ] && echo "ff0000" || echo "ffffff" )
         bed_color=$( [ "$bed_temp" -ge 40 ] && echo "ff0000" || echo "ffffff" )
         active_color="ea00ff"

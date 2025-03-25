@@ -61,7 +61,8 @@ class AsyncRunHelper:
         if self._terminate: raise InterruptedError("Async runner terminated")
 
         if self.mode == ShellMode.DAEMON:
-            self._run_task(program, args)
+            proc = self._run_task(program, args)
+            logging.info(f"[gcode_shell_command {self.name}]: run deemon process {proc.pid!r}.")
             return
 
         with self._lock:
@@ -116,6 +117,7 @@ class AsyncRunHelper:
 
             task.proc = self._run_task(task.program, task.args)
             if task.proc:
+                logging.info(f"[gcode_shell_command {self.name}]: run process {task.proc.pid!r}.")
                 self._bg_process_task(task)
 
         logging.info(f"[gcode_shell_command {self.name}]: background thread exit.")

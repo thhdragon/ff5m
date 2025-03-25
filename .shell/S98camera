@@ -8,7 +8,7 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ] || [ -f /tmp/SKIP_MOD_HARD ]; then
     echo "Custom camera disabled due to SKIP_MOD mode"
     exit 0
 fi
@@ -24,16 +24,15 @@ fi
 
 VIDEO="video0"
 
-E_SHARPNESS=255
-E_BRIGHTNESS=0
-E_CONTRAST=255
-E_GAMMA=10
-E_GAIN=1
-
 PID_FILE=/run/camera.pid
 source "/opt/config/mod_data/camera.conf"
 
 _VIDEO_P="/dev/${VIDEO}"
+
+_REDUCE_MEM_PARAMS=""
+if [ -z "$REDUCE_MEMORY" ] || [ "$REDUCE_MEMORY" == "1" ]; then
+    _REDUCE_MEM_PARAMS="-fs $(( WIDTH * HEIGHT * 2 ))"
+fi
 
 if [ "$VIDEO" = "auto" ]; then
     _VIDEO_P="/dev/video0"
@@ -48,42 +47,96 @@ if [ "$VIDEO" = "auto" ]; then
     done
 fi
 
+[[ " $* " =~ " --silent " ]] && SILENT=1 || SILENT=0
+
 start() {
-    enabled=$($CFG_SCRIPT $VAR_PATH --get "camera" "0")
+    echo "Starting camera..."
+
+    enabled=$($CFG_SCRIPT "$VAR_PATH" --get "camera" "0")
     if [ "$enabled" -eq 1 ]; then
         v4l2-ctl -d "${_VIDEO_P}" --set-fmt-video=width="${WIDTH}",height="${HEIGHT}"
-        start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 -fs $(( WIDTH * HEIGHT * 2 ))"
+        start-stop-daemon -Sbm -p $PID_FILE --exec /opt/bin/mjpg_streamer -- -o "/opt/lib/mjpg-streamer/output_http.so -w /opt/mjpg-streamer/www -p 8080" -i  "/opt/lib/mjpg-streamer/input_uvc.so -d ${_VIDEO_P} -r ${WIDTH}x${HEIGHT} -f $FPS -b 1 ${_REDUCE_MEM_PARAMS}"
         
         touch "$CAMERA_F"
-        reload
+        echo "OK"
+
+        apply_effects
     else
-        echo "Camera disabled in configuration"
+        [ "$SILENT" -eq 0 ] && echo "Camera disabled in configuration"
     fi
 }
 
 stop() {
-    start-stop-daemon -K -p $PID_FILE 2>/dev/null >/dev/null
+    echo "Stopping camera..."
+    start-stop-daemon -K -p $PID_FILE > /dev/null 2>&1
     rm -f "$CAMERA_F"
+    echo "OK"
 }
 
 restart() {
-    stop
-    sleep 2
+    if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2> /dev/null; then
+        stop
+        sleep 2
+    fi
+
     start
 }
 
 reload() {
-    if [ -f $PID_FILE ] && kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness=${E_SHARPNESS}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl brightness=${E_BRIGHTNESS}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast=${E_CONTRAST}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma=${E_GAMMA}
-        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain=${E_GAIN}
+    local enabled=$($CFG_SCRIPT "$VAR_PATH" --get "camera" "0")
 
-        touch "$CAMERA_F"
-    else
-        rm -f "$CAMERA_F"
+    if [ "$enabled" -eq "0" ]; then
+        if [ "$SILENT" -eq 0 ]; then
+            echo "Camera disabled in configuration."
+            echo "To enable the camera, run: SET_MOD_PARAM PARAM='camera' VALUE=1"
+            echo "A detailed guide can be found here: https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md"
+        fi
+
+        exit 1
     fi
+
+    if ! [ -f $PID_FILE ] || ! kill -0 "$(cat $PID_FILE)" 2>/dev/null; then
+        restart
+        exit 0
+    fi
+
+    if apply_effects; then
+        [ "$SILENT" -eq 0 ] && echo "Effects applied"
+    fi
+}
+
+apply_effects() {
+    local effects_on="$($CFG_SCRIPT "$CFG_PATH" --get "POST_PROCESSING" "1")"
+    if [ "$effects_on" -eq 0 ]; then
+        return 1
+    fi
+
+    [ -n "$E_BRIGHTNESS" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl brightness="${E_BRIGHTNESS}"
+    [ -n "$E_CONTRAST" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl contrast="${E_CONTRAST}"
+    [ -n "$E_GAIN" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gain="${E_GAIN}"
+    [ -n "$E_GAMMA" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl gamma="${E_GAMMA}"
+    [ -n "$E_HUE" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl hue="${E_HUE}"
+    [ -n "$E_SATURATION" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl saturation="${E_SATURATION}"
+    [ -n "$E_SHARPNESS" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl sharpness="${E_SHARPNESS}"
+    [ -n "$E_POWER_LINE_FREQUENCY" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl power_line_frequency="${E_POWER_LINE_FREQUENCY}"
+    [ -n "$E_WHITE_BALANCE_TEMPERATURE" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl white_balance_temperature="${E_WHITE_BALANCE_TEMPERATURE}"
+    [ -n "$E_BACKLIGHT_COMPENSATION" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl backlight_compensation="${E_BACKLIGHT_COMPENSATION}"
+    [ -n "$E_EXPOSURE_AUTO" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl exposure_auto="${E_EXPOSURE_AUTO}"
+    [ -n "$E_EXPOSURE_ABSOLUTE" ] && \
+        v4l2-ctl -d "${_VIDEO_P}" --set-ctrl exposure_absolute="${E_EXPOSURE_ABSOLUTE}"
+
+    return 0
 }
 
 
@@ -98,8 +151,7 @@ case "$1" in
         restart
     ;;
     reload)
-        reload
-        echo "OK"
+        reload "$2"
     ;;
     *)
         echo "Usage: $0 {start|stop|restart|reload}"

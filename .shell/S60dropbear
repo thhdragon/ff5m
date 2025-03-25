@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -f /tmp/SKIP_MOD ]; then
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_HARD ]; then
     echo "Dropbear disabled due to SKIP_MOD mode"
     exit 0
 fi

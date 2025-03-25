@@ -8,8 +8,9 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ]; then
+if [ -f /tmp/SKIP_MOD ] || [ -f /tmp/SKIP_MOD_SOFT ] || [ -f /tmp/SKIP_MOD_HARD ]; then
     echo "Buildroot services disabled due to SKIP_MOD mode"
+    touch "$NOT_FIRST_LAUNCH_F"
     exit 0
 fi
 
@@ -35,9 +36,7 @@ start() {
         if [ -n "$midi_file" ]; then
             audio midi -m "/opt/config/mod_data/midi/$midi_file" &
         fi
-    fi
 
-    if [ ! -f "$NOT_FIRST_LAUNCH_F" ]; then
         mount --rbind /dev/pts "$MOD"/dev/pts
     fi
     
@@ -52,6 +51,7 @@ start() {
     fi
 
     rm -f "$SCREEN_FOLLOW_UP_LOG"
+    rm -f "$BOOT_FAILURE_F"
     touch "$NOT_FIRST_LAUNCH_F"
 }
 

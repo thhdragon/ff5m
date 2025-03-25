@@ -25,13 +25,20 @@ check_special_boot_flag() {
         return 0
     fi
 
-    # Check boot flags
+    # Check boot flags (supported FLAG or FLAG.ext)
     for file_name in "${FLAGS[@]}"; do
-        if [ -f "$path/$file_name" ]; then
-            echo "$file_name"
-            return 0
+        if ! compgen -G "$path/$file_name*" > /dev/null; then
+            continue
         fi
+
+        for file in "$path/$file_name"*; do
+            if [[ "$file" =~ ^$path/$file_name(\.[^/]*)?$ ]]; then
+                echo "$file_name"
+                return 0
+            fi
+        done
     done
+
 
     return 1
 }
@@ -60,7 +67,14 @@ search_special_boot_flag_usb() {
         if is_usb_disk "$device"; then
             echo "// Found USB disk: $device"
             
-            partitions=$(fdisk -l "$device" | awk '/^ *[0-9]+/ {print $1 " " $4}' | sort -k2,2nr)
+            device_name=$(basename "$device")
+            partitions=$(
+                awk -v dev="$device_name" \
+                    '$4 ~ dev"[0-9]+$" {print substr($4,length(dev)+1) " " $3/2048 "M"}'\
+                    /proc/partitions \
+                    | sort -k2,2rn
+            )
+            
             if [ -z "$partitions" ]; then
                 echo "No partitions found on $device."
                 continue
@@ -184,13 +198,13 @@ handle_special_boot_flag() {
         ;;
         FIRMWARE_IMAGE | FIRMWARE_SCRIPT)
             echo "!! Installation image found. Skipping the mod..."
-            touch /tmp/SKIP_MOD
+            touch /tmp/SKIP_MOD_HARD
 
             exit 0
         ;;
         KLIPPER_MOD | klipper_mod_remove)
             echo "@@ Skipping mod because of Klipper Mod..."
-            touch /tmp/SKIP_MOD
+            touch /tmp/SKIP_MOD_HARD
 
             exit 0
         ;;
