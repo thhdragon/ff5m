@@ -116,7 +116,7 @@ case "$1" in
         load_version
 
         if [ "$2" != "--no-clear" ]; then
-            xzcat /opt/config/mod/load.img.xz > /dev/fb0
+            xzcat "$LOAD_IMG_XZ" > /dev/fb0
         fi
         
         "$BINS/typer" -db batch \
@@ -127,7 +127,7 @@ case "$1" in
     draw_splash)
         load_version
         if [ "$2" != "--no-clear" ]; then
-            xzcat /opt/config/mod/splash.img.xz > /dev/fb0
+            xzcat "$SPLASH_IMG_XZ" > /dev/fb0
         fi
 
         "$BINS/typer" -db batch \

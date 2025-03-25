@@ -75,3 +75,23 @@ It's not suitable for a full UI, but it consumes almost no resources and allows 
 
 
 For examples you can view [display_off.cfg](/display_off.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
+Implementation of Feather itself you can find in [feather_screen.py](/.py/klipper/plugins/feather_screen.py)
+
+### Custom Loading and Splash Screens
+
+Set any image as your splash/loading screen.
+
+- Create PNG image (800×480)
+- Convert to raw bgra with xz compression:
+
+#### Example of Conversion (ImageMagick)
+
+```sh
+convert -size 800x480 xc:none ./splash.png -geometry +0+0 -composite -depth 8 bgra:- | xz -c > "splash.img.xz"
+```
+
+#### Installation
+
+Place in `Fluidd Config → mod_data`:   
+- Loading screen: `load.img.xz`   
+- Splash screen: `splash.img.xz`   

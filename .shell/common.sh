@@ -33,6 +33,12 @@ VAR_PATH="$MOD_DATA/variables.cfg"
 FLASHED_VERSION_F="$MOD"/version.txt
 VERSION_F=/opt/config/mod/version.txt
 
+LOAD_IMG_XZ="/opt/config/mod/load.img.xz"
+[ -f /opt/config/mod_data/load.img.xz ] && LOAD_IMG_XZ="/opt/config/mod_data/load.img.xz"
+
+SPLASH_IMG_XZ="/opt/config/mod/splash.img.xz"
+[ -f /opt/config/mod_data/splash.img.xz ] && SPLASH_IMG_XZ="/opt/config/mod_data/splash.img.xz"
+
 PATH="$BINS:$PATH"
 
 unset LD_PRELOAD

@@ -57,7 +57,7 @@ initialize() {
     
     # If we are here: mod loading not skipped
 
-    xzcat /opt/config/mod/load.img.xz > /dev/fb0
+    xzcat "$LOAD_IMG_XZ" > /dev/fb0
 
     echo "// Mounting partition..."
     mount_data_partition
