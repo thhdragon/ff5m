@@ -41,8 +41,8 @@ You can read more about Klipper calibration in the Klipper documentation: [https
 The printer uses different bed meshes depending on the scenario:
 
 - When using the Stock UI, the firmware will load the `MESH_DATA` profile.
-- When using the Feather Screen, the mod will load the `default` profile.
-- When using the option to [force leveling](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#parameters), the mod will save the mesh to the `auto` profile. After the print is completed, the profile will be deleted.
+- When using the Feather Screen, the mod will load the `auto` profile.
+- When using the option to [force leveling](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#parameters), the mod will save the mesh to the `default` profile. After the print is completed, the profile will be deleted.
 
 > [!NOTE]  
 > If no profile with the required name exists, the printer will perform leveling before the print begins.    
