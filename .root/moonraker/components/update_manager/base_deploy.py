@@ -16,14 +16,13 @@ if TYPE_CHECKING:
     from .update_manager import CommandHelper
 
 class BaseDeploy:
-    cmd_helper: CommandHelper
-    def __init__(
-        self,
-        config: ConfigHelper,
-        name: Optional[str] = None,
-        prefix: str = "",
-        cfg_hash: Optional[str] = None
-    ) -> None:
+    def __init__(self,
+                 config: ConfigHelper,
+                 cmd_helper: CommandHelper,
+                 name: Optional[str] = None,
+                 prefix: str = "",
+                 cfg_hash: Optional[str] = None
+                 ) -> None:
         if name is None:
             name = self.parse_name(config)
         self.name = name
@@ -31,7 +30,8 @@ class BaseDeploy:
             prefix = f"{prefix} {self.name}: "
         self.prefix = prefix
         self.server = config.get_server()
-        self.refresh_interval = self.cmd_helper.get_refresh_interval()
+        self.cmd_helper = cmd_helper
+        self.refresh_interval = cmd_helper.get_refresh_interval()
         refresh_interval = config.getint('refresh_interval', None)
         if refresh_interval is not None:
             self.refresh_interval = refresh_interval * 60 * 60
@@ -46,10 +46,6 @@ class BaseDeploy:
             # allow deprecated [update_manager client app] style names
             name = name[7:]
         return name
-
-    @staticmethod
-    def set_command_helper(cmd_helper: CommandHelper) -> None:
-        BaseDeploy.cmd_helper = cmd_helper
 
     async def initialize(self) -> Dict[str, Any]:
         umdb = self.cmd_helper.get_umdb()

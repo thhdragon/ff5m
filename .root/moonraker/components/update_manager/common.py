@@ -50,7 +50,6 @@ class AppType(ExtendedEnum):
     GIT_REPO = 3
     ZIP = 4
     PYTHON = 5
-    EXECUTABLE = 6
 
     @classmethod
     def detect(cls, app_path: Union[str, pathlib.Path, None] = None):
@@ -74,7 +73,7 @@ class AppType(ExtendedEnum):
     def supported_channels(self) -> List[Channel]:
         if self == AppType.NONE:
             return []
-        elif self in [AppType.WEB, AppType.ZIP, AppType.EXECUTABLE]:
+        elif self in [AppType.WEB, AppType.ZIP]:
             return [Channel.STABLE, Channel.BETA]  # type: ignore
         else:
             return list(Channel)

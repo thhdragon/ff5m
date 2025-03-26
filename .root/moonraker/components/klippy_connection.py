@@ -390,6 +390,7 @@ class KlippyConnection:
         if result is None:
             return
         endpoints = result.get('endpoints', [])
+        logging.info(f"*** {endpoints}")
         for ep in endpoints:
             if ep not in RESERVED_ENDPOINTS:
                 self.server.register_endpoint(
@@ -625,8 +626,6 @@ class KlippyConnection:
                 raise self.server.error(
                     "No connection associated with subscription request"
                 )
-            # if the connection has an existing subscription pop it off
-            self.subscriptions.pop(conn, None)
             requested_sub: Subscription = args.get('objects', {})
             all_subs: Subscription = dict(requested_sub)
             # Build the subscription request from a superset of all client subscriptions
@@ -698,8 +697,7 @@ class KlippyConnection:
                 if obj_name not in all_status:
                     del self.subscription_cache[obj_name]
             result['status'] = pruned_status
-            if requested_sub:
-                self.subscriptions[conn] = requested_sub
+            self.subscriptions[conn] = requested_sub
             return result
 
     async def _request_standard(
