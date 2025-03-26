@@ -267,3 +267,13 @@ The key difference is that the mod allows you to set the temperature for calibra
 If you're having trouble, try pressing the console button using a stylus or a thin object. This may resolve the issue.
 
 ---
+
+### Why Does the Printer Boot in Failsafe Mode but Still Show Feather?
+
+Failsafe mode is designed to completely skip all mod code execution during boot.  
+Its sole purpose is to prevent you from being left with a bricked printer in case of a mod failure.
+
+If you only want to skip the mod, use [Dual Boot](/docs/DUAL_BOOT.md) instead.  
+It will gracefully skip the mod, leaving you with a fully functional stock system.
+
+---
