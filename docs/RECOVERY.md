@@ -157,7 +157,7 @@ You can download the necessary files and access the guide from this link: [Firmw
 #### Steps to Restore Firmware
 
 1. Prepare for Recovery:   
-   - You’ll need to desolder USB0. This is relatively simple, even for beginners.   
+   - You’ll need to solder USB0. This is relatively simple, even for beginners.   
    - You don’t need to solder a button to a resistor. Instead, interrupt the boot process via UART (press Enter when prompted) to enter U-Boot.   
    - Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
 
