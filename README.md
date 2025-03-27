@@ -69,10 +69,14 @@ This modification also includes additional features. It is highly recommended th
 
 For additional help, check out the [F.A.Q.](/docs/FAQ.md).
 
+You can reach services using these addresses:  
+- **Moonraker**: `http://<printer_ip>:7125/`  
+- **Fluidd**: `http://<printer_ip>/fluidd/`  
+- **Mainsail**: `http://<printer_ip>/mainsail/`  
+
 If you encounter issues:  
 1. First, consult the documentation.
 2. If the issue persists, you can create an [issue](https://github.com/DrA1ex/ff5m/issues) on GitHub or join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group for assistance.
- 
 
 ## Why This Mod Was Developed
 This mod was created to address several critical limitations and challenges faced by users of the Flashforge AD5M (Pro) 3D printer. Here are the key reasons behind its development:
