@@ -46,4 +46,4 @@ You can reach services using these addresses:
 You can update over-the-air to any version that matches your major version. For example, if you have `1.2.0`, you can update to any `1.2.x` version, but not to `1.3.x`.  
 To do an OTA update, navigate to **Configuration -> Software Update**.  
 
-OTA updates are supported for the mod itself and for Fluidd/Mainsail.
+OTA updates are supported for the mod itself and for Fluidd.
