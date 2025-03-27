@@ -132,9 +132,6 @@ initialize() {
 
     echo "// Apply klipper patches..."
     apply_klipper_patches
-    
-    echo "// Apply other patches..."
-    apply_other_patches
 
     echo "// Restore config..."
     fix_config
@@ -262,6 +259,10 @@ apply_klipper_patches() {
             ln -fs "$file" "$target"
         fi
     done
+
+    echo "Apply fixes..."
+
+    "$CMDS"/zfix_e0017.sh apply
 }
 
 fix_config() {
