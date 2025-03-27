@@ -25,11 +25,12 @@ Lastly, in difficult cases, the mod includes recovery and uninstall firmware ima
 ### Flashing the firmware image
 
 The mod uses the same installation mechanism as the stock firmware:   
-1. Download the Forge-X image from the Release [page](https://github.com/drA1ex/ff5m/releases) onto a USB flash drive.  
-2. Rename the file to match your printer version. For Pro, rename the file to `Adventurer5MPro-ForgeX-x.x.x.tgz`. For non-Pro, it should remain named `Adventurer5M-ForgeX-x.x.x.tgz`.  
-3. Insert the USB flash drive into the printer before powering it on.  
-4. The printer will automatically install the update. After the installation is finished, you will see a message at the end of the screen.  
-5. Eject the USB drive and reboot the printer.  
+1. Uninstall other mods first - if you have any.
+2. Download the Forge-X image from the Release [page](https://github.com/drA1ex/ff5m/releases) onto a USB flash drive (⚠️ **Do NOT unpack it!**).  
+3. Rename the file to match your printer version. For Pro, rename the file to `Adventurer5MPro-ForgeX-x.x.x.tgz`. For non-Pro, it should remain named `Adventurer5M-ForgeX-x.x.x.tgz`.  
+4. Insert the USB flash drive into the printer before powering it on.  
+5. The printer will automatically install the update. After the installation is finished, you will see a message at the end of the screen.  
+6. Eject the USB drive and reboot the printer.  
 
 **Note**: The mod installer currently requires the printer to be updated to at least version **2.6.5** of the stock Flashforge firmware.  
 After installation, the printer will boot into the modified firmware by default.
