@@ -83,21 +83,7 @@ SET_MOD_PARAM PARAM="camera" VALUE=1
 
 This command activates the mod's camera implementation.
 
-#### Step 4: Configure Fluidd Camera Settings
-Next, configure the camera settings in Fluidd. Here’s how:
-
-Go to **Settings -> Camera** in Fluidd.
-
-Use the **Example** configuration as a template. This will help you set up the correct settings.
-
-You need to set the following URLs:
-
-- Snapshot URL: http://printer_ip:8080/?action=snapshot
-- Stream URL: http://printer_ip:8080/?action=stream
-
-Replace printer_ip with the actual IP address of your printer. If you’re unsure about the IP, you can find it in the printer’s network settings.
-
-#### Step 5: Reload Fluidd
+#### Step 4: Reload Fluidd
 After completing the configuration, reload the Fluidd page. The camera should now be operational, and you should be able to view the stream and take snapshots.
 
 #### Notes for Mainsail Users
