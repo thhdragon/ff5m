@@ -96,15 +96,14 @@ body:
     attributes:
       label: Debugging Information
       description: Follow the instructions based on your situation and upload the required files.
-      value:
-      render: markdown
+      placeholder: "e.g., Drag and drop the debug.tar file here."
 
   - type: textarea
     id: installation_logs
     attributes:
       label: Installation/Uninstallation Logs (if applicable)
       description: If your issue is related to installation or uninstallation, upload the installation log (from USB) or other logs left after flashing the mod.
-      placeholder: "e.g., Drag and drop the log file here or paste its contents."
+      placeholder: "e.g., Drag and drop the log file here."
 
   - type: checkboxes
     id: checklist
