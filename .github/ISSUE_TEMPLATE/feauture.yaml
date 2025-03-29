@@ -1,0 +1,86 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for the Forge-X
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: printer_model
+    attributes:
+      label: Printer Model
+      description: Select the printer model this feature applies to.
+      options:
+        - Adventurer 5M
+        - Adventurer 5M Pro
+        - Both
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: firmware_version
+    attributes:
+      label: Firmware Version
+      description: Enter the firmware version you are currently using (e.g., 3.1.5). Leave blank if not applicable.
+      placeholder: "e.g., 3.1.5"
+    validations:
+      required: false
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod Version
+      description: Enter the mod version you are currently using (e.g., 1.2.2). Leave blank if not applicable.
+      placeholder: "e.g., 1.2.2"
+    validations:
+      required: false
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature Description
+      description: Describe the feature or enhancement you would like to see.
+      placeholder: "e.g., I’d like a feature that makes my printer prepare me a sandwich in the morning."
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_purpose
+    attributes:
+      label: Purpose of the Feature
+      description: Explain why this feature would be useful or what problem it solves.
+      placeholder: "e.g., This would make me happy - it's the only thing my printer is missing!"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: other_mods
+    attributes:
+      label: Other Mods Installed
+      description: Check any other mods you have installed, if relevant to your request.
+      options:
+        - label: I have installed Klipper Mod earlier.
+          required: false
+        - label: I have installed ZMod earlier.
+          required: false
+        - label: I have installed ForgeX earlier.
+          required: false
+
+  - type: checkboxes
+    id: screen_type
+    attributes:
+      label: Screen Type
+      description: Check the screen configuration you are using, if relevant to your request.
+      options:
+        - label: I use Stock screen.
+          required: false
+        - label: I use Feather screen.
+          required: false
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information
+      description: Provide any extra details, such as examples, use cases, or references to similar features in other mods.
+      placeholder: "e.g., I saw this feature in Klipper Mod and think it would work well here."
+    validations:
+      required: false
