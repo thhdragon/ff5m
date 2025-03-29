@@ -9,6 +9,11 @@ There are two versions of these images:
 - **Dry Run:** This is the same as the full image but does not restore anything. It only prints information about corrupted files. Additionally, you can read the log created on the USB after uninstalling.  
 - **Full Recovery:** This contains a full system data backup and restores corrupted files from it.
 
+Before you start, flash the debug image to collect all diagnostics needed for potential future recovery.   
+Choose based on your model:
+- Adventurer 5M: [Adventurer5M-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-debug.tgz)
+- Adventurer 5M **Pro**: [Adventurer5MPro-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5MPro-debug.tgz)
+
 If recovery doesn't work, try flashing the [Uninstall image](/docs/UNINSTALL.md#using-uninstall-image), and then the [Factory image](/docs/UNINSTALL.md#flashing-factory-firmware).  
 In most cases, this should restore your printer's functionality.
 
