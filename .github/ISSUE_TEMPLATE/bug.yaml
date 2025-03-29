@@ -5,6 +5,11 @@ labels: ["bug"]
 assignees:
   - DrA1ex
 body:
+  -type: markdown
+    attributes:
+      value: |
+        Please fill out this template as completely as possible to help us diagnose and resolve your issue efficiently. Missing information may delay the troubleshooting process.
+
   - type: dropdown
     id: printer_model
     attributes:
@@ -77,16 +82,20 @@ body:
     validations:
       required: true
 
-  - type: textarea
-    id: debug_instructions
+  - type: markdown
     attributes:
-      label: Debugging Information
-      description: Follow the instructions based on your situation and upload the required files.
       value: |
         - **If you can access Web UI:** Run `TAR_DEBUG` on your printer and upload the generated archive file below.
         - **If you cannot access Web UI:** Flash the appropriate debug image for your printer, then upload the `debug.tar` archive:
           - Adventurer 5M: [Adventurer5M-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-debug.tgz)
           - Adventurer 5M Pro: [Adventurer5MPro-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5MPro-debug.tgz)
+  
+  - type: textarea
+    id: debug_instructions
+    attributes:
+      label: Debugging Information
+      description: Follow the instructions based on your situation and upload the required files.
+      value:
       render: markdown
 
   - type: textarea
@@ -115,3 +124,9 @@ body:
       label: Additional Information
       description: Provide any extra details that might be relevant to the issue.
       placeholder: "e.g., The printer worked fine with mod version 1.2.1 but started crashing after upgrading to 1.2.2."
+
+
+  -type: markdown
+    attributes:
+      value: |
+        Thank you for providing detailed information! This will help to resolve your issue more quickly.
