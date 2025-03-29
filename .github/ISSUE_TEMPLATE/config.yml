@@ -1,7 +1,15 @@
-name: Printer Firmware Modification Issue
+blank_issues_enabled: false
+contact_links:
+  - name: Telegram Community group
+    url: https://t.me/+ihE2Ry8kBNkwYzhi
+    about: Please join the community group
+
+name: Forge-X Issue
 description: Report an issue with the printer firmware modification
 title: "[Issue]: "
 labels: ["bug"]
+assignees:
+  - DrA1ex
 body:
   - type: dropdown
     id: printer_model
