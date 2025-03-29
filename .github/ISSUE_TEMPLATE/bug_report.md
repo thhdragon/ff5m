@@ -20,7 +20,7 @@ Please fill out this template as completely as possible to help us diagnose and 
 
 ### Other Mods Installed
 Check any other mods you have installed on your printer previously:  
-- [ ] I have installed Klipper Mod earlier.  
+- [x] I have installed Klipper Mod earlier.  
 - [ ] I have installed ZMod earlier.  
 - [ ] I have installed ForgeX earlier.
 
@@ -28,7 +28,7 @@ Check any other mods you have installed on your printer previously:
 
 ### Screen type
 Check screen configurations you are using:    
-- [ ] I use Stock screen.  
+- [x] I use Stock screen.  
 - [ ] I use Feather screen.
 
 ---
@@ -63,7 +63,7 @@ Please provide the requested debugging information based on your situation:
 
 ### Checklist
 Please check the boxes that apply to confirm you’ve taken these steps:  
-- [ ] I have read the documentation and did not find an answer.  
+- [x] I have read the documentation and did not find an answer.  
 - [ ] I have read the F.A.Q.  
 - [ ] I have tried rebooting the printer, and the problem persists.
 
