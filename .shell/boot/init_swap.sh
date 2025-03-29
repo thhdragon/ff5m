@@ -7,7 +7,7 @@
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
 
-MOD=/data/.mod/.zmod
+MOD=/data/.mod/.forge-x
 CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
 CFG_PATH="/opt/config/mod_data/variables.cfg"
 

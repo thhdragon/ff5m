@@ -138,10 +138,10 @@ done < <(find ./.sync -type f)
 cleanup
 
 # To avoid restarting after Moonraker's Git repair.
-SKIP_REBOOT_F="/data/.mod/.zmod/tmp/zmod_skip_reboot"
+SKIP_REBOOT_F="/data/.mod/.forge-x/tmp/mod_skip_reboot"
 
 if [ "$CHANGED" -eq 1 ] && [ ! -f "$SKIP_REBOOT_F" ]; then
-    echo -e "\n${YELLOW}Setup reboot skip for next zmod update${NC}"
+    echo -e "\n${YELLOW}Setup reboot skip for next forge-x update${NC}"
     touch "$SKIP_REBOOT_F"
 fi
 
@@ -159,7 +159,7 @@ if [ "$CHANGED" -eq 1 ] || [ "$FORCE_RESTART" -eq 1 ] && [ "$SKIP_RESTART" -eq 0
     echo; echo -e "${GREEN}Restarting services...${NC}\n"
     
     run_service "Moonraker" "Stopping"      1   "$SKIP_MOON_RESTART" \
-    "/data/.mod/.zmod/run/moonraker.pid"    1  /etc/init.d/S99root stop
+    "/data/.mod/.forge-x/run/moonraker.pid"    1  /etc/init.d/S99root stop
     
     run_service "Database"  "Migrating"     0   "$SKIP_MIGRATE"           /opt/config/mod/.shell/migrate_db.sh
     run_service "Moonraker" "Starting"      0   "$SKIP_MOON_RESTART"      /etc/init.d/S99root start

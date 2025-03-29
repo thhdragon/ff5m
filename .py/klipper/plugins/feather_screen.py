@@ -175,6 +175,14 @@ class FeatherScreenHelper:
             f'--batch fill -p 0 360 -s 800 120 -c 0',
         ])
 
+        try:
+            with open("/tmp/net_ip", "r") as f:
+                ip = f.readline().strip()
+        except:
+            ip = None
+
+        if ip: self.print_status(f"IP: {ip}")
+
     def _send_commands(self, commands: List[str]):
         if not self._pipe_fd: return
 

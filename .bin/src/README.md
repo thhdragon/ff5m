@@ -27,6 +27,9 @@ ct-ng arm-unknown-linux-gnueabi
 # - Use EABI
 # - Floating point: Software (no FPU)
 # 
+# Or if you want to build the toolchain to run in Buildroot env (integrated in the mod):
+# - [Change] Floating point: Hardware (FPU)
+# 
 # Libraries:
 # - Set glibc version to 2.25.
 # - Use Linux Kernel version 5.3.18.

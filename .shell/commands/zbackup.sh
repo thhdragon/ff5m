@@ -54,7 +54,7 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/moonraker.log
     /data/logFiles/console*.log
     /root/version
-    /data/.mod/.zmod/etc/os-release
+    /data/.mod/.forge-x/etc/os-release
 )
 
 tar_backup() {

@@ -45,7 +45,7 @@ if [ "$CMD" == "restart_firmware" ]; then
 fi
 
 if [ "$CMD" == "recover" ]; then
-    send "machine/update/recover?name=zmod&hard=true"
+    send "machine/update/recover?name=forge-x&hard=true"
 fi
 
 echo "Unknonw command \"$CMD\""

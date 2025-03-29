@@ -84,13 +84,23 @@ mount -t proc proc /proc
 mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t devtmpfs none /dev
+# Make / rw
 mount -o remount,rw /
+# Mount /data
+fsck -y /dev/mmcblk0p7
+mount /dev/mmcblk0p7 /data
 ```
 
 6. Now, fix whatever changes caused the issue.  
 
 Note that the system isn’t fully booted, so some features may not work.  
 Search online for solutions or ask for help in the Support Telegram Group.
+
+(Optional) **Check the Filesystem**
+
+```bash
+fsck -f /dev/mmcblk0p6
+```
 
 (Optional) **Mount the USB**
 
@@ -159,7 +169,7 @@ You can download the necessary files and access the guide from this link: [Firmw
 #### Steps to Restore Firmware
 
 1. Prepare for Recovery:   
-   - You’ll need to desolder USB0. This is relatively simple, even for beginners.   
+   - You’ll need to solder USB0. This is relatively simple, even for beginners (you would need JST PH2.0 5pin).   
    - You don’t need to solder a button to a resistor. Instead, interrupt the boot process via UART (press Enter when prompted) to enter U-Boot.   
    - Use the firmware dump and tools provided here: [link](https://disk.yandex.ru/d/oie2Chx1rexkgw).
 
@@ -173,3 +183,7 @@ You can download the necessary files and access the guide from this link: [Firmw
 3. Follow the Guide
    - Carefully follow the instructions in the linked guide to complete the recovery process.  
 
+4. Flash the dump:
+   ```
+   xfel_t113_ds extra sdmmc um3 sm0 write 0x00000000 dump.bin
+   ```

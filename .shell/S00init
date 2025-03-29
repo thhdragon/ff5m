@@ -132,9 +132,6 @@ initialize() {
 
     echo "// Apply klipper patches..."
     apply_klipper_patches
-    
-    echo "// Apply other patches..."
-    apply_other_patches
 
     echo "// Restore config..."
     fix_config
@@ -209,9 +206,6 @@ init_buildroot() {
     [ -d "$MOD"/root/fluidd ] && mv "$MOD"/root/fluidd "$MOD"/root/www/
     [ -d "$MOD"/root/mainsail ] && mv "$MOD"/root/mainsail "$MOD"/root/www/
 
-    # Mainsail
-    ln -fs /opt/config/mod/.root/mainsail.json "$MOD"/root/www/mainsail/config.json
-
     ln -fs /opt/config/mod/.root/config.json "$MOD"/root/www/
     "$CMDS"/zhttp.sh apply
 }
@@ -265,41 +259,10 @@ apply_klipper_patches() {
             ln -fs "$file" "$target"
         fi
     done
-}
 
-_apply_patch() {
-    if [ $# -lt 4 ]; then
-        echo "Required arguments missing"
-        return 1
-    fi
+    echo "Apply fixes..."
 
-    local patch_file=$1
-    local target_file=$2
-    local start_block=$3
-    local end_block=$4
-    local paste_after="${5:-$4}"
-
-    local temp_file="/tmp/$(basename "$target_file").bak"
-
-    sed "/$start_block/,/$end_block/d" "$target_file" > "$temp_file"
-    sed -i "/$paste_after/r $patch_file" "$temp_file"
-
-    if ! cmp -s "$target_file" "$temp_file"; then
-        echo "// Apply patch to $target_file"
-        mv "$temp_file" "$target_file"
-    else
-        rm -f "$temp_file"
-    fi
-}
-
-apply_other_patches() {
-    # Mainsail baseurl fix
-    _apply_patch                                            \
-        "/opt/config/mod/.root/patches/mainsail.patch"      \
-        "$MOD/root/www/mainsail/index.html"                 \
-        "<!--__PATCH_START__-->"                            \
-        "<!--__PATCH_END__-->"                              \
-        "<html.*>"
+    "$CMDS"/zfix_e0017.sh apply
 }
 
 fix_config() {
@@ -489,9 +452,6 @@ case "$1" in
             echo "// Apply klipper patches..."
             apply_klipper_patches
 
-            echo "// Apply Other patches..."
-            apply_other_patches
-        
             echo "// Update configs..."
             fix_config
 
