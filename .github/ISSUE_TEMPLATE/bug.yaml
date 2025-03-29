@@ -1,0 +1,117 @@
+name: Forge-X Issue
+description: Report an issue with the mod
+title: "[Issue]: "
+labels: ["bug"]
+assignees:
+  - DrA1ex
+body:
+  - type: dropdown
+    id: printer_model
+    attributes:
+      label: Printer Model
+      description: Select your printer model.
+      options:
+        - Adventurer 5M
+        - Adventurer 5M Pro
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: firmware_version
+    attributes:
+      label: Firmware Version
+      description: Enter the firmware version of your printer (e.g., 3.1.5).
+      placeholder: "e.g., 3.1.5"
+    validations:
+      required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Mod Version
+      description: Enter the version of the mod you are using (e.g., 1.2.2).
+      placeholder: "e.g., 1.2.2"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: other_mods
+    attributes:
+      label: Other Mods Installed
+      description: Check any other mods you have installed on your printer previously.
+      options:
+        - label: I have installed Klipper Mod earlier.
+          required: false
+        - label: I have installed ZMod earlier.
+          required: false
+        - label: I have installed ForgeX earlier.
+          required: false
+
+  - type: checkboxes
+    id: screen_type
+    attributes:
+      label: Screen Type
+      description: Check the screen configuration you are using.
+      options:
+        - label: I use Stock screen.
+          required: false
+        - label: I use Feather screen.
+          required: false
+
+  - type: textarea
+    id: what_did_you_do
+    attributes:
+      label: What did you do?
+      description: Describe the steps you took that led to the issue.
+      placeholder: "e.g., I installed the mod on my Adventurer 5M Pro following the instructions in the README."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_didnt_work
+    attributes:
+      label: What didn't work?
+      description: Explain what went wrong, including error messages or unexpected behavior.
+      placeholder: "e.g., The printer crashed after starting a print job, showing 'Error 0x123' on the screen."
+    validations:
+      required: true
+
+  - type: textarea
+    id: debug_instructions
+    attributes:
+      label: Debugging Information
+      description: Follow the instructions based on your situation and upload the required files.
+      value: |
+        - **If you can access Web UI:** Run `TAR_DEBUG` on your printer and upload the generated archive file below.
+        - **If you cannot access Web UI:** Flash the appropriate debug image for your printer, then upload the `debug.tar` archive:
+          - Adventurer 5M: [Adventurer5M-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-debug.tgz)
+          - Adventurer 5M Pro: [Adventurer5MPro-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5MPro-debug.tgz)
+      render: markdown
+
+  - type: textarea
+    id: installation_logs
+    attributes:
+      label: Installation/Uninstallation Logs (if applicable)
+      description: If your issue is related to installation or uninstallation, upload the installation log (from USB) or other logs left after flashing the mod.
+      placeholder: "e.g., Drag and drop the log file here or paste its contents."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Confirm you’ve completed these steps before submitting.
+      options:
+        - label: I have read the documentation and did not find an answer.
+          required: true
+        - label: I have read the F.A.Q.
+          required: true
+        - label: I have tried rebooting the printer, and the problem persists.
+          required: true
+
+  - type: textarea
+    id: additional_info
+    attributes:
+      label: Additional Information
+      description: Provide any extra details that might be relevant to the issue.
+      placeholder: "e.g., The printer worked fine with mod version 1.2.1 but started crashing after upgrading to 1.2.2."
