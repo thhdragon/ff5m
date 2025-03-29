@@ -85,6 +85,7 @@ body:
   - type: markdown
     attributes:
       value: |
+        ---
         - **If you can access Web UI:** Run `TAR_DEBUG` on your printer and upload the generated archive file below.
         - **If you cannot access Web UI:** Flash the appropriate debug image for your printer, then upload the `debug.tar` archive:
           - Adventurer 5M: [Adventurer5M-debug.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-debug.tgz)
