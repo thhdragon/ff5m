@@ -78,7 +78,7 @@ body:
     attributes:
       label: What didn't work?
       description: Explain what went wrong, including error messages or unexpected behavior.
-      placeholder: "e.g., The printer crashed after starting a print job, showing 'Error 0x123' on the screen."
+      placeholder: "e.g., The printer crashed after starting a print job, showing 'Error E0011' on the screen; and the 'Timer too close' in the Fluidd."
     validations:
       required: true
 
