@@ -101,7 +101,7 @@ To enable this feature, you need to add a parameter in the `user.cfg` file (see 
 
 ```ini
 [led chamber_light]  
-invert: True        ; Use inverted control when set to True.
+invert: False       ; Use inverted control when set to True (Default: False).
 initial_WHITE: 0.2  ; Optional: Set the initial brightness value.
 ```  
 
