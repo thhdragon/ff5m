@@ -47,14 +47,20 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/skip.log*
     /data/logFiles/ssh.log*
     /data/logFiles/wifi.log*
+    /data/logFiles/service.log*
+    /data/logFiles/uninstall.log*
     /data/logFiles/mod/*.log*
     /data/logFiles/service.log*
     /data/logFiles/verification.log*
-    /data/logFiles/printer.log
-    /data/logFiles/moonraker.log
+    /data/logFiles/printer.log*
+    /data/logFiles/moonraker.log*
     /data/logFiles/console*.log
+    /data/logFiles/firmwareExe.log*
+    /data/logFiles/ffstartup-arm.log
+    /data/logFiles/dmesg.complete.log
     /root/version
     /data/.mod/.forge-x/etc/os-release
+    /data/.mod/.forge-x/version.txt
 )
 
 tar_backup() {
