@@ -70,15 +70,38 @@ The syntax is straightforward:
 
 ### Backup & Restore
 
-- **Automatic Restore**: The last created backup is automatically restored during the printer's boot process.
-- **Manual Backup**: Backups are not created automatically. You must manually run the `CONFIG_BACKUP` macro to create a backup.
+#### Klipper configuration Backup & Restore:
 
-###  Available Macros
+##### Features
+- **Automatic Restore**: The most recent backup is automatically restored during the printer's boot process.
+- **Manual Backup**: Backups are not created automatically. To create a backup, you must manually run the `CONFIG_BACKUP` macro.
 
-- `CONFIG_BACKUP`: Creates a backup of the current configuration.
-- `CONFIG_RESTORE`: Restores the configuration using the most recent backup.
-- `CONFIG_VERIFY`: Checks if the configuration has changed since the last backup.
-- `BACKUP_TAR`: Creates a .tar archive containing all configuration files for easy storage or transfer.
+##### Purpose
+This feature is useful if you’ve tuned parameters in `printer.base.cfg`. When updating the stock firmware, some of these parameters may revert to their defaults. By using this backup and restore system, you can ensure your custom changes are not lost and are restored during boot.
+
+##### Macros
+The following macros control this functionality:
+- **`CONFIG_BACKUP`**: Creates a backup of the current Klipper configuration.
+- **`CONFIG_RESTORE`**: Restores the Klipper configuration from the most recent backup.
+- **`CONFIG_VERIFY`**: Checks if the Klipper configuration has changed since the last backup.
+
+#### Mod & Klipper configuration Backup & Restore
+
+To preserve all your custom parameters and configurations within the mod, you can create a full backup archive. This allows you to restore the mod to its last state, even if it has been completely removed.
+
+##### Macro
+- **`BACKUP_TAR`**: Creates a `.tar` archive containing all printer and mod configuration files for easy storage, transfer, and restoration.
+
+##### Backup Process
+1. Run the `BACKUP_TAR` macro.
+2. Download the generated archive from:  
+   **Fluidd → Configuration → mod_data → `debug_<date>.tar.gz`**
+
+##### Restore Process
+1. Unpack the `.tar` archive on your computer.
+2. Drag and drop all extracted files as-is into:  
+   **Fluidd → Configuration**
+3. Reboot the printer to apply the restored configuration.
 
 ## User-Defined Parameters
 
