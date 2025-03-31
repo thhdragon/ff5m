@@ -27,6 +27,10 @@ class FeatherScreenHelper:
         self._last_progress = None
         self._last_left_panel = None
 
+    @property
+    def active(self) -> bool:
+        return self._process is not None
+
     def start(self):
         os.system("killall typer")
 
@@ -165,6 +169,39 @@ class FeatherScreenHelper:
             f'--batch text -p 180 440 -va middle -ha right -c 00f0f0 -b 0 -t "{text}"'
         ])
 
+    def print_error(self, text: str):
+        MAX_LEN = 20
+        MAX_LINES = 4
+
+        lines = []
+
+        for line in text.split("\n"):
+            acc = ""
+            for word in line.split(" "):
+                if not word: continue
+                if len(word) > MAX_LEN:
+                    word = word[:MAX_LEN - 3] + "..."
+
+                if len(acc) + len(word) > MAX_LEN:
+                    lines.append(acc)
+                    acc = ""
+
+                if acc: acc += " "
+                acc += word
+
+            if acc: lines.append(acc)
+
+        if len(lines) > MAX_LINES: lines = lines[:MAX_LINES]
+
+        y_offset = round(240 - (len(lines) - 1) * 35 / 2)
+        stripped_text = "\n".join(lines)
+
+        self._send_commands([
+            '--batch fill -p 130 130 -s 540 220 -c 0',
+            '--batch stroke -p 150 150  -s 500 180 -c ff00ff -lw 6',
+            f'--batch text -p 400 {y_offset} -ha center -va middle -c 00f0f0 -f "Roboto 12pt" -t "{stripped_text}"',
+        ])
+
     def clear(self):
         self._last_status_bar = None
         self._last_file_caption = None
@@ -249,6 +286,15 @@ class FeatherScreen:
         if self._toolbar_timer is not None:
             self.reactor.unregister_timer(self._toolbar_timer)
             self._toolbar_timer = None
+
+        if self.feather.active:
+            msg, category = self.printer.get_state_message()
+            if category == "shutdown":
+                msg = msg.split("\n")[0]
+            else:
+                msg = "Disconnected"
+
+            self.feather.print_error(msg)
 
         self.feather.stop()
 
