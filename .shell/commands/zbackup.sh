@@ -55,6 +55,7 @@ TAR_DEBUG_PARAMS=(
     /data/logFiles/console*.log
     /root/version
     /data/.mod/.forge-x/etc/os-release
+    /data/.mod/.forge-x/version.txt
 )
 
 tar_backup() {
