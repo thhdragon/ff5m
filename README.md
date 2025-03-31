@@ -13,10 +13,6 @@ The mod is based on ZMod, which itself is derived from Klipper-mod.
 > *After installation or uninstallation, ensure that you check all printer parameters and perform a full recalibration. Failing to do so may result in damage to your printer.*
 > *Proceed at your own risk!*
 
-> [!WARNING]
-> This mod is currently in development. While it is functional, you may encounter bugs or print failures during use.  
-> If you experience any issues, please report them by creating an [issue](https://github.com/DrA1ex/ff5m/issues).
-
 ## DISCLAIMER
 
 The printer has Linux, but it’s not the Linux you’re used to.  
