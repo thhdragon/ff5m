@@ -90,10 +90,10 @@ The following macros control this functionality:
 To preserve all your custom parameters and configurations within the mod, you can create a full backup archive. This allows you to restore the mod to its last state, even if it has been completely removed.
 
 ##### Macro
-- **`BACKUP_TAR`**: Creates a `.tar` archive containing all printer and mod configuration files for easy storage, transfer, and restoration.
+- **`TAR_BACKUP`**: Creates a `.tar` archive containing all printer and mod configuration files for easy storage, transfer, and restoration.
 
 ##### Backup Process
-1. Run the `BACKUP_TAR` macro.
+1. Run the `TAR_BACKUP` macro.
 2. Download the generated archive from:  
    **Fluidd → Configuration → mod_data → `debug_<date>.tar.gz`**
 
