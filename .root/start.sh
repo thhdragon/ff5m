@@ -12,6 +12,10 @@ echo "Starting services..."
 # Set HOME to /root to ensure git uses the correct .gitconfig
 export HOME=/root
 
+# TODO: remove in the next major release
+[ -L /usr/bin/ip ] && rm -f /usr/bin/ip
+[ -L /usr/bin/tc ] && rm -f /usr/bin/tc
+
 /opt/config/mod/.root/S65moonraker start
 /opt/config/mod/.root/S70httpd start
 /opt/config/mod/.root/S45ntpd start
