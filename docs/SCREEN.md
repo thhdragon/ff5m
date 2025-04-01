@@ -45,8 +45,13 @@ This will disable the stock screen and activate the Feather screen immediately. 
 > [!WARNING]
 > Only DHCP mode is supported!
 
-**If you lose access** to the printer after disabling the screen, you can temporarily prevent the mod from booting using the [Dual Boot](/docs/DUAL_BOOT.md) option.  
-Then you can edit `variables.cfg` file and disable `display_off` parameter manually:
+**If you lose access** to the printer after disabling the screen, flash this image:  
+- [Adventurer5M-ForgeX-feather-off.tgz](https://github.com/DrA1ex/ff5m/releases/download/1.2.0/Adventurer5M-ForgeX-feather-off.tgz)   
+
+Rename it to match your printer version.
+
+**Alternatively**, you can temporarily prevent the mod from booting using the [Dual Boot](/docs/DUAL_BOOT.md) option.   
+Then edit the `variables.cfg` file to disable the `display_off` parameter manually:
 
 ```bash
 # Enable stock screen using script
@@ -55,7 +60,7 @@ Then you can edit `variables.cfg` file and disable `display_off` parameter manua
 # Or change parameter in variables.cfg using this script
 /opt/config/mod/.shell/commands/zconf.sh /opt/config/mod_data/variables.cfg --set "display_off=0"
 
-# Or edit manually:
+# Or edit manually
 nano /opt/config/mod_data/variables.cfg
 ```
 
