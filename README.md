@@ -54,6 +54,20 @@ So don’t do anything if you not clearly understand what you are doing.
 - **Entware** package manager for additional software installation
 - **Dual boot** with stock Flashforge software or Klipper Mod
 
+## TL;DR
+
+1. Uninstall any other installed mods first.   
+2. [Install](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#flashing-the-firmware-image) the mod.   
+3. Update slicer [Start and End G-code](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#for-stock-screen).   
+4. Update slicer [Host Type](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#configuring-moonraker--klipper-connection).   
+5. Enable [MD5 check](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#enabling-md5-checksum-validation) for G-code files.
+6. Update the mod to new versions using [OTA](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#ota-updates).   
+7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD_PARAM PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
+8. ⚠️ [Recalibrate](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
+9. **Optional**: Enable the mod’s [Camera](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
+10. **Optional**: Enable [Feather Screen](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen).   
+
+
 ## Get Started
 
 To begin, follow the instructions on the [Installation page](/docs/INSTALL.md). After the installation, you will need to update your slicer's starting and finishing G-code. Refer to the [Slicing page](/docs/SLICING.md) for guidance.
@@ -105,7 +119,6 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Dual boot](docs/DUAL_BOOT.md)
 - [Uninstall](docs/UNINSTALL.md)
 - [Recovery guide](docs/RECOVERY.md)
-
 
 If you encounter any issues, feel free to join Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
 
