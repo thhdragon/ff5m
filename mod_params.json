@@ -264,6 +264,13 @@
       "label": "Firmware parameter tuning",
       "order": 15,
       "warning": "!! After changing the value, be sure to recreate the bed mesh and adjust the Z-Offset.\n!! If you have performed dimension calibration, it must also be updated.\n!! Additionally, you may need to recalibrate the flow and Pressure Advance.\n!! Printing with an old bed mesh or Z-Offset may damage the printer!\nYou can view the changing parameters in the Configuration -> 'mod' -> 'tuning.cfg' section."
+    },
+    {
+      "key": "filament_switch_sensor",
+      "type": "bool",
+      "default": 1,
+      "label": "Use filament switch sensor",
+      "order": 100
     }
   ]
 }
