@@ -70,7 +70,7 @@ search_special_boot_flag_usb() {
             device_name=$(basename "$device")
             partitions=$(
                 awk -v dev="$device_name" \
-                    '$4 ~ dev"[0-9]+$" {print substr($4,length(dev)+1) " " $3/2048 "M"}'\
+                    '$4 ~ dev"[0-9]+$" {print substr($4,length(dev)+1) " " $3/1024 "M"}'\
                     /proc/partitions \
                     | sort -k2,2rn
             )
