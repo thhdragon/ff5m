@@ -48,6 +48,41 @@ The printer uses different bed meshes depending on the scenario:
 > If no profile with the required name exists, the printer will perform leveling before the print begins.    
 > Make sure to use the `SAVE_CONFIG` command after leveling to save the mesh properly.
 
+# KAMP
+
+Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
+
+1. **Enable the Mod Parameter**  
+   ```
+   SET_MOD_PARAM PARAM=use_kamp VALUE=1
+   ```   
+   Optionally, temporarily enable it via `START_PRINT`:  
+   ```
+   START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single] FORCE_KAMP=1
+   ```
+
+2. **Enable "Exclude Objects" in Slicer**  
+   - **Orca Slicer**: *Process Profile → Other → Exclude objects*  
+   - **Prusa Slicer**: Go to *Print Settings → Output options → Label objects*, check the "Label objects"
+
+3. **Modify START_GCODE for KAMP**  
+   Add this before the `START_PRINT` macro to handle supports, skirts, and other non-model objects:  
+   - **For Orca**:  
+     ```
+     KAMP_DEFINE_AREA MIN={first_layer_print_min[0]},{first_layer_print_min[1]} MAX={first_layer_print_max[0]},{first_layer_print_max[1]}
+     ```   
+   - **For Prusa**: 
+     ```
+     KAMP_DEFINE_AREA MIN={min_x},{min_y} MAX={max_x},{max_y}
+     ```
+
+4. **Purging Notes**  
+   *KAMP* defaults to `LINE_PURGE` instead of other cleaning algorithms. Avoid adding alternative algorithms (e.g., directly in starting G-code), as KAMP meshes a limited bed region, and default cleaning methods may damage the bed.  
+   To disable priming entirely *(optional)*:  
+   ```
+   SET_MOD_PARAM PARAM=disable_priming VALUE=1
+   ```   
+
 ## Bed Collision Protection
 
 To avoid bed scratching caused by the nozzle hitting the bed, the mod includes a collision detection feature.  
