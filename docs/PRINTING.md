@@ -48,7 +48,7 @@ The printer uses different bed meshes depending on the scenario:
 > If no profile with the required name exists, the printer will perform leveling before the print begins.    
 > Make sure to use the `SAVE_CONFIG` command after leveling to save the mesh properly.
 
-# KAMP
+## KAMP
 
 Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
 
@@ -66,7 +66,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
    - **Prusa Slicer**: Go to *Print Settings → Output options → Label objects*, check the "Label objects"
 
 3. **Modify Starting G-Code in Slicer**  
-   Add this before the `START_PRINT` macro to handle supports, skirts, and other non-model objects:  
+   Add this before the START_PRINT macro. Without it, you'll experience leveling and purging problems when printing supports, skirts, or other non-model objects:  
    - **For Orca**:  
      ```
      KAMP_DEFINE_AREA MIN={first_layer_print_min[0]},{first_layer_print_min[1]} MAX={first_layer_print_max[0]},{first_layer_print_max[1]}
