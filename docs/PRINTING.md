@@ -65,7 +65,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
    - **Orca Slicer**: *Process Profile → Other → Exclude objects*  
    - **Prusa Slicer**: Go to *Print Settings → Output options → Label objects*, check the "Label objects"
 
-3. **Modify START_GCODE for KAMP**  
+3. **Modify Starting G-Code in Slicer**  
    Add this before the `START_PRINT` macro to handle supports, skirts, and other non-model objects:  
    - **For Orca**:  
      ```
