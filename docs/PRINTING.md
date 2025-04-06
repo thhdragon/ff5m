@@ -155,7 +155,7 @@ SET_MOD_PARAM PARAM="disable_screen_led" VALUE=1
 It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 - `stop_motor`: Automatically disables motors after inactivity.
 - `auto_reboot`: Reboots the printer after a print finishes. Options: OFF, SIMPLE_90, or FIRMWARE_90.
-- `close_dialogs`: Automatically closes stock firmware dialogs after 20 seconds. Options: OFF, SLOW, or FAST.
+- `close_dialogs`: Automatically closes stock firmware dialogs after 20 seconds. Options: OFF, SLOW, or FAST (requires [LAN-mode](https://discord.com/channels/1323351124069191691/1352724693739896983/1358351057264181310)).
 
 ## Z-Offset 
 
