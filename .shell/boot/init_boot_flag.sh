@@ -154,6 +154,8 @@ handle_special_boot_flag() {
             echo "?? Skipping mod load..."
             rm -f /opt/config/mod/SKIP_MOD
             touch /tmp/SKIP_MOD
+
+            echo "// Stock firmware will be loaded soon..."
             
             exit 0
             ;;
@@ -166,6 +168,8 @@ handle_special_boot_flag() {
             if [ -d /root/.oh-my-zsh ]; then
                 mount --bind /opt/config/mod/.zsh/.oh-my-zsh /root/.oh-my-zsh
             fi
+
+            echo "// Stock firmware will be loaded soon..."
             
             exit 0
             ;;
@@ -192,7 +196,7 @@ handle_special_boot_flag() {
             exit 0
             ;;
         klipper_mod_skip)
-            echo "!! Klipper mod skipped. Continue boot"
+            echo "!! Klipper mod skipped. Continuing boot..."
 
             exit 1
         ;;
@@ -200,11 +204,15 @@ handle_special_boot_flag() {
             echo "!! Installation image found. Skipping the mod..."
             touch /tmp/SKIP_MOD_HARD
 
+            echo "// Firmware image will be loaded soon..."
+
             exit 0
         ;;
         KLIPPER_MOD | klipper_mod_remove)
             echo "@@ Skipping mod because of Klipper Mod..."
             touch /tmp/SKIP_MOD_HARD
+
+            echo "// Klipper mod will be loaded soon..."
 
             exit 0
         ;;
