@@ -78,6 +78,7 @@ To begin, follow the instructions on the [Installation page](/docs/INSTALL.md). 
 
 This modification also includes additional features. It is highly recommended that you thoroughly read the [Printing](/docs/PRINTING.md) and [Configuration](/docs/CONFIGURATION.md) pages before getting started.
 
+This article might also be useful: [Reducing resource usage](https://github.com/DrA1ex/ff5m/blob/dev/docs/PRINTING.md#reducing-resource-usage).   
 For additional help, check out the [F.A.Q.](/docs/FAQ.md).
 
 You can reach services using these addresses:  
