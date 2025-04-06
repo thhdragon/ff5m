@@ -194,3 +194,42 @@ SET_MOD_PARAM PARAM="fix_e0017" VALUE=1
 ## Using stock Firmware with mod
 
 Some mod features, like fast dialog closing, may not work unless the stock firmware parameter "Use only local networks" is enabled. It is recommended to set this parameter for all users.
+
+## Reducing Resource Usage
+
+If you’re planning a long or complex print, it’s a waste of filament if it stops due to low resources.    
+You can reduce resource usage to the bare minimum while ensuring printing still works correctly.
+
+#### Switch to Feather Screen
+The stock screen consumes 10-20 MB of RAM, while Feather uses only 1-2 MB.
+
+#### Reduce Camera Resource Usage
+Disable the camera, lower its resolution to the minimum, or switch to the mod’s camera implementation.   
+The camera (especially controlled by stock firmware) uses significant memory.   
+Switching to the mod’s camera can reduce usage by about 4x.
+
+#### Disable Moonraker
+Moonraker consumes around 30 MB of RAM. It’s not required for the stock screen or Feather, but disabling it means losing access to Fluidd/Mainsail.  
+
+To disable Moonraker before printing and re-enable it afterward, modify your G-code:  
+- **Starting G-code** (add as the first line):  
+  ```
+  STOP_MOD
+  ```   
+- **Ending G-code** (add as the last line):  
+  ```
+  START_MOD
+  ```   
+
+This stops Moonraker (and related services like Telegram bots or Discord notifications) before the print and restarts it after a successful finish. If you do this, consider disabling SWAP too (see below).
+
+#### Disable SWAP (Only if Moonraker is Disabled)
+You can disable *SWAP* completely if Moonraker is off — there’s enough memory for basic operations without it. However, printing might still trigger an out-of-memory error, and shaper calibration will likely be impossible without *SWAP*. Only disable *SWAP* alongside Moonraker, not as a standalone optimization.  
+- **Disable SWAP until next reboot**:  
+  ```
+  SHELL CMD='swapoff -a'
+  ```  
+- **Disable SWAP permanently**:  
+  ```
+  SET_MOD_PARAM PARAM=use_swap VALUE=OFF
+  ```
