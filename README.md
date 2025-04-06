@@ -56,7 +56,7 @@ So don’t do anything if you not clearly understand what you are doing.
 
 ## TL;DR
 
-1. Uninstall any other installed mods first.   
+1. Uninstall any other installed mods first (⚠️ make a backup!).   
 2. [Install](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#flashing-the-firmware-image) the mod.   
 3. Update slicer [Start and End G-code](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#for-stock-screen).   
 4. Update slicer [Host Type](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#configuring-moonraker--klipper-connection).   
@@ -65,7 +65,8 @@ So don’t do anything if you not clearly understand what you are doing.
 7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD_PARAM PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
 8. ⚠️ [Recalibrate](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
 9. **Optional**: Enable the mod’s [Camera](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
-10. **Optional**: Enable [Feather Screen](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen).   
+10. **Optional**: Configure your [LED lighting](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#led-light-control)     
+11. **Optional**: Enable [Feather Screen](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen).   
 
 
 ## Get Started
