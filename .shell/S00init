@@ -65,6 +65,8 @@ initialize() {
     rotate_logs "/data/logFiles/boot.log"
     rotate_logs "/data/logFiles/ssh.log"
     rotate_logs "/data/logFiles/wifi.log"
+
+    sync
     
     echo "// SWAP Initialization..."
     /opt/config/mod/.shell/boot/init_swap.sh
@@ -94,6 +96,7 @@ initialize() {
     # Runtime
     ln -fns /opt/config/mod/.bin/runtime/14.2.0 /opt/lib/
 
+    sync
     echo "// Update version..."
     
     # version
@@ -112,6 +115,7 @@ initialize() {
     fi
     
     chroot "$MOD" /opt/config/mod/.root/version.sh "$FIRMWARE_VERSION" "$MOD_VERSION" "$PATCH_VERSION"
+    sync
 
     # Print version onto the screen
     "$SCRIPTS/screen.sh" draw_loading --no-clear
@@ -141,6 +145,7 @@ initialize() {
     # database
     if [ -f "/opt/config/mod_data/database/moonraker-sql.db" ]; then
         /opt/config/mod/.shell/migrate_db.sh
+        sync
     fi
 
     echo "// Finishing initialization..."
@@ -152,6 +157,7 @@ initialize() {
     
     # (?) Restrict public unauthorized access to printer's camera (only SerialNnumber is needed)
     grep -q qvs.qiniuapi.com /etc/hosts || sed -i '2 i\127.0.0.1 qvs.qiniuapi.com' /etc/hosts
+    sync
     
     echo "// Initialization step done!"
 }
@@ -186,6 +192,8 @@ init_buildroot() {
     
     ln -fns /opt/config/mod/moonraker.conf /root/printer_data/config/moonraker.conf
     ln -fns /opt/config/mod/.root/moonraker.asvc /root/printer_data/moonraker.asvc
+
+    sync
     
     mount --bind /root/printer_data "$MOD"/root/printer_data
 
@@ -207,7 +215,9 @@ init_buildroot() {
     [ -d "$MOD"/root/mainsail ] && mv "$MOD"/root/mainsail "$MOD"/root/www/
 
     ln -fs /opt/config/mod/.root/config.json "$MOD"/root/www/
+    
     "$CMDS"/zhttp.sh apply
+    sync
 }
 
 apply_klipper_patches() {
@@ -232,9 +242,15 @@ apply_klipper_patches() {
             fi
         fi
     done
+
+    sync
+    echo "Linking extensions..."
     
     # Link new extensions
     ln -fs $SRC_DIR/plugins/* "$TARGET_DIR/extras/"
+
+    sync
+    echo "Apply patches..."
     
     # Apply klipper patches
     find $SRC_DIR/patches -type f | while read -r file; do
@@ -260,9 +276,12 @@ apply_klipper_patches() {
         fi
     done
 
+    sync
     echo "Apply fixes..."
 
     "$CMDS"/zfix_e0017.sh apply
+
+    sync
 }
 
 fix_config() {
@@ -380,6 +399,7 @@ fix_config() {
 
     # Run the batch file
     chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py --batch $BATCH_FILE
+    sync
 
     # Clean up the temporary files
     rm -f $BATCH_FILE $TMP_CFG_PATH
@@ -439,11 +459,11 @@ case "$1" in
 
         rotate_logs "/opt/config/mod_data/log/init.log"
         rotate_logs "/opt/config/mod_data/log/skip.log"
+        sync
         
         initialize 2>&1 | logged "/opt/config/mod_data/log/init.log" --send-to-screen
 
         touch "$INIT_FLAG"
-        
         sync
     ;;
     
