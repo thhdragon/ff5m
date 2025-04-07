@@ -78,7 +78,7 @@ This step is crucial to avoid conflicts between the stock and mod camera impleme
 Once the stock camera is disabled, enable the mod's camera by running the following command in the console:
 
 ```
-SET_MOD_PARAM PARAM="camera" VALUE=1
+SET_MOD PARAM="camera" VALUE=1
 ```
 
 This command activates the mod's camera implementation.

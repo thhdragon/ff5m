@@ -110,10 +110,10 @@ You can either increase the threshold or disable the weight check feature using 
 
 ```bash
 # Increase threshold
-SET_MOD_PARAM PARAM="weight_check_max" VALUE=1800
+SET_MOD PARAM="weight_check_max" VALUE=1800
 
 # Disable the feature
-SET_MOD_PARAM PARAM="weight_check" VALUE=0
+SET_MOD PARAM="weight_check" VALUE=0
 ```
 
 *Note:* It is strongly advised to investigate and fix any underlying hardware or kinematic issues after implementing these changes.

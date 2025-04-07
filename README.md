@@ -62,7 +62,7 @@ So don’t do anything if you not clearly understand what you are doing.
 4. Update slicer [Host Type](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#configuring-moonraker--klipper-connection).   
 5. Enable [MD5 check](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#enabling-md5-checksum-validation) for G-code files.
 6. Update the mod to new versions using [OTA](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#ota-updates).   
-7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD_PARAM PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
+7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
 8. ⚠️ [Recalibrate](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
 9. **Optional**: Enable the mod’s [Camera](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
 10. **Optional**: Configure your [LED lighting](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#led-light-control)     

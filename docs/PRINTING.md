@@ -54,7 +54,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
 
 1. **Enable the Mod Parameter**  
    ```
-   SET_MOD_PARAM PARAM=use_kamp VALUE=1
+   SET_MOD PARAM=use_kamp VALUE=1
    ```   
    Optionally, temporarily enable it via `START_PRINT`:  
    ```
@@ -80,7 +80,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
    *KAMP* defaults to `LINE_PURGE` instead of other cleaning algorithms. Avoid adding alternative algorithms (e.g., directly in starting G-code), as KAMP meshes a limited bed region, and default cleaning methods may damage the bed.  
    To disable priming entirely *(optional)*:  
    ```
-   SET_MOD_PARAM PARAM=disable_priming VALUE=1
+   SET_MOD PARAM=disable_priming VALUE=1
    ```   
 
 ## Bed Collision Protection
@@ -135,7 +135,7 @@ Once `load_zoffset` is enabled, adjust Z-Offset through Fluidd or Mainsail’s s
 ### Example
 ```
 # Enable Z-offset loading
-SET_MOD_PARAM PARAM="load_zoffset" VALUE=1
+SET_MOD PARAM="load_zoffset" VALUE=1
 
 # Set Z-offset (will be saved to `z_offset` mod parameter)
 SET_GCODE_OFFSET Z=-0.2
@@ -144,7 +144,7 @@ SET_GCODE_OFFSET Z=-0.2
 _SET_GCODE_OFFSET Z=0.25
 
 # Set saved Z-offset value (will not be applied immediately but will be loaded before print if `load_zoffset` is enabled)
-SET_MOD_PARAM PARAM="z_offset" VALUE=0.25
+SET_MOD PARAM="z_offset" VALUE=0.25
 ```
 
 ## Sound
@@ -176,7 +176,7 @@ initial_WHITE: 0.2  ; Optional: Set the initial brightness value.
 
 
 ```bash
-SET_MOD_PARAM PARAM="disable_screen_led" VALUE=1
+SET_MOD PARAM="disable_screen_led" VALUE=1
 ```
 
 ## Automation
@@ -197,7 +197,7 @@ These are controlled by the following [parameters](/docs/CONFIGURATION.md):
 In stock firmware, some internal Klipper parameters controlling the **Move Queue** are not optimally configured, which can cause the **E0017** error (**Move Queue Overflow**).  
 To fix this, enable the mod [parameter](/docs/CONFIGURATION.md):
 ```bash
-SET_MOD_PARAM PARAM="fix_e0017" VALUE=1
+SET_MOD PARAM="fix_e0017" VALUE=1
 ```
 
 ## Using stock Firmware with mod
@@ -240,5 +240,5 @@ You can disable *SWAP* completely if Moonraker is off — there’s enough memor
   ```  
 - **Disable SWAP permanently**:  
   ```
-  SET_MOD_PARAM PARAM=use_swap VALUE=OFF
+  SET_MOD PARAM=use_swap VALUE=OFF
   ```

@@ -125,7 +125,7 @@ su - ff5m
 To enable SSH tunneling, modify the mod parameter:
 
 ```
-SET_MOD_PARAM PARAM="zssh" VALUE=1
+SET_MOD PARAM="zssh" VALUE=1
 ```
 
 The mod will automatically manage the SSH tunnel and restart it if needed. For seamless operation, it is recommended to set the `REMOTE_RUN` parameter in `ssh.conf` to restart the bot container when the SSH tunnel is established.  

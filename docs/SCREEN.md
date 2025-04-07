@@ -31,7 +31,7 @@ Alternatively, you can use the START_PRINT option, described here: [Slicing](/do
 To enable the Feather screen and free up resources, set the following mod parameter:
 
 ```bash
-SET_MOD_PARAM PARAM="display_off" VALUE=1
+SET_MOD PARAM="display_off" VALUE=1
 ```
 
 This will disable the stock screen and activate the Feather screen immediately. **Make sure to wait until the current print finishes before doing this! :)**
