@@ -59,6 +59,9 @@ initialize() {
 
     xzcat "$LOAD_IMG_XZ" > /dev/fb0
 
+    # Perform date fix before time was loaded
+    date 2025.01.01-00:00:00 > /dev/null
+
     echo "// Mounting partition..."
     mount_data_partition
 
