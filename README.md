@@ -88,7 +88,11 @@ You can reach services using these addresses:
 
 If you encounter issues:  
 1. First, consult the documentation.
-2. If the issue persists, you can create an [issue](https://github.com/DrA1ex/ff5m/issues) on GitHub or join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group for assistance.
+2. If the problem persists:
+   - Open a [GitHub issue](https://github.com/DrA1ex/ff5m/issues)
+   - Join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group
+   - Visit the [Discord server](https://discord.gg/K7MH4hAfeX)    
+     → Navigate to: Forums → mods-and-projects → Forge-X
 
 ## Why This Mod Was Developed
 This mod was created to address several critical limitations and challenges faced by users of the Flashforge AD5M (Pro) 3D printer. Here are the key reasons behind its development:
@@ -123,6 +127,7 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Recovery guide](docs/RECOVERY.md)
 
 If you encounter any issues, feel free to join Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
+You can also join FlashForge community in [Discord](https://discord.gg/K7MH4hAfeX) (Navigate to: Forums → mods-and-projects → Forge-X)
 
 ## Credits
 
