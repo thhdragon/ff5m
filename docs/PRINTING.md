@@ -48,7 +48,7 @@ The printer uses different bed meshes depending on the scenario:
 > If no profile with the required name exists, the printer will perform leveling before the print begins.    
 > Make sure to use the `SAVE_CONFIG` command after leveling to save the mesh properly.
 
-# KAMP
+## KAMP
 
 Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
 
@@ -118,6 +118,35 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 > [!NOTE]
 > Bed Mesh Validation may produce false negatives if your nozzle is very dirty, as this can affect the accuracy of probing and the correct Z-offset position. Always ensure your nozzle is clean before starting a print.
 
+## Z-Offset
+
+In stock screen mode, Z-Offset is managed via the firmware’s screen. It’s automatically saved and loaded for the next print.
+
+For the Feather screen, you can control Z-Offset using standard macros or Fluidd/Mainsail controls. It will be saved but not loaded automatically after a reboot.   
+Enable the `load_zoffset` mod [parameter](/docs/CONFIGURATION.md) to make the mod automatically save and load Z-Offset after a reboot, like the stock firmware do.
+
+Once `load_zoffset` is enabled, adjust Z-Offset through Fluidd or Mainsail’s standard controls (which use `SET_GCODE_OFFSET`). The mod will then save the Z-Offset to the configuration and load it automatically after a reboot, right before the print starts.
+
+### Macros
+- **[SET_GCODE_OFFSET](https://www.klipper3d.org/G-Codes.html#set_gcode_offset)**: Standard Klipper macro to apply Z-Offset; also saves the value to the mod’s parameter.  
+- **`LOAD_GCODE_OFFSET`**: Loads and applies the last-saved Z-Offset from the mod’s parameter.
+
+
+### Example
+```
+# Enable Z-offset loading
+SET_MOD_PARAM PARAM="load_zoffset" VALUE=1
+
+# Set Z-offset (will be saved to `z_offset` mod parameter)
+SET_GCODE_OFFSET Z=-0.2
+
+# Set Z-offset (will NOT be saved to `z_offset` mod parameter)
+_SET_GCODE_OFFSET Z=0.25
+
+# Set saved Z-offset value (will not be applied immediately but will be loaded before print if `load_zoffset` is enabled)
+SET_MOD_PARAM PARAM="z_offset" VALUE=0.25
+```
+
 ## Sound
 You can customize sound indications or completely disable them. Additionally, you can configure MIDI playback for specific events. Available MIDI files are located in **Configuration -> mod_data -> midi**. You can also add your own MIDI files by uploading them to the **midi** folder.
 It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
@@ -156,26 +185,6 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 - `stop_motor`: Automatically disables motors after inactivity.
 - `auto_reboot`: Reboots the printer after a print finishes. Options: OFF, SIMPLE_90, or FIRMWARE_90.
 - `close_dialogs`: Automatically closes stock firmware dialogs after 20 seconds. Options: OFF, SLOW, or FAST (requires [LAN-mode](https://discord.com/channels/1323351124069191691/1352724693739896983/1358351057264181310)).
-
-## Z-Offset 
-
-In the stock firmware, Z-Offset is controlled directly through the firmware's screen.
-For the alternative screen (or headless mode), use the following mod [parameters](/docs/CONFIGURATION.md):
-- `load_zoffset`: Load the saved Z-Offset value.
-- `z_offset`: Manually set the Z-Offset value.
-
-Macros:
-- `LOAD_GCODE_OFFSET`: Load and apply Z-Offset from mod's parameter
-- `SET_GCODE_OFFSET`: It's standard Klipper macro to apply Z-Offset, but it's also save value to the mod's parameter
-
-Example:
-```bash
-# Enable global Z-offset management
-SET_MOD_PARAM PARAM="load_zoffset" VALUE=1
-
-# Set custom Z-offset (loaded in START_PRINT only if `load_zoffset` enabled)
-SET_MOD_PARAM PARAM="z_offset" VALUE=0.25
-```
 
 ## Nozzle Cleaning
 
