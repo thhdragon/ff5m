@@ -18,10 +18,10 @@ The mod supports a wide range of parameters to customize printer behavior. Below
   - `SIMPLE_90`: Restarts after 1.5 minutes  
   - `FIRMWARE_90`: Firmware restarts after 1.5 minutes  
 
-- **`close_dialogs`**: Controls dialog timeout behavior.  
-  - `OFF`: Dialogs remain open  
-  - `SLOW`: Closes after 20 seconds (slow fade)  
-  - `FAST`: Closes after 20 seconds (quick fade)  
+- **`close_dialogs`**: Controls dialog timeout behavior.   
+  - `OFF`: Dialogs remain open   
+  - `SLOW`: Closes after 20s (GDB method, may not work in all firmware versions)     
+  - `FAST`: Closes after 20s (API method, requires [LAN-mode](/docs/PRINTING.md#using-stock-firmware-with-mod))    
 
 - **`disable_priming`**: Disables nozzle cleaning by line if set to `1`.  
 
