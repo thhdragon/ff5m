@@ -30,12 +30,24 @@ attach $pid
 
 # Check that we have instanse of CancelDialog (means it is opened now)
 if (_ZN12CancelDialog16instCancelDialogE != 0)
-  call _ZN12CancelDialog13setStateClearEv(_ZN12CancelDialog16instCancelDialogE)
+  if (_ZN12CancelDialog13setStateClearEv != 0)
+    call _ZN12CancelDialog13setStateClearEv(_ZN12CancelDialog16instCancelDialogE)
+  else
+    echo "Error: Failed to dismiss Cancel dialog!"  
+  end
+else
+  echo "Cancel dialog not found!"
 end
 
 # Check that we have instanse of CompletePrintDialog (means it is opened now)
 if (_ZN19CompletePrintDialog23instCompletePrintDialogE != 0)
-  call _ZN19CompletePrintDialog13setStateClearEv(_ZN19CompletePrintDialog23instCompletePrintDialogE)
+  if (_ZN19CompletePrintDialog13setStateClearEv != 0)
+    call _ZN19CompletePrintDialog13setStateClearEv(_ZN19CompletePrintDialog23instCompletePrintDialogE)
+  else
+    echo "Error: Failed to dismiss Complete dialog!"  
+  end
+else
+  echo "Complete print dialog not found!"
 end
 
 # Detach from our process, leave it run freely
