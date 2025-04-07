@@ -131,11 +131,16 @@ class GCodeDispatch:
                 del self.ready_gcode_handlers[cmd]
             if cmd in self.base_gcode_handlers:
                 del self.base_gcode_handlers[cmd]
+            self._build_status_commands()
             return old_cmd
         if cmd in self.ready_gcode_handlers:
             raise self.printer.config_error(
                 "gcode command %s already registered" % (cmd,))
         if not self.is_traditional_gcode(cmd):
+            if (cmd.upper() != cmd or not cmd.replace('_', 'A').isalnum()
+                    or cmd[0].isdigit() or cmd[1:2].isdigit()):
+                raise self.printer.config_error(
+                    "Can't register '%s' as it is an invalid name" % (cmd,))
             origfunc = func
             func = lambda params: origfunc(self._get_extended_params(params))
         self.ready_gcode_handlers[cmd] = func
@@ -143,6 +148,7 @@ class GCodeDispatch:
             self.base_gcode_handlers[cmd] = func
         if desc is not None:
             self.gcode_help[cmd] = desc
+        self._build_status_commands()
     def register_mux_command(self, cmd, key, value, func, desc=None):
         prev = self.mux_commands.get(cmd)
         if prev is None:
@@ -161,6 +167,14 @@ class GCodeDispatch:
         prev_values[value] = func
     def get_command_help(self):
         return dict(self.gcode_help)
+    def get_status(self, eventtime):
+        return {'commands': self.status_commands}
+    def _build_status_commands(self):
+        commands = {cmd: {} for cmd in self.gcode_handlers}
+        for cmd in self.gcode_help:
+            if cmd in commands:
+                commands[cmd]['help'] = self.gcode_help[cmd]
+        self.status_commands = commands
     def register_output_handler(self, cb):
         self.output_callbacks.append(cb)
     def _handle_shutdown(self):
@@ -168,6 +182,7 @@ class GCodeDispatch:
             return
         self.is_printer_ready = False
         self.gcode_handlers = self.base_gcode_handlers
+        self._build_status_commands()
         self._respond_state("Shutdown")
     def _handle_disconnect(self):
         self._respond_state("Disconnect")
@@ -175,6 +190,7 @@ class GCodeDispatch:
         self.is_printer_ready = True
         self.gcode_handlers = self.ready_gcode_handlers
         self._respond_state("Ready")
+        self._build_status_commands()
     # Parse input into commands
     args_r = re.compile('([A-Z_]+|[A-Z*/])')
     def _process_commands(self, commands, need_ack=True):
