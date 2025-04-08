@@ -57,6 +57,9 @@ class BaseDeploy:
     def needs_refresh(self, log_remaining_time: bool = False) -> bool:
         next_refresh_time = self.last_refresh_time + self.refresh_interval
         remaining_time = int(next_refresh_time - time.time() + .5)
+        if self.last_cfg_hash == "***skip***":
+            logging.info("*** Detected skip marker")
+            return False
         if self.cfg_hash != self.last_cfg_hash or remaining_time <= 0:
             return True
         if log_remaining_time:

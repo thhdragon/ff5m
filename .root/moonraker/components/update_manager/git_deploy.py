@@ -55,6 +55,7 @@ class GitDeploy(AppDeploy):
 
     async def initialize(self) -> Dict[str, Any]:
         storage = await super().initialize()
+        logging.info("*** Initializer repo")
         await self.repo.restore_state(storage)
         self._is_valid = storage.get("is_valid", self.repo.is_valid())
         if not self.needs_refresh():
