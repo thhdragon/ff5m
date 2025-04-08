@@ -7,8 +7,6 @@
 ##
 ## This file may be distributed under the terms of the GNU GPLv3 license
 
-echo "Starting services..."
-
 # Set HOME to /root to ensure git uses the correct .gitconfig
 export HOME=/root
 

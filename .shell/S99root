@@ -17,7 +17,6 @@ fi
 
 source /opt/config/mod/.shell/common.sh
 
-
 start() {
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ] &&  [ -f "$CUSTOM_BOOT_F" ]; then
         # Turn off and on display's backlight otherwise it's will not work.
@@ -38,6 +37,23 @@ start() {
         fi
 
         mount --rbind /dev/pts "$MOD"/dev/pts
+    fi
+
+    if [ ! -f /opt/config/mod_data/database/moonraker-sql.db ]; then
+        echo "// Initializing database..."
+ 
+        rm -f /opt/config/mod/sql/version
+        sync
+
+        chroot "$MOD" /opt/config/mod/.root/start.sh &> /dev/null
+        chroot "$MOD" /opt/config/mod/.root/stop.sh &> /dev/null
+
+        wait_stopped
+        sync
+
+        /opt/config/mod/.shell/migrate_db.sh
+        chroot "$MOD" /opt/config/mod/.root/restore_ota.sh
+        sync
     fi
     
     echo "// Starting services..."
@@ -61,6 +77,12 @@ stop() {
     echo "// Done"
 }
 
+wait_stopped() {
+    while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
+    while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
+    while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
+}
+
 switch() {
     case "$1" in
         start)
@@ -71,10 +93,7 @@ switch() {
         ;;
         restart|reload)
             stop
-            
-            while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
-            while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
-            while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
+            wait_stopped
             
             start
         ;;
