@@ -57,17 +57,18 @@ So don’t do anything if you not clearly understand what you are doing.
 ## TL;DR
 
 1. Uninstall any other installed mods first (⚠️ make a backup!).   
-2. [Install](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#flashing-the-firmware-image) the mod.   
-3. Update slicer [Start and End G-code](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#for-stock-screen).   
-4. Update slicer [Host Type](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#configuring-moonraker--klipper-connection).   
-5. Enable [MD5 check](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#enabling-md5-checksum-validation) for G-code files.
-6. Update the mod to new versions using [OTA](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#ota-updates).   
-7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
-8. ⚠️ [Recalibrate](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
-9. **Optional**: Enable the mod’s [Camera](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
-10. **Optional**: Configure your [LED lighting](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#led-light-control)     
-11. **Optional**: Enable [Feather Screen](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen).   
-
+2. [Install](/docs/INSTALL.md#flashing-the-firmware-image) the mod.   
+3. Update slicer [Start and End G-code](/docs/SLICING.md#for-stock-screen).   
+4. Update slicer [Host Type](/docs/SLICING.md#configuring-moonraker--klipper-connection).   
+5. Enable [MD5 check](/docs/SLICING.md#enabling-md5-checksum-validation) for G-code files.
+6. Update the mod to new versions using [OTA](/docs/INSTALL.md#ota-updates).   
+7. **Optional**: Enable [config tuning](/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
+8. ⚠️ [Recalibrate](/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
+9. **Optional**: Enable the mod’s [Camera](/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
+10. **Optional**: Configure your [LED lighting](/docs/PRINTING.md#led-light-control)     
+11. **Optional**: Enable [Feather Screen](/docs/SCREEN.md#switching-to-feather-screen).   
+12. **Optional**: Enable [Bed Collision Protection](/docs/PRINTING.md#bed-collision-protection).   
+13. **Optional**: Enable [Bed Mesh Validation](/docs/PRINTING.md#bed-mesh-validation).   
 
 ## Get Started
 
