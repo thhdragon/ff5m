@@ -6,8 +6,8 @@ However, manually editing this file is not recommended. Parameters alone don't d
 
 ### Configuration Macros
 - `LIST_MOD_PARAMS`: Lists all available mod parameters and their current values. Use this to explore the full range of configurable settings.
-- `GET_MOD_PARAM PARAM=<name>`: Retrieves the current value of a specific parameter.
-- `SET_MOD_PARAM PARAM=<name> VALUE=<value>`: Sets a new value for a specific parameter.
+- `GET_MOD PARAM=<name>`: Retrieves the current value of a specific parameter.
+- `SET_MOD PARAM=<name> VALUE=<value>`: Sets a new value for a specific parameter.
 
 ### Parameters Overview
 The mod supports a wide range of parameters to customize printer behavior. Below is a summary of key parameters. For a complete and up-to-date list, always use the `LIST_MOD_PARAMS` macro.
@@ -18,10 +18,10 @@ The mod supports a wide range of parameters to customize printer behavior. Below
   - `SIMPLE_90`: Restarts after 1.5 minutes  
   - `FIRMWARE_90`: Firmware restarts after 1.5 minutes  
 
-- **`close_dialogs`**: Controls dialog timeout behavior.  
-  - `OFF`: Dialogs remain open  
-  - `SLOW`: Closes after 20 seconds (slow fade)  
-  - `FAST`: Closes after 20 seconds (quick fade)  
+- **`close_dialogs`**: Controls dialog timeout behavior.   
+  - `OFF`: Dialogs remain open   
+  - `SLOW`: Closes after 20s (GDB method, may not work in all firmware versions)     
+  - `FAST`: Closes after 20s (API method, requires [LAN-mode](/docs/PRINTING.md#using-stock-firmware-with-mod))    
 
 - **`disable_priming`**: Disables nozzle cleaning by line if set to `1`.  
 

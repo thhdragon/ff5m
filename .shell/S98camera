@@ -88,7 +88,7 @@ reload() {
     if [ "$enabled" -eq "0" ]; then
         if [ "$SILENT" -eq 0 ]; then
             echo "Camera disabled in configuration."
-            echo "To enable the camera, run: SET_MOD_PARAM PARAM='camera' VALUE=1"
+            echo "To enable the camera, run: SET_MOD PARAM='camera' VALUE=1"
             echo "A detailed guide can be found here: https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md"
         fi
 

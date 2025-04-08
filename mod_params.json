@@ -132,6 +132,13 @@
       "order": 50001
     },
     {
+      "key": "backlight_eco",
+      "type": "int",
+      "default": 10,
+      "label": "Screen brightness in ECO mode",
+      "order": 50002
+    },
+    {
       "key": "midi_on",
       "type": "str",
       "default": "",
@@ -225,7 +232,7 @@
     {
       "key": "weight_check",
       "type": "bool",
-      "default": 1,
+      "default": 0,
       "label": "Bed collision protection",
       "order": 10
     },

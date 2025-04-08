@@ -54,7 +54,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
 
 1. **Enable the Mod Parameter**  
    ```
-   SET_MOD_PARAM PARAM=use_kamp VALUE=1
+   SET_MOD PARAM=use_kamp VALUE=1
    ```   
    Optionally, temporarily enable it via `START_PRINT`:  
    ```
@@ -80,7 +80,7 @@ Follow these steps to set up KAMP (Klipper Adaptive Meshing and Purging):
    *KAMP* defaults to `LINE_PURGE` instead of other cleaning algorithms. Avoid adding alternative algorithms (e.g., directly in starting G-code), as KAMP meshes a limited bed region, and default cleaning methods may damage the bed.  
    To disable priming entirely *(optional)*:  
    ```
-   SET_MOD_PARAM PARAM=disable_priming VALUE=1
+   SET_MOD PARAM=disable_priming VALUE=1
    ```   
 
 ## Bed Collision Protection
@@ -89,6 +89,10 @@ To avoid bed scratching caused by the nozzle hitting the bed, the mod includes a
 It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 - `weight_check`: Enables or disables collision detection.
 - `weight_check_max`: Sets the maximum tolerable weight (in grams).
+
+For protection to work correctly without false triggers, ensure your bed’s weight sensor isn’t defective and shows accurate values when the bed is cold and after it’s warmed up.   
+Some users experience weight sensor degradation, where the difference between a cold and warm bed can be 2-3 kg (2000-3000 g).  
+Read this before enabling: [About bed pressure error](/docs/FAQ.md#why-am-i-getting-a-bed-pressure-detected-error)   
 
 > [!WARNING]
 > Don’t set `weight_check_max` too low. Legitimate situations, such as the nozzle scratching an overextruded model or the weight of the model itself, can trigger false stops.  
@@ -117,6 +121,35 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 
 > [!NOTE]
 > Bed Mesh Validation may produce false negatives if your nozzle is very dirty, as this can affect the accuracy of probing and the correct Z-offset position. Always ensure your nozzle is clean before starting a print.
+
+## Z-Offset
+
+In stock screen mode, Z-Offset is managed via the firmware’s screen. It’s automatically saved and loaded for the next print.
+
+For the Feather screen, you can control Z-Offset using standard macros or Fluidd/Mainsail controls. It will be saved but not loaded automatically after a reboot.   
+Enable the `load_zoffset` mod [parameter](/docs/CONFIGURATION.md) to make the mod automatically save and load Z-Offset after a reboot, like the stock firmware do.
+
+Once `load_zoffset` is enabled, adjust Z-Offset through Fluidd or Mainsail’s standard controls (which use `SET_GCODE_OFFSET`). The mod will then save the Z-Offset to the configuration and load it automatically after a reboot, right before the print starts.
+
+### Macros
+- **[SET_GCODE_OFFSET](https://www.klipper3d.org/G-Codes.html#set_gcode_offset)**: Standard Klipper macro to apply Z-Offset; also saves the value to the mod’s parameter.  
+- **`LOAD_GCODE_OFFSET`**: Loads and applies the last-saved Z-Offset from the mod’s parameter.
+
+
+### Example
+```
+# Enable Z-offset loading
+SET_MOD PARAM="load_zoffset" VALUE=1
+
+# Set Z-offset (will be saved to `z_offset` mod parameter)
+SET_GCODE_OFFSET Z=-0.2
+
+# Set Z-offset (will NOT be saved to `z_offset` mod parameter)
+_SET_GCODE_OFFSET Z=0.25
+
+# Set saved Z-offset value (will not be applied immediately but will be loaded before print if `load_zoffset` is enabled)
+SET_MOD PARAM="z_offset" VALUE=0.25
+```
 
 ## Sound
 You can customize sound indications or completely disable them. Additionally, you can configure MIDI playback for specific events. Available MIDI files are located in **Configuration -> mod_data -> midi**. You can also add your own MIDI files by uploading them to the **midi** folder.
@@ -147,35 +180,15 @@ initial_WHITE: 0.2  ; Optional: Set the initial brightness value.
 
 
 ```bash
-SET_MOD_PARAM PARAM="disable_screen_led" VALUE=1
+SET_MOD PARAM="disable_screen_led" VALUE=1
 ```
 
 ## Automation
 
 It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
-- `stop_motor`: Automatically disables motors after inactivity.
-- `auto_reboot`: Reboots the printer after a print finishes. Options: OFF, SIMPLE_90, or FIRMWARE_90.
-- `close_dialogs`: Automatically closes stock firmware dialogs after 20 seconds. Options: OFF, SLOW, or FAST.
-
-## Z-Offset 
-
-In the stock firmware, Z-Offset is controlled directly through the firmware's screen.
-For the alternative screen (or headless mode), use the following mod [parameters](/docs/CONFIGURATION.md):
-- `load_zoffset`: Load the saved Z-Offset value.
-- `z_offset`: Manually set the Z-Offset value.
-
-Macros:
-- `LOAD_GCODE_OFFSET`: Load and apply Z-Offset from mod's parameter
-- `SET_GCODE_OFFSET`: It's standard Klipper macro to apply Z-Offset, but it's also save value to the mod's parameter
-
-Example:
-```bash
-# Enable global Z-offset management
-SET_MOD_PARAM PARAM="load_zoffset" VALUE=1
-
-# Set custom Z-offset (loaded in START_PRINT only if `load_zoffset` enabled)
-SET_MOD_PARAM PARAM="z_offset" VALUE=0.25
-```
+- `stop_motor`: Automatically disables motors after inactivity.   
+- `auto_reboot`: Reboots the printer after a print finishes.   
+- `close_dialogs`: Automatically dismiss stock firmware dialogs after 20 seconds.   
 
 ## Nozzle Cleaning
 
@@ -188,9 +201,48 @@ These are controlled by the following [parameters](/docs/CONFIGURATION.md):
 In stock firmware, some internal Klipper parameters controlling the **Move Queue** are not optimally configured, which can cause the **E0017** error (**Move Queue Overflow**).  
 To fix this, enable the mod [parameter](/docs/CONFIGURATION.md):
 ```bash
-SET_MOD_PARAM PARAM="fix_e0017" VALUE=1
+SET_MOD PARAM="fix_e0017" VALUE=1
 ```
 
 ## Using stock Firmware with mod
 
 Some mod features, like fast dialog closing, may not work unless the stock firmware parameter "Use only local networks" is enabled. It is recommended to set this parameter for all users.
+
+## Reducing Resource Usage
+
+If you’re planning a long or complex print, it’s a waste of filament if it stops due to low resources.    
+You can reduce resource usage to the bare minimum while ensuring printing still works correctly.
+
+#### Switch to Feather Screen
+The stock screen consumes 10-20 MB of RAM, while Feather uses only 1-2 MB.
+
+#### Reduce Camera Resource Usage
+Disable the camera, lower its resolution to the minimum, or switch to the mod’s camera implementation.   
+The camera (especially controlled by stock firmware) uses significant memory.   
+Switching to the mod’s camera can reduce usage by about 4x.
+
+#### Disable Moonraker
+Moonraker consumes around 30 MB of RAM. It’s not required for the stock screen or Feather, but disabling it means losing access to Fluidd/Mainsail.  
+
+To disable Moonraker before printing and re-enable it afterward, modify your G-code:  
+- **Starting G-code** (add as the first line):  
+  ```
+  STOP_MOD
+  ```   
+- **Ending G-code** (add as the last line):  
+  ```
+  START_MOD
+  ```   
+
+This stops Moonraker (and related services like Telegram bots or Discord notifications) before the print and restarts it after a successful finish. If you do this, consider disabling SWAP too (see below).
+
+#### Disable SWAP (Only if Moonraker is Disabled)
+You can disable *SWAP* completely if Moonraker is off — there’s enough memory for basic operations without it. However, printing might still trigger an out-of-memory error, and shaper calibration will likely be impossible without *SWAP*. Only disable *SWAP* alongside Moonraker, not as a standalone optimization.  
+- **Disable SWAP until next reboot**:  
+  ```
+  SHELL CMD='swapoff -a'
+  ```  
+- **Disable SWAP permanently**:  
+  ```
+  SET_MOD PARAM=use_swap VALUE=OFF
+  ```

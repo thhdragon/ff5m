@@ -18,7 +18,7 @@ If you prefer to use the stock camera functionality, you can skip Steps 1–3 an
 ### Configuring the Mod's Camera
 
 #### Step 1: Modify Camera Configuration
-The camera settings are defined in the `camera.conf file`, located in Fluidd under _Configuration -> mod_data -> camera.conf_. Below is the default configuration:
+The camera settings are defined in the `camera.conf` file, located in Fluidd under _Configuration -> mod_data -> camera.conf_. Below is the default configuration:
 
 ```cfg
 # Resolution width
@@ -36,8 +36,8 @@ VIDEO=auto
 # Reduce camera memory usage
 # This may be handy if your camera consumes too much memory.
 # For example, even for 640x480 resolution, it may uses memory as it 1080p stream.
-# Disable it if you expericencing issues with your camera
-REDUCE_MEMORY=1
+# Disable it if you experiencing issues with your camera
+REDUCE_MEMORY=0
 
 # Image post-processing settings.
 # Enable this to use image post-processing
@@ -78,7 +78,7 @@ This step is crucial to avoid conflicts between the stock and mod camera impleme
 Once the stock camera is disabled, enable the mod's camera by running the following command in the console:
 
 ```
-SET_MOD_PARAM PARAM="camera" VALUE=1
+SET_MOD PARAM="camera" VALUE=1
 ```
 
 This command activates the mod's camera implementation.

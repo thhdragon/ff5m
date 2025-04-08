@@ -39,6 +39,7 @@ apply_migrations() {
             
             if sqlite3 "$DATABASE_PATH" < "$migration"; then
                 echo "$migration_number" > "$LAST_MIGRATION_FILE"
+                sync
                 migration_applied=1
             else
                 echo "Failed to apply migration: $migration_file. Check the SQL script or database file."
@@ -50,6 +51,7 @@ apply_migrations() {
     if [ "$migration_applied" -eq 0 ]; then
         echo "Database already up to date"
     else
+        sync
         echo "All migrations have been processed"
     fi
 }

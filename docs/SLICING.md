@@ -83,6 +83,12 @@ You can download the required script from the repository:
 - For Windows: [addMD5.bat](/addMD5.bat)
 - For Linux/Mac: [addMD5.sh](/addMD5.sh)
 
+> [!NOTE]  
+> Ensure the script has the correct **permissions** to execute (on *Linux/Mac*).   
+> You may need to run `chmod +x ./addMD5.sh` to make it executable.   
+> For macOS, if the script doesn’t run, remove the quarantine flag with:   
+> `xattr -d com.apple.quarantine ./addMD5.sh`
+
 #### Configuring the Script in OrcaSlicer
 
 1. **Download the Script**: Save the appropriate script (addMD5.bat for Windows or addMD5.sh for Linux/Mac) to your computer.
@@ -101,6 +107,5 @@ You can download the required script from the repository:
 - Before starting a print, the mod verifies the checksum. If the checksum does not match, the file is considered corrupted, and the print is canceled.
 
 ### Notes
-- Ensure the script has the correct **permissions** to execute (on _Linux/Mac_). You may need to run `chmod +x addMD5.sh` to make it executable.
 - If the checksum validation fails, the G-code file will be deleted to prevent accidental use in the future.
 - This feature is enabled by default in the mod but requires the MD5 checksum to be added to the G-code file for it to work.

@@ -55,8 +55,12 @@ class ModParamManagement:
 
         self.gcode.register_command("LIST_MOD_PARAMS", self.cmd_LIST_MOD_PARAMS)
         self.gcode.register_command("RELOAD_MOD_PARAMS", self.cmd_RELOAD_MOD_PARAMS)
+
         self.gcode.register_command("GET_MOD_PARAM", self.cmd_GET_MOD_PARAM)
         self.gcode.register_command("SET_MOD_PARAM", self.cmd_SET_MOD_PARAM)
+
+        self.gcode.register_command("GET_MOD", self.cmd_GET_MOD)
+        self.gcode.register_command("SET_MOD", self.cmd_SET_MOD)
 
     def _run_gcode(self, *cmds: str):
         self.gcode.run_script_from_command("\n".join(cmds))
@@ -206,7 +210,7 @@ class ModParamManagement:
         if issubclass(param.type, Enum):
             gcmd.respond_raw(f'  // {[value.name for value in param.type]}')
         if not param.readonly:
-            gcmd.respond_raw(f'  --> SET_MOD_PARAM PARAM="{param.key}" VALUE={repr(value)}')
+            gcmd.respond_raw(f'  --> SET_MOD PARAM="{param.key}" VALUE={repr(value)}')
 
     def cmd_LIST_MOD_PARAMS(self, gcmd):
         for param in self.params:
@@ -225,6 +229,9 @@ class ModParamManagement:
         param = self.params_map[key]
         self._print_param(gcmd, param)
         self._print_warning(param)
+
+    def cmd_GET_MOD(self, gcmd):
+        self.cmd_GET_MOD_PARAM(gcmd)
 
     def cmd_SET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
@@ -255,6 +262,9 @@ class ModParamManagement:
             gcmd.respond_raw("SET: " + self._format_label(param, transformed))
 
         self._print_warning(param)
+
+    def cmd_SET_MOD(self, gcmd):
+        self.cmd_SET_MOD_PARAM(gcmd)
 
     def _print_warning(self, param):
         if param.warning:

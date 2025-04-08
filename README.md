@@ -62,7 +62,7 @@ So don’t do anything if you not clearly understand what you are doing.
 4. Update slicer [Host Type](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#configuring-moonraker--klipper-connection).   
 5. Enable [MD5 check](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md#enabling-md5-checksum-validation) for G-code files.
 6. Update the mod to new versions using [OTA](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md#ota-updates).   
-7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD_PARAM PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
+7. **Optional**: Enable [config tuning](https://github.com/DrA1ex/ff5m/blob/main/docs/CONFIGURATION.md#configuration-macros) for a better first layer: `SET_MOD PARAM=tune_config VALUE=1` (⚠️ requires recalibration afterward).   
 8. ⚠️ [Recalibrate](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#calibration) Bed Mesh, shaper, and Z-offset.   
 9. **Optional**: Enable the mod’s [Camera](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md#step-3-enable-mods-camera) implementation.   
 10. **Optional**: Configure your [LED lighting](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#led-light-control)     
@@ -78,6 +78,7 @@ To begin, follow the instructions on the [Installation page](/docs/INSTALL.md). 
 
 This modification also includes additional features. It is highly recommended that you thoroughly read the [Printing](/docs/PRINTING.md) and [Configuration](/docs/CONFIGURATION.md) pages before getting started.
 
+This article might also be useful: [Reducing resource usage](https://github.com/DrA1ex/ff5m/blob/dev/docs/PRINTING.md#reducing-resource-usage).   
 For additional help, check out the [F.A.Q.](/docs/FAQ.md).
 
 You can reach services using these addresses:  
@@ -87,7 +88,11 @@ You can reach services using these addresses:
 
 If you encounter issues:  
 1. First, consult the documentation.
-2. If the issue persists, you can create an [issue](https://github.com/DrA1ex/ff5m/issues) on GitHub or join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group for assistance.
+2. If the problem persists:
+   - Open a [GitHub issue](https://github.com/DrA1ex/ff5m/issues)
+   - Join the [Telegram Support](https://t.me/+ihE2Ry8kBNkwYzhi) group
+   - Visit the [Discord server](https://discord.gg/K7MH4hAfeX)    
+     → Navigate to: Forums → mods-and-projects → Forge-X
 
 ## Why This Mod Was Developed
 This mod was created to address several critical limitations and challenges faced by users of the Flashforge AD5M (Pro) 3D printer. Here are the key reasons behind its development:
@@ -122,6 +127,7 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Recovery guide](docs/RECOVERY.md)
 
 If you encounter any issues, feel free to join Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
+You can also join FlashForge community in [Discord](https://discord.gg/K7MH4hAfeX) (Navigate to: Forums → mods-and-projects → Forge-X)
 
 ## Credits
 
