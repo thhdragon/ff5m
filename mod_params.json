@@ -232,7 +232,7 @@
     {
       "key": "weight_check",
       "type": "bool",
-      "default": 1,
+      "default": 0,
       "label": "Bed collision protection",
       "order": 10
     },

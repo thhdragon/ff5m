@@ -73,7 +73,7 @@ If you are using the **Feather screen**, no changes are required.
 
 ---
 
-### Why am I Getting a "Weight Exceeded" Error?
+### Why am I Getting a "Bed pressure detected" Error?
 
 This safety feature is designed to prevent damage to the printer’s bed caused by the nozzle impacting it. By default, the weight limit is set to **1.2 kg**, but this can be adjusted using the `weight_check_max` parameter.
 

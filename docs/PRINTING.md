@@ -90,6 +90,10 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 - `weight_check`: Enables or disables collision detection.
 - `weight_check_max`: Sets the maximum tolerable weight (in grams).
 
+For protection to work correctly without false triggers, ensure your bed’s weight sensor isn’t defective and shows accurate values when the bed is cold and after it’s warmed up.   
+Some users experience weight sensor degradation, where the difference between a cold and warm bed can be 2-3 kg (2000-3000 g).  
+Read this before enabling: [About bed pressure error](/docs/FAQ.md#why-am-i-getting-a-bed-pressure-detected-error)   
+
 > [!WARNING]
 > Don’t set `weight_check_max` too low. Legitimate situations, such as the nozzle scratching an overextruded model or the weight of the model itself, can trigger false stops.  
 > Over time, the bed's weight may also increase during long prints (weight of the model itself).
