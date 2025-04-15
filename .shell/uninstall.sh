@@ -39,11 +39,15 @@ revert_klipper_patches() {
 
 fail() {
     if [ -n "$1" ]; then echo "$1"; fi
-    echo "@@ Failed to remove mod. Reboot in 5 seconds..."
-    sleep 5
-    
+
+    sync
+    sleep 1
+
+    echo "@@ Failed to remove mod. Reboot the printer."
+    sync
+
+    sleep 300
     reboot
-    exit 1
 }
 
 uninstall() {
@@ -85,6 +89,11 @@ uninstall() {
     mount | grep "/data/.mod" | awk '{print $3}' | xargs -n1 -I {} umount -lf "{}"
     mount | grep " /root/printer_data" | awk '{print $3}' | xargs -n1 -I {} umount -lf "{}"
     umount -lf /root/.oh-my-zsh &> /dev/null
+
+    if mount | grep -q /data/.mod || lsof | grep -q /data/.mod; then
+        echo "@@ Found running mod services."
+        fail
+    fi
     
     echo "// Removing services..."
     
@@ -138,11 +147,14 @@ uninstall() {
     rm -rf /data/.mod
     
     echo "// Done!"
-    echo "// Printer will reboot in 5 seconds..."
     
     sync
-    sleep 5
+    sleep 1
+
+    echo "// Reboot the printer"
+    sync
     
+    sleep 300
     reboot
 }
 
