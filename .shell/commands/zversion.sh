@@ -43,6 +43,8 @@ case $1 in
             message "Detected Core Version: $CORE_VERSION | Current Firmware Version: $OTA_VERSION" "!!"
             message "Please update your firmware by downloading the latest image from the Releases page." "!!"
             message "Visit: https://github.com/drA1ex/ff5m/releases" "!!"
+
+            echo "UPDATE_DELAYED_GCODE ID=verify_version DURATION=60" > /tmp/printer
         fi
     ;;
     *)
