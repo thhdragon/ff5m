@@ -38,13 +38,13 @@ PID_FILE=/run/zssh.pid
 start() {
     enabled=$($CFG_SCRIPT "$VAR_PATH" --get "zssh" "0")
     if [ "$enabled" -eq 0 ]; then
-        [ "$SILENT" -eq 0 ] && echo "@@ SSH is disabled"
+        echo "@@ SSH is disabled"
         return
     fi
     
     if ! is_running; then
         echo "// Starting ssh tunnel..."
-
+        
         sync
         /bin/dropbearmulti dbclient                     \
             -NTfy                                       \
@@ -58,12 +58,12 @@ start() {
         
         ret=$?
         sync
-
+        
         if [ "$ret" -ne 0 ]; then
             echo "@@ Unable to create SSH tunnel. Returned: $ret"
             exit 1
         fi
-
+        
         echo "// OK"
         
         ps | grep '\-NTf[y]' | head -1 | awk '{print $1}' > "$PID_FILE"
@@ -82,12 +82,12 @@ start() {
             
             ret=$?
             sync
-
+            
             if [ "$ret" -ne 0 ]; then
                 echo "@@ Unable to run remote command over SSH. Returned: $ret"
                 exit 2
             fi
-
+            
             echo "// OK"
         fi
         
@@ -124,7 +124,7 @@ reload() {
     enabled=$($CFG_SCRIPT "$VAR_PATH" --get "zssh" "0")
     if [ "$enabled" -eq 1 ]; then
         if ! is_running; then
-            [ "$SILENT" -eq 0 ] && echo "?? SSH connection lost."
+            echo "?? SSH connection lost."
             restart
         fi
     fi
@@ -151,10 +151,10 @@ switch() {
         ;;
         test)
             if is_running; then
-                [ "$SILENT" -eq 0 ] && echo "SSH Tunnel is running"
+                echo "SSH Tunnel is running"
                 return 0
             else
-                [ "$SILENT" -eq 0 ] && echo "SSH Tunnel is not running"
+                echo "SSH Tunnel is not running"
                 return 1
             fi
         ;;
@@ -164,5 +164,7 @@ switch() {
     esac
 }
 
-switch "$@" 2>&1 | logged "/data/logFiles/ssh.log"
+[ "$SILENT" -eq 1 ] && LOGGED_ARGS=("--no-print")
+
+switch "$@" 2>&1 | logged "/data/logFiles/ssh.log" "${LOGGED_ARGS[@]}"
 exit $?
