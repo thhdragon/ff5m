@@ -6,6 +6,7 @@
 
 
 import logging
+import time
 
 
 class LoadCellTareGcode:
@@ -39,6 +40,8 @@ class LoadCellTareGcode:
         self.gcode.respond_raw("TEST_M108")
 
     def cmd_LOAD_CELL_TARE(self, gcmd):
+        t = time.time()
+
         self._lazy_load_printers_objects()
 
         weight = self.weight.last_temp
@@ -87,7 +90,7 @@ class LoadCellTareGcode:
             return self._raise_error("Load cell tare failed. No tare confirmation received")
 
         # If we are here - tare is considered successful
-        logging.info("LOAD_CELL_TARE: Load cell tare finished!")
+        logging.info(f"LOAD_CELL_TARE: Load cell tare finished in {time.time() - t:0.1f}s.")
 
     def _query_probe(self):
         # This may trigger a "Timer too close" error.
@@ -97,11 +100,12 @@ class LoadCellTareGcode:
         # It checks if the weight is greater than 200; if so, the probe is considered triggered
 
         weight = self.weight.last_temp
-        if weight > 200:
+        if weight < 200:
             logging.info("LOAD_CELL_TARE: No pressure to bed detected. OK!")
             return
 
         logging.info("LOAD_CELL_TARE: Detected bed pressure.")
+        self.gcode.respond_raw("!! Detected bed pressure. Please ensure the bed is clean!")
 
         self.gcode.run_script_from_command("SAVE_GCODE_STATE NAME=CELL_TARE")
 
@@ -121,7 +125,6 @@ class LoadCellTareGcode:
             )
 
         self.gcode.run_script_from_command("RESTORE_GCODE_STATE NAME=CELL_TARE")
-        self.gcode.respond_raw("!! Detected bed pressure. Please ensure the bed is clean!")
 
     def _raise_error(self, msg):
         start_print_vars = self.printer.lookup_object('gcode_macro _START_PRINT').variables
