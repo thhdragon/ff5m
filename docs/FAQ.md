@@ -73,6 +73,25 @@ If you are using the **Feather screen**, no changes are required.
 
 ---
 
+### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response"?
+
+This occurs when the printer’s weight sensor fails to respond within the requested time.  
+It may happen due to insufficient system resources or loose wiring.
+
+Try checking and reattaching all connections, as this may resolve the issue.  
+If the problem persists, consider disabling the `weight_check` feature, as it requires taring the load cell right before the print starts, which can trigger this error.
+
+---
+
+### Why am I Getting "Shutdown due to sensor value exceeding the limit"?
+
+This indicates that Bed Collision Protection was triggered due to excessive pressure on the bed.  
+It’s normal if the nozzle hits the bed forcefully, but it could also be a false trigger.
+
+For details on false triggers, see the next article.
+
+---
+
 ### Why am I Getting a "Bed pressure detected" Error?
 
 This safety feature is designed to prevent damage to the printer’s bed caused by the nozzle impacting it. By default, the weight limit is set to **1.2 kg**, but this can be adjusted using the `weight_check_max` parameter.
