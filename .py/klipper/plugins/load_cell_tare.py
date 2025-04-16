@@ -90,9 +90,14 @@ class LoadCellTareGcode:
         logging.info("LOAD_CELL_TARE: Load cell tare finished!")
 
     def _query_probe(self):
-        self._run_gcode("QUERY_PROBE")
+        # This may trigger a "Timer too close" error.
+        # self._run_gcode("QUERY_PROBE")
 
-        if not self.probe.last_state:
+        # Instead, we simply check the weight value since the MCU handles this in QUERY_PROBE.
+        # It checks if the weight is greater than 200; if so, the probe is considered triggered
+
+        weight = self.weight.last_temp
+        if weight > 200:
             logging.info("LOAD_CELL_TARE: No pressure to bed detected. OK!")
             return
 
