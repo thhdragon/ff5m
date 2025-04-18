@@ -390,18 +390,16 @@ class FeatherScreen:
         estimate_duration = self.virtual_sdcard.estimate_print_time
 
         if not estimate_duration:
-            estimate_duration = self.toolhead.get_status(eventtime)["estimated_print_time"]
+            current_layer = stats["info"]["current_layer"]
+            total_layer = stats["info"]["total_layer"]
 
-            if not estimate_duration:
-                current_layer = stats["info"]["current_layer"]
-                total_layer = stats["info"]["total_layer"]
+            if current_layer and total_layer:
+                estimate_duration = print_duration / max(current_layer, 1) * total_layer
+            else:
+                progress = self.display_status.get_status(eventtime)["progress"]
+                estimate_duration = print_duration / progress if progress > 0 else None
 
-                if current_layer and total_layer:
-                    estimate_duration = print_duration / max(current_layer, 1) * total_layer
-                else:
-                    estimate_duration = stats["total_duration"]
-
-        if print_duration > estimate_duration:
+        if estimate_duration is not None and print_duration > estimate_duration:
             estimate_duration = print_duration
 
         if self.state == ScreenState.PRINTING:
@@ -411,6 +409,8 @@ class FeatherScreen:
 
     @staticmethod
     def _convert_duration(t: float, digits=1):
+        if t is None: return "???"
+
         units = [
             {"unit": "d", "exp": 60 * 60 * 24},
             {"unit": "h", "exp": 60 * 60},
