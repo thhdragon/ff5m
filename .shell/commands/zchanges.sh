@@ -24,14 +24,14 @@ case "$key" in
             message "Do not turn off the screen unless you clearly understand how the bed mesh, z-offset, and the START_PRINT and END_PRINT macros work."
             message "https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md"
             
-            $SCRIPTS/commands/zdisplay.sh "off"
+            "$SCRIPTS"/commands/zdisplay.sh "off"
         else
-            $SCRIPTS/commands/zdisplay.sh "on"
+            "$SCRIPTS"/commands/zdisplay.sh "on"
         fi
     ;;
     
     use_swap)
-        $SCRIPTS/init_swap.sh
+        "$SCRIPTS"/boot/init_swap.sh
     ;;
     
     camera)
@@ -58,7 +58,7 @@ case "$key" in
     ;;
     
     fix_e0017)
-        if $SCRIPTS/commands/zfix_e0017.sh "$value"; then
+        if "$SCRIPTS"/commands/zfix_e0017.sh "$value"; then
             message "Klipper was changed. Printer will reboot now"
             sleep 5
             reboot
