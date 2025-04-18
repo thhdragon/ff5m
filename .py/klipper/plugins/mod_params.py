@@ -239,7 +239,15 @@ class ModParamManagement:
         force = gcmd.get('FORCE', 0)
 
         if key not in self.params_map:
-            raise gcmd.error(f'Unknown parameter: "{key}"')
+            similar_key = self._find_similar_param(key, list(self.params_map.keys()))
+            if similar_key:
+                gcmd.respond_raw(f"!! Unknown parameter: {key!r}")
+                gcmd.respond_info("Did you mean this?")
+                gcmd.respond_info(f"SET_MOD PARAM={similar_key!r} VALUE={value!r}")
+
+                return
+            else:
+                raise gcmd.error(f'Unknown parameter: "{key}"')
 
         param = self.params_map[key]
         if param.readonly and not force:
@@ -292,6 +300,53 @@ class ModParamManagement:
 
     def get_status(self, _):
         return {'variables': self.variables}
+
+    @staticmethod
+    def _levenshtein_distance(s1, s2):
+        # If s1 is shorter, swap to optimize memory
+        if len(s1) < len(s2):
+            return ModParamManagement._levenshtein_distance(s2, s1)
+
+        # If s2 is empty, distance is length of s1
+        if len(s2) == 0:
+            return len(s1)
+
+        # Initialize the previous row of distances
+        previous_row = list(range(len(s2) + 1))
+
+        # Iterate over characters in s1
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+
+            # Iterate over characters in s2
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1
+                deletions = current_row[j] + 1
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+
+            previous_row = current_row
+
+        return previous_row[-1]
+
+    @staticmethod
+    def _find_similar_param(misspelled, param_list):
+        if not param_list: return None
+
+        # Compute distances from misspelled name to each parameter
+        distances = [(param, ModParamManagement._levenshtein_distance(misspelled, param)) for param in param_list]
+
+        # Find the minimum distance
+        min_distance = min(distances, key=lambda x: x[1])[1]
+
+        if min_distance <= 10:
+            closest_params = [param for param, dist in distances if dist == min_distance]
+
+            # Return the first one (arbitrary choice if multiple matches)
+            return closest_params[0]
+        else:
+            # If the smallest distance is too large, return None
+            return None
 
 
 def load_config(config):
