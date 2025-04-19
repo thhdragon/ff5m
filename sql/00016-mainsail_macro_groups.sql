@@ -247,86 +247,6 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
             [
                 {
                     "pos": 1,
-                    "name": "CONFIG_BACKUP",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 2,
-                    "name": "CONFIG_RESTORE",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 3,
-                    "name": "CONFIG_VERIFY",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 4,
-                    "name": "MEM",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 5,
-                    "name": "DATE_GET",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 6,
-                    "name": "DATE_SET",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 7,
-                    "name": "SET_TIMEZONE",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 8,
-                    "name": "TEST_EMMC",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 9,
-                    "name": "CLEAR_EMMC",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 10,
-                    "name": "TAR_DEBUG",
-                    "color": "group",
-                    "showInStandby": true,
-                    "showInPrinting": true,
-                    "showInPause": true
-                },
-                {
-                    "pos": 11,
                     "name": "LEVELING_PRINT_FILE",
                     "color": "group",
                     "showInStandby": true,
@@ -334,7 +254,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                     "showInPause": true
                 },
                 {
-                    "pos": 12,
+                    "pos": 2,
                     "name": "NOLEVELING_PRINT_FILE",
                     "color": "group",
                     "showInStandby": true,
@@ -342,7 +262,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                     "showInPause": true
                 },
                 {
-                    "pos": 13,
+                    "pos": 3,
                     "name": "SHELL",
                     "color": "group",
                     "showInStandby": true,
@@ -350,7 +270,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                     "showInPause": true
                 },
                 {
-                    "pos": 14,
+                    "pos": 4,
                     "name": "NEW_RESTART",
                     "color": "group",
                     "showInStandby": true,
@@ -358,7 +278,7 @@ INSERT OR REPLACE INTO "namespace_store" ("namespace", "key", "value") VALUES ('
                     "showInPause": true
                 },
                 {
-                    "pos": 15,
+                    "pos": 5,
                     "name": "NEW_SAVE_CONFIG",
                     "color": "group",
                     "showInStandby": true,
