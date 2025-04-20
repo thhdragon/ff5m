@@ -240,7 +240,16 @@ This can happen when you are using the Feather screen, and the mod cannot connec
 Since the mod requires a network connection to function, it will keep attempting to connect until successful.
 
 Printers are often metal-shielded, meaning Wi-Fi signals may struggle to reach the antenna.  
-Consider switching to a 2.4 GHz Wi-Fi network. You can do this from the stock screen or by manually editing the `/etc/wpa_supplicant.conf` configuration file.
+Consider switching to a 2.4GHz Wi-Fi network. You can do this from the stock screen or by manually editing the `/etc/wpa_supplicant.conf` configuration file by adding `freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462` to the network section, example below.
+```bash
+network={
+        ssid="example"
+        psk="password"
+        freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462
+        key_mgmt=WPA-PSK WPA-EAP NONE
+        disabled=1
+}
+```
 
 If the mod still cannot connect within 5 minutes, the stock screen will load instead.
 
