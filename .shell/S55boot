@@ -16,7 +16,7 @@ source /opt/config/mod/.shell/common.sh
 skip_mod() {
     echo "Boot disabled due to SKIP_MOD mode"
 
-    if ! /opt/config/mod/.shell/commands/zdisplay.sh test; then
+    if [ "$("$CMDS"/zdisplay.sh test)" != "STOCK" ]; then
         echo "// Reverting configuration to be suitable with the enabled screen"
         
         mount_data_partition
@@ -25,7 +25,7 @@ skip_mod() {
         mount --bind /opt/config "$MOD/opt/config"
         init_chroot
         
-        /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+        /opt/config/mod/.shell/commands/zdisplay.sh stock --skip-reboot
 
         echo "// Cleaning up..."
         
