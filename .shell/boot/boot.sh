@@ -123,7 +123,7 @@ elif [ "$DISPLAY_OFF" -eq 1 ]; then
     # This means Feather is useless without network - skip it
     
     echo "?? Switch config to enabled screen..."
-    /opt/config/mod/.shell/commands/zdisplay.sh on --skip-reboot
+    /opt/config/mod/.shell/commands/zdisplay.sh stock --skip-reboot
 
     echo "@@ Failed to initialize mod. Booting into stock firmware..."
     sleep 1

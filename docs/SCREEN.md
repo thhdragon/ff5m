@@ -61,7 +61,7 @@ Then edit the `variables.cfg` file to disable the `display` parameter manually:
 
 ```bash
 # Enable stock screen using script
-/opt/config/mod/.shell/commands/zdisplay.sh on
+/opt/config/mod/.shell/commands/zdisplay.sh stock
 
 # Or change parameter in variables.cfg using this script
 /opt/config/mod/.shell/commands/zconf.sh /opt/config/mod_data/variables.cfg --set "display='STOCK'"
