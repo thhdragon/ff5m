@@ -48,5 +48,5 @@ if [ "$CMD" == "recover" ]; then
     send "machine/update/recover?name=forge-x&hard=true"
 fi
 
-echo "Unknonw command \"$CMD\""
+echo "Unknown command \"$CMD\""
 exit 1

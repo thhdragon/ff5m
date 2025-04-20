@@ -11,19 +11,15 @@ import time
 
 class LoadCellTareGcode:
     def __init__(self, config):
-        self.loaded = False
-
         self.config = config
         self.printer = config.get_printer()
         self.gcode = self.printer.lookup_object("gcode")
 
+        self.printer.register_event_handler("klippy:ready", self._init)
+
         self.gcode.register_command("LOAD_CELL_TARE", self.cmd_LOAD_CELL_TARE)
-        self.gcode.register_command("TEST_M108", self.cmd_TEST_M108)
 
-    def _lazy_load_printers_objects(self):
-        if self.loaded: return
-
-        self.loaded = True
+    def _init(self):
         self.toolhead = self.printer.lookup_object("toolhead")
         self.weight = self.printer.lookup_object("temperature_sensor weightValue")
         self.probe = self.printer.lookup_object("probe")
@@ -36,16 +32,15 @@ class LoadCellTareGcode:
     def _tare_confirmed(self):
         return bool(self.level_pin.last_state)
 
-    def cmd_TEST_M108(self, gcmd):
-        self.gcode.respond_raw("TEST_M108")
-
     def cmd_LOAD_CELL_TARE(self, gcmd):
         t = time.time()
 
-        self._lazy_load_printers_objects()
-
         weight = self.weight.last_temp
         threshold_weight = self.mod_params.variables.get("cell_weight", 0)
+
+        if weight <= threshold_weight:
+            logging.info(f"LOAD_CELL_TARE: Skipped (weight {weight} within threshold {threshold_weight})")
+            return
 
         logging.info(f"LOAD_CELL_TARE: Started load cell tare. Weight: {weight}, threshold: {threshold_weight}")
 
