@@ -73,7 +73,7 @@ If you are using the **Feather screen**, no changes are required.
 
 ---
 
-### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response"?
+### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response" / "Timer too close" during START_PRINT?
 
 This occurs when the printer’s weight sensor fails to respond within the requested time.  
 It may happen due to insufficient system resources or loose wiring.
@@ -263,7 +263,12 @@ This error may occur due to memory limitations or overheating issues on your pri
 - High memory consumption is often caused by the camera functionality.  
   - Consider switching to an alternative [Camera Implementation](/docs/CAMERA.md) that uses fewer resources.
 
-#### **2. Overheating Issues**
+### **2. Internal MCU Issues**
+- These are not tied to specific causes and may result from sensor read/write processes.
+  - No specific fixes, as these are internal MCU errors, the mod cannot address them directly.
+  - Try disabling `weight_check`, `filament_switch_sensor`, or similar parameters to reduce MCU interactions during printing.
+
+#### **3. Overheating Issues**
 - Inspect the driver fan located on the motherboard to ensure it's functioning properly:  
   - Remove the printer’s back plate by unscrewing it.  
   - Verify that the fan is operational and not obstructed.  
