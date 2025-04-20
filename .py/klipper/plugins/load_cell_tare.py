@@ -38,7 +38,7 @@ class LoadCellTareGcode:
         weight = self.weight.last_temp
         threshold_weight = self.mod_params.variables.get("cell_weight", 0)
 
-        if weight <= threshold_weight:
+        if weight < threshold_weight:
             logging.info(f"LOAD_CELL_TARE: Skipped (weight {weight} within threshold {threshold_weight})")
             return
 
@@ -124,7 +124,7 @@ class LoadCellTareGcode:
     def _raise_error(self, msg):
         start_print_vars = self.printer.lookup_object('gcode_macro _START_PRINT').variables
         if start_print_vars["print_active"]:
-            if self.mod_params.variables['display_off']:
+            if self.mod_params.variables['display'] != 0:
                 self.gcode.run_script_from_command('CANCEL_PRINT REASON="Cell tare failed!"')
             else:
                 self.gcode.run_script_from_command('CANCEL_PRINT')
