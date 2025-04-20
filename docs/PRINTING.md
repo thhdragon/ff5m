@@ -15,6 +15,11 @@ For detailed instructions on configuring your slicer, refer to the [Slicing](../
 ## Calibration
 
 To calibrate the printer, use only these macros (or the Stock screen).  
+
+> [!WARNING]  
+> The Stock Screen doesn’t support the {code}SAVE_CONFIG{code} macro, which will cause freezing. A reboot is required afterward.
+> Learn how to work around this [here](/docs/FAQ.md#stock-screen-freezes-i-cant-print-anything).
+
 All of these macros are available in the Fluidd/Mainsail main screen in the section **Calibration**:
 
 - `AUTO_FULL_BED_LEVEL`: Bed meshing.  
