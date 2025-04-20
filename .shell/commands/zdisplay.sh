@@ -66,9 +66,9 @@ apply_display_off() {
     "$SCRIPTS"/screen.sh backlight 100
     
     /etc/init.d/S00init reload
-    echo "// Restarting Klipper..." | logged --no-log --send-to-screen
+    echo "// Restarting Klipper..." | logged --no-log --send-to-screen --screen-no-followup
     
-    "$SCRIPTS"/restart_klipper.sh --hard
+    "$SCRIPTS"/restart_klipper.sh
     
     return 0
 }

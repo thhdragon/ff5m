@@ -49,6 +49,8 @@ class FeatherScreenHelper:
             stderr=subprocess.STDOUT
         )
 
+        logging.info("[feather_screen] 'typer' daemon started.")
+
         self._pipe_fd = os.open(PIPE_NAME, os.O_WRONLY)
 
     def stop(self):
@@ -57,6 +59,8 @@ class FeatherScreenHelper:
             self._process.terminate()
             self._process = None
             self._pipe_fd = None
+
+            logging.info("[feather_screen] 'typer' daemon terminated.")
 
     icon_extruder = '\ue119'
     icon_bed = '\ue003'
