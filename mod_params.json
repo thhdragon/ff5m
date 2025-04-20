@@ -168,13 +168,6 @@
       "order": 50012
     },
     {
-      "key": "new_save_config",
-      "type": "bool",
-      "default": 0,
-      "label": "Use alt. SAVE_CONFIG",
-      "order": 100
-    },
-    {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,

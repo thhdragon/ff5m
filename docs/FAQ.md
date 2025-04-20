@@ -174,13 +174,13 @@ If this happens, you won't be able to print, as printing requires the stock scre
 
 Consider switching to Feather Screen. Refer to [this guide](/docs/SCREEN.md) for details.
 
-For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully. Run it yourself instead of `SAVE_CONFIG`:
+For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully.   
 
 ```
 NEW_SAVE_CONFIG
 ```
 
-Alternatively, enable the mod parameter `new_save_config`, which allows you to use standard macro `SAVE_CONFIG` and reload the screen gracefully.
+Note: It uses a debugger to interface with the firmware and save configurations programmatically, so compatibility varies across firmware versions.
 
 ---
 
