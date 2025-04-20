@@ -39,7 +39,7 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 - **`camera`**: Enables the alternative camera implementation if set to `1`.  
 
 - **`filament_switch_sensor`**: Enables pause on filament runout if set to `1`.  
-  **Note**: Only works with Feather screen.   
+  **Note**: Only works with Feather/Headless screen.   
 
 - **`weight_check`**: Enables bed collision protection if set to `1`.  
 

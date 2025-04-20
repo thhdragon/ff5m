@@ -20,7 +20,7 @@ While it does not currently support user input, it is highly extensible and cust
 By using the Feather screen, you can significantly reduce resource usage while maintaining essential functionality.
 This is particularly beneficial for users running complex prints or using additional modifications.
 
-### Switching to Feather Screen
+### Switching to Feather Screen / Headless
 
 Disabling the stock screen changes how the printer works.
 It no longer loads the `MESH_DATA` profile or applies the **Z-Offset** automatically.
@@ -35,6 +35,12 @@ SET_MOD PARAM="display" VALUE="FEATHER"
 ```
 
 This will disable the stock screen and activate the Feather screen immediately. **Make sure to wait until the current print finishes before doing this! :)**
+
+If you want to free up more resources or run a custom screen implementation yourself, run this command:
+
+```bash
+SET_MOD PARAM="display" VALUE="HEADLESS"
+```
 
 
 > [!NOTE]

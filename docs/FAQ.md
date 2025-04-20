@@ -273,7 +273,7 @@ Both of these issues can halt the calibration process, so addressing memory or c
 ---
 
 
-#### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
+### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
 
 Yes, it will work. The stock screen interacts with Klipper directly, so anything you do with Klipper will also be reflected in both the stock firmware and the mod.
 
@@ -281,7 +281,7 @@ The key difference is that the mod allows you to set the temperature for calibra
 
 ---
 
-#### Unable to Access Stock Debug Console for Load Cell Calibration
+### Unable to Access Stock Debug Console for Load Cell Calibration
 
 If you're having trouble, try pressing the console button using a stylus or a thin object. This may resolve the issue.
 
