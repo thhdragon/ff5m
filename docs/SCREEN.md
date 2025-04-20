@@ -31,7 +31,7 @@ Alternatively, you can use the START_PRINT option, described here: [Slicing](/do
 To enable the Feather screen and free up resources, set the following mod parameter:
 
 ```bash
-SET_MOD PARAM="display_off" VALUE=1
+SET_MOD PARAM="display" VALUE="FEATHER"
 ```
 
 This will disable the stock screen and activate the Feather screen immediately. **Make sure to wait until the current print finishes before doing this! :)**
@@ -51,14 +51,14 @@ This will disable the stock screen and activate the Feather screen immediately. 
 Rename it to match your printer version.
 
 **Alternatively**, you can temporarily prevent the mod from booting using the [Dual Boot](/docs/DUAL_BOOT.md) option.   
-Then edit the `variables.cfg` file to disable the `display_off` parameter manually:
+Then edit the `variables.cfg` file to disable the `display` parameter manually:
 
 ```bash
 # Enable stock screen using script
 /opt/config/mod/.shell/commands/zdisplay.sh on
 
 # Or change parameter in variables.cfg using this script
-/opt/config/mod/.shell/commands/zconf.sh /opt/config/mod_data/variables.cfg --set "display_off=0"
+/opt/config/mod/.shell/commands/zconf.sh /opt/config/mod_data/variables.cfg --set "display='STOCK'"
 
 # Or edit manually
 nano /opt/config/mod_data/variables.cfg
@@ -79,7 +79,7 @@ To see usage instructions, run:
 It's not suitable for a full UI, but it consumes almost no resources and allows you to print any information you need.
 
 
-For examples you can view [display_off.cfg](/display_off.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
+For examples you can view [feather.cfg](/config/feather.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
 Implementation of Feather itself you can find in [feather_screen.py](/.py/klipper/plugins/feather_screen.py)
 
 ### Custom Loading and Splash Screens
