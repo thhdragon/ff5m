@@ -32,6 +32,14 @@
         "SLOW": 1,
         "FAST": 2
       }
+    },
+    "DisplayEnum": {
+      "type": "int",
+      "values": {
+        "STOCK": 0,
+        "FEATHER": 1,
+        "HEADLESS": 2
+      }
     }
   },
   "parameters": [
@@ -207,11 +215,22 @@
       "order": 20000
     },
     {
-      "key": "display_off",
-      "type": "bool",
-      "default": 0,
+      "key": "display",
+      "type": "DisplayEnum",
+      "default": "STOCK",
       "label": "Display",
-      "options": ["Flashforge", "Feather"]
+      "options": {
+        "STOCK": "Use Stock Screen",
+        "FEATHER": "Use Feather Screen",
+        "HEADLESS": "Use Headless"
+      },
+      "deprecated": {
+        "key": "display_off",
+        "mapping": {
+          "0": "'STOCK'",
+          "1": "'FEATHER'"
+        }
+      }
     },
     {
       "key": "camera",
