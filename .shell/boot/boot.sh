@@ -19,8 +19,8 @@ if [ ! -f /etc/init.d/S00init ]; then
     /etc/init.d/S00init start
 fi
 
-"$CMDS"/zdisplay.sh test
-DISPLAY_OFF=$?
+DISPLAY_OFF=0
+[ "$("$CMDS"/zdisplay.sh test)" != "STOCK" ] && DISPLAY_OFF=1
 
 wifi_init() {
     if [ -f "/etc/wpa_supplicant.conf" ]; then

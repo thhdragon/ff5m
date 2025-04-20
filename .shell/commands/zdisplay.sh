@@ -9,25 +9,39 @@
 
 source /opt/config/mod/.shell/common.sh
 
-display_on() {
+display_stock() {
     chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
-        --params /opt/config/mod/.cfg/init.display_on.cfg
+        --params /opt/config/mod/.cfg/init.display.stock.cfg
 }
 
-display_off() {
+display_feather() {
     chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
         --mode restore --avoid_writes \
         --config /opt/config/printer.cfg \
         --no_data \
-        --params /opt/config/mod/.cfg/init.display_off.cfg
+        --params /opt/config/mod/.cfg/init.display.feather.cfg
+}
+
+display_headless() {
+    chroot "$MOD" /bin/python3 "$PY"/cfg_backup.py \
+        --mode restore --avoid_writes \
+        --config /opt/config/printer.cfg \
+        --no_data \
+        --params /opt/config/mod/.cfg/init.display.headless.cfg
 }
 
 test() {
-    local display_off=$("$CMDS"/zconf.sh "$VAR_PATH" --get "display_off" "0")
-    return "$display_off"
+    local display_off=$("$CMDS"/zconf.sh "$VAR_PATH" --get "display_off" "MISSING")
+
+    if [ "$display_off" != "MISSING" ]; then
+        [ "$display_off" = "0" ] && echo "STOCK" || echo "FEATHER"
+    else
+        local display=$("$CMDS"/zconf.sh "$VAR_PATH" --get "display" "STOCK")
+        echo "$display"
+    fi
 }
 
 
@@ -60,8 +74,8 @@ apply_display_off() {
 }
 
 case "$1" in
-    on)
-        display_on
+    stock)
+        display_stock
         sync
         
         if [ "$2" != "--skip-reboot" ]; then
@@ -74,26 +88,32 @@ case "$1" in
         exit 0
     ;;
     
-    off)
-        display_off
+    feather)
+        display_feather
+        apply_display_off
+    ;;
+
+    headless)
+        display_headless
         apply_display_off
     ;;
     
     apply)
-        if ! test; then
-            echo "Turning display off"
+        if [ "$(test)" != "STOCK" ]; then
+            echo "Turning off Stock screen..."
             apply_display_off
         fi
     ;;
     
     test)
-        test; ret=$?
-        if [ "$ret" -eq 0 ]; then echo "Display enabled"; else echo "Display disabled"; fi
-        exit $ret
+        result="$(test)"
+        echo "Display: $result" 1>&2 
+        
+        echo "$result"
     ;;
     
     *)
-        echo "Usage: $0 on|off|test"; exit 1;
+        echo "Usage: $0 stock|feather|headless|test"; exit 1;
     ;;
 esac
 
