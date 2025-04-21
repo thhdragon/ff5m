@@ -32,6 +32,14 @@
         "SLOW": 1,
         "FAST": 2
       }
+    },
+    "DisplayEnum": {
+      "type": "int",
+      "values": {
+        "STOCK": 0,
+        "FEATHER": 1,
+        "HEADLESS": 2
+      }
     }
   },
   "parameters": [
@@ -84,10 +92,17 @@
       "order": 20000
     },
     {
-      "key": "fix_e0017",
+      "key": "tune_klipper",
       "type": "bool",
       "default": 0,
-      "label": "Fix E0017 error"
+      "label": "Tune klipper parameters",
+      "deprecated": {
+        "key": "fix_e0017",
+        "mapping": {
+          "0": "0",
+          "1": "1"
+        }
+      }
     },
     {
       "key": "check_md5",
@@ -160,13 +175,6 @@
       "order": 50012
     },
     {
-      "key": "new_save_config",
-      "type": "bool",
-      "default": 0,
-      "label": "Use alt. SAVE_CONFIG",
-      "order": 100
-    },
-    {
       "key": "print_leveling",
       "type": "bool",
       "default": 0,
@@ -207,11 +215,36 @@
       "order": 20000
     },
     {
-      "key": "display_off",
-      "type": "bool",
-      "default": 0,
+      "key": "park_dz",
+      "type": "int",
+      "default": "50",
+      "label": "Parking offset after print completion, mm",
+      "order": 20000
+    },
+    {
+      "key": "clear_cooldown_temp",
+      "type": "int",
+      "default": "120",
+      "label": "Cooldown temperature for CLEAR_NOZZLE, Cº",
+      "order": 20000
+    },
+    {
+      "key": "display",
+      "type": "DisplayEnum",
+      "default": "STOCK",
       "label": "Display",
-      "options": ["Flashforge", "Feather"]
+      "options": {
+        "STOCK": "Use Stock Screen",
+        "FEATHER": "Use Feather Screen",
+        "HEADLESS": "Use Headless"
+      },
+      "deprecated": {
+        "key": "display_off",
+        "mapping": {
+          "0": "'STOCK'",
+          "1": "'FEATHER'"
+        }
+      }
     },
     {
       "key": "camera",

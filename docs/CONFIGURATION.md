@@ -29,7 +29,7 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 
 - **`disable_skew`**: Disables skew correction if set to `1`.  
 
-- **`fix_e0017`**: Enables a fix for the E0017 error if set to `1`.  
+- **`tune_klipper`**: Enables a fix for Communication Timeout (E0011) / Move Queue Overflow (EO017) errors if set to `1`.  
 
 - **`check_md5`**: Enables MD5 checksum verification for G-code files.  
   **Note**: Requires a [post-processing script](/docs/SLICING.md#md5-checksum-validation) in your slicer. Scripts are available in *Configuration → mod* (`addMD5.sh` or `addMD5.bat`).  
@@ -39,7 +39,7 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 - **`camera`**: Enables the alternative camera implementation if set to `1`.  
 
 - **`filament_switch_sensor`**: Enables pause on filament runout if set to `1`.  
-  **Note**: Only works with Feather screen.   
+  **Note**: Only works with Feather/Headless screen.   
 
 - **`weight_check`**: Enables bed collision protection if set to `1`.  
 

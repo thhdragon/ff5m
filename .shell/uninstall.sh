@@ -35,6 +35,9 @@ revert_klipper_patches() {
             echo "?? Restored \"$target\""
         fi
     done
+
+    # Klipper tunning
+    "$CMDS"/ztune_klipper.sh 0
 }
 
 fail() {
@@ -74,7 +77,8 @@ uninstall() {
         --data /opt/config/mod/.cfg/data.restore.base.cfg \
         || fail "@@ Failed to restore printer.base.cfg"
     
-    grep -q qvs.qiniuapi.com /etc/hosts && sed -i '|qvs.qiniuapi.com|d' /etc/hosts
+    echo "127.0.0.1       localhost" > /etc/hosts
+    echo "127.0.1.1       kunos" >> /etc/hosts
     
     echo "// Restore klipper..."
     

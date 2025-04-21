@@ -282,7 +282,7 @@ apply_klipper_patches() {
     sync
     echo "Apply fixes..."
 
-    "$CMDS"/zfix_e0017.sh apply
+    "$CMDS"/ztune_klipper.sh apply
 
     sync
 }
@@ -320,26 +320,39 @@ fix_config() {
     }," >> $BATCH_FILE
 
     # 3. Initialize display configuration
-    if "$SCRIPTS"/commands/zdisplay.sh test; then
+    local screen="$("$SCRIPTS"/commands/zdisplay.sh test)"
+    if [ "$screen" == "STOCK" ]; then
         # Stock screen enabled
         echo "
         {
             \"mode\": \"restore\",
             \"config\": \"/opt/config/printer.cfg\",
-            \"params\": \"/opt/config/mod/.cfg/init.display_on.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/init.display.stock.cfg\",
             \"no_data\": true,
             \"avoid_writes\": true
         }," >> $BATCH_FILE
-    else
-        # Stock screen disabled
+    elif [ "$screen" == "FEATHER" ]; then
+        # Feather screen enabled
         echo "
         {
             \"mode\": \"restore\",
             \"config\": \"/opt/config/printer.cfg\",
-            \"params\": \"/opt/config/mod/.cfg/init.display_off.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/init.display.feather.cfg\",
             \"no_data\": true,
             \"avoid_writes\": true
         }," >> $BATCH_FILE
+    elif [ "$screen" == "HEADLESS" ]; then
+        # Headless mode enabled
+        echo "
+        {
+            \"mode\": \"restore\",
+            \"config\": \"/opt/config/printer.cfg\",
+            \"params\": \"/opt/config/mod/.cfg/init.display.headless.cfg\",
+            \"no_data\": true,
+            \"avoid_writes\": true
+        }," >> $BATCH_FILE
+    else
+        echo @@ Invalid display parameter: "$screen"
     fi
 
     # 4. Init printer.cfg configuration

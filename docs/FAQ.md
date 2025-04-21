@@ -73,7 +73,7 @@ If you are using the **Feather screen**, no changes are required.
 
 ---
 
-### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response"?
+### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response" / "Timer too close" during START_PRINT?
 
 This occurs when the printer’s weight sensor fails to respond within the requested time.  
 It may happen due to insufficient system resources or loose wiring.
@@ -174,13 +174,13 @@ If this happens, you won't be able to print, as printing requires the stock scre
 
 Consider switching to Feather Screen. Refer to [this guide](/docs/SCREEN.md) for details.
 
-For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully. Run it yourself instead of `SAVE_CONFIG`:
+For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully.   
 
 ```
 NEW_SAVE_CONFIG
 ```
 
-Alternatively, enable the mod parameter `new_save_config`, which allows you to use standard macro `SAVE_CONFIG` and reload the screen gracefully.
+Note: It uses a debugger to interface with the firmware and save configurations programmatically, so compatibility varies across firmware versions.
 
 ---
 
@@ -263,26 +263,31 @@ If this happens, something has gone seriously wrong. Don’t worry—there’s s
 Refer to the [recovery guide](/docs/RECOVERY.md) for detailed instructions on how to restore your printer.
 
 
-### Shaper Calibration Stops with Error "MCU 'mcu' Shutdown: Timer Too Close"
+### Print/Shaper Calibration Stops with "MCU 'mcu' Shutdown: Timer Too Close"
 
-This error may occur due to memory limitations or overheating issues on your printer. Here's how you can troubleshoot and resolve it:
+This error may occur due to memory limitations, MCU issues, or overheating. Below are troubleshooting steps to resolve it:
 
-#### **1. Memory Issues**
-- To check the memory usage, run the `MEM` macro in your printer firmware.  
-- High memory consumption is often caused by the camera functionality.  
-  - Consider switching to an alternative [Camera Implementation](/docs/CAMERA.md) that uses fewer resources.
+#### Memory Issues
+- Check memory usage by running the `MEM` macro in your printer firmware.  
+- High memory consumption is often caused by the camera.  
+  - Switch to the mod’s [Camera Implementation](/docs/CAMERA.md) for lower resource usage.  
+- Follow the [Resource Usage Reduction Guide](/docs/PRINTING.md#reducing-resource-usage).   
 
-#### **2. Overheating Issues**
-- Inspect the driver fan located on the motherboard to ensure it's functioning properly:  
+#### Internal MCU Issues
+- These are not tied to specific causes and may result from sensor read/write processes.  
+  - **No Specific Fixes**: As these are internal MCU errors, the mod cannot address them directly.  
+  - Try disabling `weight_check`, `filament_switch_sensor`, or similar parameters to reduce MCU interactions during printing.  
+  - Avoid changing fan, LED, or similar settings during printing.
+
+#### Overheating Issues
+- Inspect the driver fan on the motherboard to ensure it’s functioning:  
   - Remove the printer’s back plate by unscrewing it.  
-  - Verify that the fan is operational and not obstructed.  
-
-Both of these issues can halt the calibration process, so addressing memory or cooling problems should resolve the error.
+  - Verify that the fan is operational and not obstructed.
 
 ---
 
 
-#### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
+### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
 
 Yes, it will work. The stock screen interacts with Klipper directly, so anything you do with Klipper will also be reflected in both the stock firmware and the mod.
 
@@ -290,7 +295,7 @@ The key difference is that the mod allows you to set the temperature for calibra
 
 ---
 
-#### Unable to Access Stock Debug Console for Load Cell Calibration
+### Unable to Access Stock Debug Console for Load Cell Calibration
 
 If you're having trouble, try pressing the console button using a stylus or a thin object. This may resolve the issue.
 

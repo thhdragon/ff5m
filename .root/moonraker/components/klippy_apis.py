@@ -158,29 +158,32 @@ class KlippyAPI(APITransport):
         # Escape existing double quotes in the file name
         filename = filename.replace("\"", "\\\"")
 
-        # FF5M Fix Print Bug
-        found = False
+        # FF5M: Stock printing fix
+        stock = False
         with open('/opt/config/printer.cfg') as file:
           for line in file:
-            if re.search('display_off.cfg', line):
-              found = True
+            if re.search('\[include.+stock.cfg\]', line):
+              stock = True
               break
-        # Если работаем в режиме без экрана
-        if found:
-            script = f'SDCARD_PRINT_FILE FILENAME="{filename}"'
-        else:
-            found = False
+        
+        # If using stock firmware
+        if stock:
+            leveling = False
             with open('/opt/config/mod_data/variables.cfg') as file:
               for line in file:
                 if re.search('print_leveling = 1', line):
-                  found = True
+                  leveling = True
                   break
             # Если работаем с экрана и стоит параметр leveling при каждой печати
-            if found:
+            if leveling:
                 script = f'LEVELING_PRINT_FILE FILENAME="{filename}"'
             else:
                 script = f'NOLEVELING_PRINT_FILE FILENAME="{filename}"'
+        else:
+            script = f'SDCARD_PRINT_FILE FILENAME="{filename}"'
+        
         # END FF5M Fix Print Bug
+        
         if wait_klippy_started:
             await self.klippy.wait_started()
         logging.info(f"Requesting Job Start, filename = {filename}")

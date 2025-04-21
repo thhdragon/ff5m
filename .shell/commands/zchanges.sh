@@ -19,14 +19,26 @@ if [ -z "$key" ]; then
 fi
 
 case "$key" in
-    display_off)
-        if [ "$value" -eq 1 ]; then
-            message "Do not turn off the screen unless you clearly understand how the bed mesh, z-offset, and the START_PRINT and END_PRINT macros work."
-            message "https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md"
-            
-            "$SCRIPTS"/commands/zdisplay.sh "off"
+    display)
+        if [ "$value" = "STOCK" ]; then
+            "$SCRIPTS"/commands/zdisplay.sh "stock"
         else
-            "$SCRIPTS"/commands/zdisplay.sh "on"
+            message "Critical Notice." "!!"
+            message "Do not disable the Stock Screen unless you fully understand:"  "!!"
+            message " - Bed mesh calibration"  "!!"
+            message " - Z-offset configuration"  "!!"
+            message " - START_PRINT/END_PRINT macro behavior"  "!!"
+            message " " " "
+            message "Improper handling may cause printer damage. Review the documentation first:" "!!"
+            message "https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md" "->"
+
+            sleep 1
+            
+            if [ "$value" = "FEATHER" ]; then
+                "$SCRIPTS"/commands/zdisplay.sh "feather"
+            else
+                "$SCRIPTS"/commands/zdisplay.sh "headless"
+            fi
         fi
     ;;
     
@@ -57,8 +69,8 @@ case "$key" in
         fi
     ;;
     
-    fix_e0017)
-        if "$SCRIPTS"/commands/zfix_e0017.sh "$value"; then
+    tune_klipper)
+        if "$SCRIPTS"/commands/ztune_klipper.sh "$value"; then
             message "Klipper was changed. Printer will reboot now"
             sleep 5
             reboot

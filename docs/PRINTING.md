@@ -15,6 +15,11 @@ For detailed instructions on configuring your slicer, refer to the [Slicing](../
 ## Calibration
 
 To calibrate the printer, use only these macros (or the Stock screen).  
+
+> [!WARNING]  
+> The Stock Screen doesn’t support the `SAVE_CONFIG` macro, which will cause freezing. A reboot is required afterward.
+> Learn how to work around this [here](/docs/FAQ.md#stock-screen-freezes-i-cant-print-anything).
+
 All of these macros are available in the Fluidd/Mainsail main screen in the section **Calibration**:
 
 - `AUTO_FULL_BED_LEVEL`: Bed meshing.  
@@ -92,7 +97,7 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 
 For protection to work correctly without false triggers, ensure your bed’s weight sensor isn’t defective and shows accurate values when the bed is cold and after it’s warmed up.   
 Some users experience weight sensor degradation, where the difference between a cold and warm bed can be 2-3 kg (2000-3000 g).  
-Read this before enabling: [About bed pressure error](/docs/FAQ.md#why-am-i-getting-a-bed-pressure-detected-error), [About MCU shutdown](/docs/FAQ.md#why-am-i-getting-shutdown-due-to-sensor-value-exceeding-the-limit), [About 'endstop_state' error](/docs/FAQ.md#why-am-i-getting-mcu-shutdown-with-unable-to-obtain-endstop_state-response)
+Read this before enabling: [About bed pressure error](/docs/FAQ.md#why-am-i-getting-a-bed-pressure-detected-error), [About MCU shutdown](/docs/FAQ.md#why-am-i-getting-shutdown-due-to-sensor-value-exceeding-the-limit), [About 'endstop_state' error / Timer too close](/docs/FAQ.md#why-am-i-getting-mcu-shutdown-with-unable-to-obtain-endstop_state-response--timer-too-close-during-start_print)
 
 > [!WARNING]
 > Don’t set `weight_check_max` too low. Legitimate situations, such as the nozzle scratching an overextruded model or the weight of the model itself, can trigger false stops.  
@@ -197,11 +202,12 @@ These are controlled by the following [parameters](/docs/CONFIGURATION.md):
 - `zclear`: Configure the purge line algorithm (e.g., `ORCA` - like Orca Slicer do).
 - `disable_priming`: Disable nozzle priming by setting this parameter to 1.
 
-## Fixing E0017 Error
-In stock firmware, some internal Klipper parameters controlling the **Move Queue** are not optimally configured, which can cause the **E0017** error (**Move Queue Overflow**).  
+## Fixing Communication Timeout (E0011) / Move Queue Overflow (EO017) Error
+In stock firmware, some internal Klipper parameters controlling **MCU Communication** and the **Move Queue**  are not optimally configured, which can cause the **E0011** and the **E0017** error.   
+
 To fix this, enable the mod [parameter](/docs/CONFIGURATION.md):
 ```bash
-SET_MOD PARAM="fix_e0017" VALUE=1
+SET_MOD PARAM="tune_klipper" VALUE=1
 ```
 
 ## Using stock Firmware with mod

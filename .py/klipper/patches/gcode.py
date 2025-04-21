@@ -276,7 +276,7 @@ class GCodeDispatch:
         r'(?P<cmd>[a-zA-Z_][a-zA-Z0-9_]+)(?:\s+|$)'
         r'(?P<args>[^#*;]*?)'
         r'\s*(?:[#*;].*)?$')
-    immediate_cmds = [ "M108", "LED", "LED_ON", "LED_OFF", "TONE", "ALARM", "BEEP" ]
+    immediate_cmds = [ "M108", "TONE", "ALARM", "BEEP" ]
     immediate_cmds_r = re.compile(r'^(' + '|'.join(re.escape(cmd) for cmd in immediate_cmds) + r')(?:\s|$)', re.IGNORECASE)
     def _get_extended_params(self, gcmd):
         m = self.extended_r.match(gcmd.get_commandline())

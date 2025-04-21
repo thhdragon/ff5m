@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## Starting forge-x services
 ##
@@ -26,5 +26,15 @@ for _ in $(seq 0 30); do
 done
 
 [ $started = 1 ] && echo "OK" || echo "FAIL"
+
+if [ -d /etc/init.d ]; then
+    echo "Starting user services..."
+    
+    while read -r file; do
+        "$file" start
+    done < <(find ./etc/init.d/ -type f -name "S*")
+
+    echo "Done"
+fi
 
 echo "Services started"

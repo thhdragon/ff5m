@@ -71,7 +71,7 @@ class MD5Checker:
             filename = self.vcard.file_path() or ""
 
         if not self.check_md5(filename, delete):
-            if self.params.variables['display_off']:
+            if self.params.variables['display'] != 0:
                 self.gcode.run_script_from_command('CANCEL_PRINT REASON="MD5 Mismatch"')
             else:
                 self.gcode.run_script_from_command('CANCEL_PRINT')

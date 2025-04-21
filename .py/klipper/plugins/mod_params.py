@@ -16,6 +16,13 @@ DEFAULT_BOOL_OPTIONS = ["NO", "YES"]
 
 
 @dataclass
+class DeprecationParameter:
+    key: str
+    new_key: str
+    mapping: Dict[str, str]
+
+
+@dataclass
 class Parameter:
     key: str
     type: Type
@@ -26,6 +33,7 @@ class Parameter:
     hidden: bool = False
     order: int = 0
     warning: Optional[str] = None
+    deprecated: Optional[DeprecationParameter] = None
 
 
 class ModParamManagement:
@@ -48,6 +56,7 @@ class ModParamManagement:
 
         self.params: List[Parameter] = list()
         self.params_map: Dict[str, Parameter] = dict()
+        self.migration_map: Dict[str, DeprecationParameter] = dict()
         self.type_mapping: Dict[str, Type] = dict()
 
         self._load_declaration()
@@ -109,7 +118,12 @@ class ModParamManagement:
                 readonly=param_data.get("readonly", False),
                 hidden=param_data.get("hidden", False),
                 order=param_data.get("order", 0),
-                warning=param_data.get("warning", None)
+                warning=param_data.get("warning", None),
+                deprecated=DeprecationParameter(
+                    key=param_data["deprecated"]["key"],
+                    new_key=param_data["key"],
+                    mapping=param_data["deprecated"]["mapping"],
+                ) if "deprecated" in param_data else None
             )
 
             if param_type == bool and param.options is None:
@@ -119,6 +133,7 @@ class ModParamManagement:
 
         self.params = params
         self.params_map = {p.key: p for p in params}
+        self.migration_map = {p.deprecated.key: p.deprecated for p in params if p.deprecated}
 
     def _create_enum_from_json(self, enum_name: str, enum_data: Dict[str, Any]) -> Type[Enum]:
         try:
@@ -139,11 +154,17 @@ class ModParamManagement:
 
             parsed = dict()
             for key, value in parser.items("Variables"):
-                if key not in self.params_map:
+                if key in self.params_map:
+                    parsed[key] = ast.literal_eval(value)
+                elif key in self.migration_map:
+                    migration = self.migration_map[key]
+                    if value in migration.mapping:
+                        parsed[migration.new_key] = ast.literal_eval(migration.mapping[value])
+                        logging.info(f'[mod_params]: Migrating parameter from "{key}" to "{migration.new_key}". New value: {parsed[migration.new_key]}')
+                    else:
+                        logging.error(f'[mod_params]: Unable to migrate deprecated parameter: "{key}"')
+                else:
                     logging.error(f'[mod_params]: Read unknown parameter while parsing: "{key}"')
-                    continue
-
-                parsed[key] = ast.literal_eval(value)
 
             for param in self.params:
                 key = param.key
@@ -223,7 +244,10 @@ class ModParamManagement:
 
     def cmd_GET_MOD_PARAM(self, gcmd):
         key = gcmd.get('PARAM')
-        if key not in self.params_map:
+        if key in self.migration_map:
+            new_key = self.migration_map[key].new_key
+            raise gcmd.error(f"!! Parameter {key!r} is deprecated. Use {new_key!r} instead!")
+        elif key not in self.params_map:
             raise gcmd.error(f'Unknown parameter: "{key}"')
 
         param = self.params_map[key]
@@ -238,7 +262,10 @@ class ModParamManagement:
         value = gcmd.get('VALUE')
         force = gcmd.get('FORCE', 0)
 
-        if key not in self.params_map:
+        if key in self.migration_map:
+            new_key = self.migration_map[key].new_key
+            raise gcmd.error(f"!! Parameter {key!r} is deprecated. Use {new_key!r} instead!")
+        elif key not in self.params_map:
             similar_key = self._find_similar_param(key, list(self.params_map.keys()))
             if similar_key:
                 gcmd.respond_raw(f"!! Unknown parameter: {key!r}")
