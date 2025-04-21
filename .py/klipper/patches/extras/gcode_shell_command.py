@@ -251,9 +251,11 @@ class ShellCommand:
                 "shell_command: Command {%s} failed" % (self.name))
             raise self.gcode.error("Error running command {%s}" % (self.name))
 
+        if self.debug:
+            self.gcode.respond_info("Running Command {%s}...:" % (self.name))
+
         if self.verbose:
             self.proc_fd = proc.stdout.fileno()
-            self.gcode.respond_info("Running Command {%s}...:" % (self.name))
             hdl = reactor.register_fd(self.proc_fd, self._process_output)
 
         eventtime = reactor.monotonic()
@@ -274,14 +276,13 @@ class ShellCommand:
                 self.gcode.respond_info(self.partial_output)
                 self.partial_output = ""
 
-            if complete:
-                msg = "Command {%s} finished\n" % (self.name)
-            else:
-                msg = "Command {%s} timed out" % (self.name)
-
-            self.gcode.respond_info(msg)
             reactor.unregister_fd(hdl)
             self.proc_fd = None
+
+        if not complete:
+            self.gcode.respond_info("Command {%s} timed out" % self.name)
+        elif self.debug:
+            self.gcode.respond_info("Command {%s} finished\n" % self.name)
 
     def _process_output(self, eventime):
         if self.proc_fd is None:
