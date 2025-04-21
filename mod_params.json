@@ -222,6 +222,13 @@
       "order": 20000
     },
     {
+      "key": "clear_cooldown_temp",
+      "type": "int",
+      "default": "120",
+      "label": "Cooldown temperature for CLEAR_NOZZLE, Cº",
+      "order": 20000
+    },
+    {
       "key": "display",
       "type": "DisplayEnum",
       "default": "STOCK",
