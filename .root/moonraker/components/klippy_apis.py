@@ -162,7 +162,7 @@ class KlippyAPI(APITransport):
         stock = False
         with open('/opt/config/printer.cfg') as file:
           for line in file:
-            if re.search('stock.cfg', line):
+            if re.search('\[include.+stock.cfg\]', line):
               stock = True
               break
         
