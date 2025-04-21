@@ -44,8 +44,9 @@ So don’t do anything if you not clearly understand what you are doing.
 - **Timelapse** support via [Moonraker Telegram bot](https://github.com/nlef/moonraker-telegram-bot) installed on external host
 - Adaptive bed meshing with **KAMP**.
 - Built-in **MD5** checks for gcode files.
-- **Backup** and **Restore** mechanizm for printer's configuration
-- Fix for the **E00017** error.
+- **Backup** and **Restore** mechanism for printer's configuration
+- Fix for the **Move queue overflow (E0017)** error.
+- Fix for the **Communication Timeout (E0011)** error.
 - **Failsafe** mechanism to prevent nozzle collisions.
 - Better **Clear Nozzle** algorithm.
 - Enhanced **Shaper Calibration** with automatic plot generation.

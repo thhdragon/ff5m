@@ -29,7 +29,7 @@ The mod supports a wide range of parameters to customize printer behavior. Below
 
 - **`disable_skew`**: Disables skew correction if set to `1`.  
 
-- **`fix_e0017`**: Enables a fix for the E0017 error if set to `1`.  
+- **`tune_klipper`**: Enables a fix for Communication Timeout (E0011) / Move Queue Overflow (EO017) errors if set to `1`.  
 
 - **`check_md5`**: Enables MD5 checksum verification for G-code files.  
   **Note**: Requires a [post-processing script](/docs/SLICING.md#md5-checksum-validation) in your slicer. Scripts are available in *Configuration → mod* (`addMD5.sh` or `addMD5.bat`).  

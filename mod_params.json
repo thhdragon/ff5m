@@ -92,10 +92,17 @@
       "order": 20000
     },
     {
-      "key": "fix_e0017",
+      "key": "tune_klipper",
       "type": "bool",
       "default": 0,
-      "label": "Fix E0017 error"
+      "label": "Tune klipper parameters",
+      "deprecated": {
+        "key": "fix_e0017",
+        "mapping": {
+          "0": "0",
+          "1": "1"
+        }
+      }
     },
     {
       "key": "check_md5",

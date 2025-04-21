@@ -202,11 +202,12 @@ These are controlled by the following [parameters](/docs/CONFIGURATION.md):
 - `zclear`: Configure the purge line algorithm (e.g., `ORCA` - like Orca Slicer do).
 - `disable_priming`: Disable nozzle priming by setting this parameter to 1.
 
-## Fixing E0017 Error
-In stock firmware, some internal Klipper parameters controlling the **Move Queue** are not optimally configured, which can cause the **E0017** error (**Move Queue Overflow**).  
+## Fixing Communication Timeout (E0011) / Move Queue Overflow (EO017) Error
+In stock firmware, some internal Klipper parameters controlling **MCU Communication** and the **Move Queue**  are not optimally configured, which can cause the **E0011** and the **E0017** error.   
+
 To fix this, enable the mod [parameter](/docs/CONFIGURATION.md):
 ```bash
-SET_MOD PARAM="fix_e0017" VALUE=1
+SET_MOD PARAM="tune_klipper" VALUE=1
 ```
 
 ## Using stock Firmware with mod

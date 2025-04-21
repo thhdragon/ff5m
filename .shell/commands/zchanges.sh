@@ -69,8 +69,8 @@ case "$key" in
         fi
     ;;
     
-    fix_e0017)
-        if "$SCRIPTS"/commands/zfix_e0017.sh "$value"; then
+    tune_klipper)
+        if "$SCRIPTS"/commands/ztune_klipper.sh "$value"; then
             message "Klipper was changed. Printer will reboot now"
             sleep 5
             reboot

@@ -282,7 +282,7 @@ apply_klipper_patches() {
     sync
     echo "Apply fixes..."
 
-    "$CMDS"/zfix_e0017.sh apply
+    "$CMDS"/ztune_klipper.sh apply
 
     sync
 }
