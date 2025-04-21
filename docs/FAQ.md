@@ -254,26 +254,26 @@ If this happens, something has gone seriously wrong. Don’t worry—there’s s
 Refer to the [recovery guide](/docs/RECOVERY.md) for detailed instructions on how to restore your printer.
 
 
-### Shaper Calibration Stops with Error "MCU 'mcu' Shutdown: Timer Too Close"
+### Print/Shaper Calibration Stops with "MCU 'mcu' Shutdown: Timer Too Close"
 
-This error may occur due to memory limitations or overheating issues on your printer. Here's how you can troubleshoot and resolve it:
+This error may occur due to memory limitations, MCU issues, or overheating. Below are troubleshooting steps to resolve it:
 
-#### **1. Memory Issues**
-- To check the memory usage, run the `MEM` macro in your printer firmware.  
-- High memory consumption is often caused by the camera functionality.  
-  - Consider switching to an alternative [Camera Implementation](/docs/CAMERA.md) that uses fewer resources.
+#### Memory Issues
+- Check memory usage by running the `MEM` macro in your printer firmware.  
+- High memory consumption is often caused by the camera.  
+  - Switch to the mod’s [Camera Implementation](/docs/CAMERA.md) for lower resource usage.  
+- Follow the [Resource Usage Reduction Guide](/docs/PRINTING.md#reducing-resource-usage).   
 
-### **2. Internal MCU Issues**
-- These are not tied to specific causes and may result from sensor read/write processes.
-  - No specific fixes, as these are internal MCU errors, the mod cannot address them directly.
-  - Try disabling `weight_check`, `filament_switch_sensor`, or similar parameters to reduce MCU interactions during printing.
+#### Internal MCU Issues
+- These are not tied to specific causes and may result from sensor read/write processes.  
+  - **No Specific Fixes**: As these are internal MCU errors, the mod cannot address them directly.  
+  - Try disabling `weight_check`, `filament_switch_sensor`, or similar parameters to reduce MCU interactions during printing.  
+  - Avoid changing fan, LED, or similar settings during printing.
 
-#### **3. Overheating Issues**
-- Inspect the driver fan located on the motherboard to ensure it's functioning properly:  
+#### Overheating Issues
+- Inspect the driver fan on the motherboard to ensure it’s functioning:  
   - Remove the printer’s back plate by unscrewing it.  
-  - Verify that the fan is operational and not obstructed.  
-
-Both of these issues can halt the calibration process, so addressing memory or cooling problems should resolve the error.
+  - Verify that the fan is operational and not obstructed.
 
 ---
 
