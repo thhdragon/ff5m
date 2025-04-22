@@ -84,6 +84,7 @@ To see usage instructions, run:
 
 It's not suitable for a full UI, but it consumes almost no resources and allows you to print any information you need.
 
+Documentation for `typer` is available here: [link](/docs/TYPER.md)   
 
 For examples you can view [feather.cfg](/config/feather.cfg) for macros and [screen.sh](/.shell/screen.sh) script.
 Implementation of Feather itself you can find in [feather_screen.py](/.py/klipper/plugins/feather_screen.py)
