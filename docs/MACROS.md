@@ -261,7 +261,7 @@ This document provides a concise overview of the G-code macros defined in the `b
 - **NEW_RESTART**
   - **Description**: Reloads Klipper configuration, using a shell command for stock screens.
   - **Parameters**: None.
-  - **Defaults**: Runs `restart_klipper` for stock screens, otherwise calls original `NEW_RESTART`.
+  - **Defaults**: Runs `restart_klipper` for stock screens.
 
 ### Configuration and Backup
 
