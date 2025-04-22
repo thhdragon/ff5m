@@ -6,82 +6,202 @@ To quickly find answers, use the GitHub navigation button at the top-right corne
 
 ---
 
+## General Questions
+
+### What is the Forge-X mod?
+The Forge-X mod is an advanced firmware modification for the Flashforge Adventurer 5M (AD5M) 3D printer, built upon the Klipper firmware and extending the ZMod project. It enhances printer functionality with features like improved macros, optimized resource usage, and support for custom screens (e.g., Feather). The mod aims to provide a stable and extensible platform for advanced 3D printing, including tools for recovery, firmware management, and performance optimization.
+
+### How do I install the Forge-X mod?
+To install the Forge-X mod:
+1. **Download the Latest Release**: Visit the [Forge-X GitHub releases page](https://github.com/DrA1ex/ff5m/releases) to download the latest firmware image (e.g., Forge-X 1.3.3).
+2. **Prepare a USB Drive**: Format a USB drive to FAT32 and copy the firmware image (e.g., `.tgz` file) to the root directory. Ensure files like `klipper_mod_skip` or `SKIP_MOD_SOFT` are included if needed.
+3. **Flash the Mod**: Insert the USB drive into the printer, power it on, and follow the on-screen prompts to flash the firmware. The process typically takes a few minutes.
+4. **Verify Installation**: After rebooting, check if the printer boots into the expected interface (e.g., GuppyScreen or Feather). If issues occur, refer to recovery steps.
+5. **Update Configurations**: Configure settings via Mainsail, Fluidd, or the printer’s interface. Check the [Forge-X documentation](https://github.com/DrA1ex/ff5m) for macro and configuration details.
+
+**Note**: For Forge-X 1.2.0 and later, you don’t need to preinstall ZMod. Always verify file integrity using checksums provided in the documentation.
+
+### What should I do if I encounter issues with the mod?
+If you encounter issues:
+1. **Check Logs**: Review logs like `clean.log` or `recovery.log` generated during flashing.
+2. **Use Recovery Tools**: Try the uninstaller or recovery images to restore the printer.
+3. **Consult Documentation**: Refer to the [Forge-X GitHub documentation](https://github.com/DrA1ex/ff5m) for troubleshooting guides.
+4. **Ask for Support**: Post in the Forge-X Telegram support group with details like error messages, logs, or photos.
+5. **Update Firmware**: Ensure both the stock firmware and Forge-X mod are updated to the latest versions.
+6. **Monitor Resources**: Run the `MEM` macro to check memory usage and free up resources if needed.
+
 ### Do I need to uninstall the earlier Klipper mod before installing the new mod?
-
-It is recommended to uninstall the earlier Klipper mod before installing the new mod. However, the two mods can work together in a dual-boot setup.
-
-By default, the printer boots into the Klipper mod. If you want to boot into the Forge-X mod, simply insert a USB drive containing the file `klipper_mod_skip`, as described in the Klipper mod documentation under [Dual Boot](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/INSTALL.md#dual-boot).
-
----
+It is recommended to uninstall the earlier Klipper mod before installing the new mod. However, the two mods can work together in a dual-boot setup. By default, the printer boots into the Klipper mod. To boot into the Forge-X mod, insert a USB drive containing the file `klipper_mod_skip`, as described in the Klipper mod documentation under [Dual Boot](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/INSTALL.md#dual-boot).
 
 ### Can I install the Klipper Mod over the Forge-X mod?
-
-Yes, you can. The Klipper Mod does not interfere with the Forge-X mod, and you can use it alongside the Dual Boot feature.  
-
-To boot into the Forge-X mod, simply insert a USB drive containing the file `klipper_mod_skip`, as described in the Klipper Mod documentation under [Dual Boot](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/INSTALL.md#dual-boot).
+Yes, you can. The Klipper Mod does not interfere with the Forge-X mod, and you can use it alongside the Dual Boot feature. To boot into the Forge-X mod, insert a USB drive containing the file `klipper_mod_skip`, as described in the Klipper Mod documentation under [Dual Boot](https://github.com/xblax/flashforge_ad5m_klipper_mod/blob/master/docs/INSTALL.md#dual-boot).
 
 ---
 
+## Firmware and Installation Issues
 
-### Why can't I SSH into the printer after installing the mod?
+### Why does my printer show a frozen spinner or fail to boot after installing a mod?
+A frozen spinner or boot failure typically indicates corrupted system files or configuration issues, often caused by:   
+- **Temporary Flickering**: Reboot the printer — this usually resolves the issue.   
+- **File Corruption**: A corrupted firmware image or incomplete flash.   
+- **Configuration Corruption**: Mod-related changes conflicting with the stock firmware.   
 
-Accessing the printer via SSH can be tricky after installing the Klipper mod because both mods use different SSH private keys. Your system may also block the connection due to a certificate mismatch.  
+**Solutions**:
+- **Re-flash the Firmware**: Use a verified factory image or the Forge-X recovery image.
+- **Run the Uninstaller**: The uninstaller removes mod-related files and restores the original configuration.
+- **Use Recovery Image**: The recovery image restores system files. Run a dry run first to verify compatibility, then perform a full recovery.
 
-To resolve this issue, you need to remove the printer’s IP entry from the `known_hosts` file.  
+### How can I restore my printer if it’s bricked?
+A bricked printer (unable to boot or stuck on a frozen spinner) can be restored using:
+1. **Uninstaller**: Flash the uninstaller image to remove Forge-X/ZMod files and restore the original configuration.
+2. **Recovery Image**: Use the full recovery image (`Adventurer5M-3.x.x-2.2.3-recovery-full.tgz`) to restore system files. Start with a dry run (`Adventurer5M-3.x.x-2.2.3-recovery-dry.tgz`) to verify compatibility.
+3. **Factory Firmware**: Flash a verified Flashforge factory image to reset the printer to its original state.
+4. **Debugging Port**: As a last resort, use the motherboard’s debugging port to revive the printer (not detailed in the log).
 
-**On Windows:**  
-Remove the entry using Regedit (for PuTTY):  
-`HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\SshHostKeys`.
+**Steps**:
+- Download the recovery or uninstaller images from the support group or GitHub.
+- Flash the image via USB, following the same process as mod installation.
+- Check logs (`recovery.log`) to confirm the process completed successfully.
+- Reboot and verify the printer boots into the stock UI.
+- If issues persist, contact the support group with detailed logs and error messages.
 
-**On Linux/macOS:**  
-Edit the file located at `~/.ssh/known_hosts` and delete the line corresponding to your printer's IP.
+### What is the difference between the recovery image and the uninstaller?
+- **Uninstaller**: Removes Forge-X and ZMod files, restoring the printer’s original configuration without modifying system files. It’s useful for resolving mod-related issues or configuration corruption.
+- **Recovery Image**: Restores corrupted system files, including those critical to the printer’s operation. It’s a more comprehensive fix for bricked printers or severe file corruption. It includes a dry run option to verify compatibility without making changes.
 
-Once removed, you should be able to reconnect via SSH. Forge-X use the default credentials: `root/root`.
+**When to Use**:
+- Use the uninstaller for mod-related issues or to revert to stock firmware.
+- Use the recovery image for severe issues like corrupted system files or persistent boot failures.
+
+### How do I update the stock firmware?
+Stock firmware updates must be performed through the Stock screen interface. Follow these steps:
+1. Download the latest Flashforge firmware from their official support channels.
+2. Copy the firmware file to a USB drive formatted to FAT32.
+3. Insert the USB drive into the printer and use the Stock screen’s update option to flash the firmware.
+4. Reboot the printer to apply the update.
+
+For detailed instructions, refer to the Forge-X support group or Flashforge documentation.
+
+### My printer is stuck on the Stock initialization screen. How can I fix it?
+This issue is likely caused by a bug in the newer Flashforge firmware (version `3.1.*`), where the firmware freezes if it fails to connect to a network during initialization. Reboot the printer by powering it off and back on. To avoid this issue, downgrade to firmware version `2.7.*` or switch to the Feather screen, which operates independently of the problematic firmware.
+
+### My printer is stuck on the screen with a black-and-white Flashforge logo. How can I fix it?
+This indicates a hardware or software issue preventing proper booting, not related to the mod. Try flashing the [Factory image](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#flashing-factory-firmware). If unsuccessful, flash the [Uninstall image](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#using-uninstall-image), then the [Recovery image](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md#recovery-using-flashing-image), and finally the Factory image again. Refer to the [Recovery Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md). If the issue persists, contact Flashforge support without mentioning mods to avoid warranty issues.
+
+### My printer is stuck on the screen with the Forge-X logo. How can I fix it?
+If the printer displays loading information and is stuck, it may be a Wi-Fi issue or a mod-related problem. Skip the mod during boot using the [Dual Boot instructions](https://github.com/DrA1ex/ff5m/blob/main/docs/DUAL_BOOT.md) or uninstall the mod following the [Uninstall guide](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md). Avoid flashing over a different firmware version without removing the mod to prevent bricking. Refer to the [Recovery Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md) if needed.
+
+### My printer won’t boot. I can’t skip the mod, flash firmware, or do anything.
+This indicates a severe issue. Follow the [Recovery Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md) to unbrick the printer using recovery or uninstaller images. If unsuccessful, contact Flashforge support, avoiding mention of mods.
 
 ---
 
-### How do I adjust the camera settings?
+## Network and Connectivity Issues
 
-To adjust camera parameters like brightness or contrast, edit the `camera.conf` file.  
-Alternatively, you can use the web control panel at:  
-`http://printer_IP:8080/control.htm`
+### Why can’t I access Mainsail or Fluidd remotely after installing the Klipper Mod?
+This issue may occur due to:
+- **IP Address Change**: The printer’s IP address may have changed after installing the mod. Check the current IP address via the printer’s touchscreen or router settings.
+- **Network Configuration**: The mod may not have connected to Wi-Fi properly. Reconnect to Wi-Fi using the touchscreen or manually configure `/etc/wpa_supplicant.conf` to use a 2.4GHz network.
+- **Resource Issues**: High resource usage may prevent Mainsail or Fluidd from loading. Run the `MEM` macro to check memory usage.
 
-**Note:** Changes made in the web control panel will not be saved automatically. You must manually transfer adjustments into the corresponding `E_<parameter>` properties in `camera.conf`.
+**Solutions**:
+- Verify the printer’s IP address and update your router’s static IP settings if needed.
+- Reconnect to Wi-Fi or edit `/etc/wpa_supplicant.conf` to include `freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462` in the network section.
+- Restart the printer and check resource usage with the `MEM` macro.
+- Ensure the mod is fully installed and running.
 
----
+### Why can’t I connect via SSH?
+SSH connection issues may arise because:
+- The Klipper and Forge-X mods use different SSH private keys, causing certificate mismatches.
+- The printer’s IP address may have changed.
+- Resource constraints may prevent the SSH service from running.
 
-### I adjusted the camera settings, but they are not applied after a reboot.
+**Solutions**:
+- **Remove Old SSH Keys**:
+  - **Windows**: Use Regedit to remove the printer’s IP entry from `HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\SshHostKeys`.
+  - **Linux/macOS**: Edit `~/.ssh/known_hosts` and delete the line corresponding to the printer’s IP.
+- **Verify IP Address**: Ensure you’re using the correct IP address.
+- **Check Credentials**: Use the default credentials `root/root` for Forge-X.
+- **Restart SSH Service**: Reboot the printer or restart the SSH service via the console if accessible.
+- **Check Resources**: Run the `MEM` macro to ensure sufficient memory for SSH.
 
-Some camera settings are not applied during boot-up. Instead, they are applied later—typically when a print starts.  
+### The mod isn’t loading and is stuck at the network connection step.
 
-To apply the changes manually at any time, use the macro:  `CAMERA_RELOAD`
+This can happen when you are using the Feather screen, and the mod cannot connect to the network.  
+Since the mod requires a network connection to function, it will keep attempting to connect until successful.
 
----
-
-### What changes are needed to the G-code start and end commands when migrating from the old Klipper mod?
-
-If you plan to use the stock screen, update the G-code start commands as outlined in the documentation (`/docs/SLICING.md`):
-
-```gcode
-START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
-M190 S[bed_temperature_initial_layer_single]
-M104 S[nozzle_temperature_initial_layer]
+Printers are often metal-shielded, meaning Wi-Fi signals may struggle to reach the antenna.  
+Consider switching to a 2.4GHz Wi-Fi network. You can do this from the stock screen or by manually editing the `/etc/wpa_supplicant.conf` configuration file by adding `freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462` to the network section, example below.
+```bash
+network={
+        ssid="example"
+        psk="password"
+        freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462
+        key_mgmt=WPA-PSK WPA-EAP NONE
+        disabled=1
+}
 ```
 
+If the mod still cannot connect within 5 minutes, the stock screen will load instead.
 
-If you are using the **Feather screen**, no changes are required.
-
----
-
-### Why am I Getting MCU Shutdown with "Unable to obtain 'endstop_state' response" / "Timer too close" during START_PRINT?
-
-This occurs when the printer’s weight sensor fails to respond within the requested time.  
-It may happen due to insufficient system resources or loose wiring.
-
-Try checking and reattaching all connections, as this may resolve the issue.  
-If the problem persists, consider disabling the `weight_check` feature, as it requires taring the load cell right before the print starts, which can trigger this error.
+If the mod doesn’t load at all, refer to [this instruction](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen) to switch back to the original stock screen.
 
 ---
+
+## Resource and Performance Issues
+
+### What causes “Timer Too Close” or MCU errors?
+“Timer Too Close” or MCU errors occur due to:
+- **Resource Exhaustion**: High memory or CPU usage, often from running resource-intensive features like KlipperScreen, Spoolman, or KAMP with “exclude objects” in the slicer.
+- **MCU Issues**: Internal sensor read/write issues or loose wiring.
+- **Overheating**: Malfunctioning driver fan on the motherboard.
+- **Complex G-Code**: Certain infill patterns (e.g., Gyroid) may increase resource demands, indirectly causing errors.
+
+**Solutions**:
+- **Check Memory Usage**: Run the `MEM` macro after boot to monitor memory consumption. Aim for usage below 75–80%.
+- **Reduce Resource Usage**: Disable features like `weight_check`, `filament_switch_sensor`, or camera streaming. Switch to the Feather screen or Headless mode for lower resource usage (10–15x less than Stock screen).
+- **Update Firmware**: Ensure the stock firmware (e.g., 3.1.4 or later) and Forge-X mod are updated to benefit from optimizations like the `tune_klipper` parameter.
+- **Check Hardware**: Inspect and reattach wiring, especially for the weight sensor. Verify the driver fan is operational by removing the printer’s back plate.
+- **Optimize G-Code**: Avoid complex infill patterns like Gyroid if errors persist. Test simpler infills or print single objects to isolate issues.
+
+### How can I reduce memory usage on my printer?
+To reduce memory usage:
+- **Run the `MEM` Macro**: Execute the `MEM` macro in the console after boot to check memory usage.
+- **Switch to Feather or Headless Mode**: The Feather screen uses ~10MB less memory, and Headless mode uses ~12MB less than the Stock screen.
+- **Disable Resource-Intensive Features**: Spoolman, or KAMP’s “exclude objects” feature.
+- **Optimize Camera Settings**: Use the mod’s camera implementation for lower resource usage.
+- **Follow the Resource Guide**: Refer to the [Resource Usage Reduction Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#reducing-resource-usage).
+
+### Can I use KlipperScreen or other resource-heavy features with Forge-X?
+KlipperScreen can be used with Forge-X by moving configs/binaries from Klipper Mod, as they are binary compatible. However, it consumes significant resources (75–80% memory usage when running with Mainsail, Fluidd, and a camera). This may lead to “Timer Too Close” or MCU errors, especially on resource-constrained AD5M printers.
+
+**Recommendations**:
+- Test KlipperScreen to evaluate usability, but monitor memory usage with the `MEM` macro.
+- Consider switching to Feather or Headless mode for better performance.
+- Alternatively, use a Raspberry Pi with a BTT screen for a richer interface without overloading the printer.
+
+### What is the Feather screen, and how does it help?
+The Feather screen is a lightweight interface for the Forge-X mod, designed to minimize resource usage (10–15x less than the Stock screen). It displays essential printing information and is ideal for users prioritizing performance over UI features.
+
+**Benefits**:
+- Reduces memory usage by ~10-15MB compared to the Stock screen.
+- Eliminates issues like the Stock screen freezing during Moonraker commands (e.g., `SAVE_CONFIG`).
+- Avoids firmware bugs in Flashforge 3.1.* versions (e.g., network-related freezes).
+- Supports displaying information with minimal overhead.
+
+**Limitations**:
+- Lacks some UI features of KlipperScreen or GuppyScreen (e.g., advanced macros like chamber LED control).
+
+Switch to Feather using the [Screen Switching Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen).
+
+### Why am I getting MCU shutdown with “Unable to obtain ‘endstop_state’ response” or “Timer too close” during START_PRINT?
+This occurs when the printer’s weight sensor fails to respond within the requested time due to insufficient system resources or loose wiring.
+
+**Solutions**:
+- **Check Connections**: Reattach all wiring, especially for the weight sensor.
+- **Reduce Resource Usage**: Follow the [Resource Usage Reduction Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#reducing-resource-usage) and use Feather or Headless mode.
+- **Update Firmware**: Use stock firmware 3.1.4+ or later and Forge-X 1.3.3+ for optimized performance.
+
 
 ### Why am I Getting "Shutdown due to sensor value exceeding the limit"?
 
@@ -89,8 +209,6 @@ This indicates that Bed Collision Protection was triggered due to excessive pres
 It’s normal if the nozzle hits the bed forcefully, but it could also be a false trigger.
 
 For details on false triggers, see the next article.
-
----
 
 ### Why am I Getting a "Bed pressure detected" Error?
 
@@ -116,7 +234,6 @@ For more information, refer to the [Printing Page](https://github.com/DrA1ex/ff5
 - **Weight cell calibration issues**: If you manually leveled the bed, it might require recalibration.  
 - **Hardware problems**: Printer-related hardware issues may also cause this error.  
 
-
 #### Resolving the Issue by Calibrating the Load Cell  
 
 To resolve the issue, recalibrate the load cell by following Flashforge's support instructions. You can access the detailed guide via the following [link](https://docs.google.com/document/d/1Oou4A56g5HTrxBAMoH-bTnTZZ3IZyGr_3jL9tUYYiow/edit?usp=drivesdk).
@@ -137,19 +254,103 @@ SET_MOD PARAM="weight_check" VALUE=0
 
 *Note:* It is strongly advised to investigate and fix any underlying hardware or kinematic issues after implementing these changes.
 
---- 
+### Print/Shaper calibration stops with “MCU ‘mcu’ Shutdown: Timer Too Close”
+This error may result from memory limitations, MCU issues, or overheating.
 
-### What should I do about the warning after an SSH connection: `wtmp_write: problem writing /dev/null/wtmp: Not a directory`?
-
-You can safely ignore this warning. It indicates that a core system configuration in the firmware is incomplete, but it does not affect your printer’s functionality.
+**Solutions**:
+- **Memory Issues**:
+  - Run the `MEM` macro to check memory usage.
+  - Switch to the mod’s [Camera Implementation](https://github.com/DrA1ex/ff5m/blob/main/docs/CAMERA.md) for lower resource usage.
+  - Follow the [Resource Usage Reduction Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#reducing-resource-usage).
+- **MCU Issues**:
+  - Disable `weight_check`, `filament_switch_sensor`, or similar parameters.
+  - Avoid changing fan or LED settings during printing.
+- **Overheating**:
+  - Verify the driver fan on the motherboard is operational by removing the back plate and checking for obstructions.
 
 ---
 
+## Print and Configuration Issues
+
+### How do I change the parking Z position after a print?
+Currently, the parking Z position is hardcoded in Feather mode (50mm down after printing). To change it use `park_dz` mod parameter:
+```
+SET_MOD PARAM=park_dz VALUE=100
+```
+
+### Why do I get errors when printing certain objects or using specific infill patterns?
+Errors during printing, especially with complex objects or infill patterns like Gyroid, are typically due to resource exhaustion rather than G-code issues. The same G-code may work multiple times but fail after a reboot due to memory constraints.
+
+**Solutions**:
+- **Check Memory Usage**: Run the `MEM` macro to ensure memory usage is below 75–80%.
+- **Simplify G-Code**: Use simpler infill patterns (e.g., Grid instead of Gyroid) or print single objects to reduce resource demands.
+- **Update Firmware**: Use stock firmware 3.1.4 or later and Forge-X 1.3.3 for optimizations.
+- **Switch to Feather**: Reduces resource usage significantly.
+
+### How do I use macros for calibration or other tasks?
+Forge-X provides various macros for calibration and management, accessible via Fluidd or Mainsail:
+- **Calibration Macros**: Check the “calibration macros group” in Fluidd for macros like auto bed leveling.
+- **MEM Macro**: Run in the console to check memory usage.
+- **CAMERA_RELOAD**: Applies camera settings manually.
+- **NEW_SAVE_CONFIG**: Saves configurations without freezing the Stock screen (compatibility varies).
+- **SET_MOD**: Adjusts parameters like `weight_check` or `weight_check_max`.
+
+For a complete list, refer to the [Macro Documentation](https://github.com/DrA1ex/ff5m/blob/main/docs/MACROS.md). Update to Forge-X 1.3.3 to ensure all macros are available in both Fluidd and Mainsail.
+
+### What changes are needed to the G-code start and end commands when migrating from the old Klipper mod?
+For the Stock screen, update the G-code start commands as outlined in [Slicing Documentation](https://github.com/DrA1ex/ff5m/blob/main/docs/SLICING.md):
+```gcode
+START_PRINT EXTRUDER_TEMP=[nozzle_temperature_initial_layer] BED_TEMP=[bed_temperature_initial_layer_single]
+M190 S[bed_temperature_initial_layer_single]
+M104 S[nozzle_temperature_initial_layer]
+```
+No changes are required for the Feather screen.
+
+### Can I calibrate the printer using the Stock screen (Fluidd)? Will it work?
+Yes, calibration via the Stock screen works, as it interacts directly with Klipper. Changes are reflected in both the stock firmware and the mod. The mod allows setting the calibration temperature, which the Stock screen does not support.
+
+### Unable to access Stock Debug Console for load cell calibration
+Use a stylus or thin object to press the console button more precisely.
+
+### Stock screen freezes: I can’t print anything
+The Stock screen does not support Moonraker external control, causing freezes when running `SAVE_CONFIG`, `RESTART`, or `FIRMWARE_RESTART`. Reboot the printer to resolve. Use the `NEW_SAVE_CONFIG` macro for graceful configuration saving (compatibility varies). Consider switching to the Feather screen to avoid this issue, as detailed in the [Screen Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md).
+
+### Feather screen stuck on “Finishing boot...”
+This occurs if Klipper or the MCU fails to become ready, often due to a broken configuration or an unreset MCU after a `reboot` command. Perform a `FIRMWARE_RESET` or power cycle the printer. Access Fluidd or SSH to diagnose the issue.
+
+### Why does the printer boot in Failsafe mode but still show Feather?
+Failsafe mode skips all mod code execution to prevent bricking but may still display Feather if the mod partially loads. Use [Dual Boot](https://github.com/DrA1ex/ff5m/blob/main/docs/DUAL_BOOT.md) to skip the mod gracefully and boot into the stock system.
+
+---
+
+## Community Contributions and Updates
+
+### What is the thumbnail display feature, and how do I use it?
+The thumbnail display feature, contributed by the community, shows print previews on the Feather screen, adding ~1 second to print start time. Download the script and instructions from the provided zip file in the support group. Follow the setup guide to enable it: https://t.me/FF_ForgeX/1906
+
+### How do I stay updated on new Forge-X releases?
+- Monitor the [Forge-X GitHub releases page](https://github.com/DrA1ex/ff5m/releases) for updates (e.g., Forge-X 1.3.3).
+- Join the Forge-X Telegram support group for announcements and support.
+- Check the [Macro Documentation](https://github.com/DrA1ex/ff5m/blob/main/docs/MACROS.md) and [Feather Drawing Utility Documentation](https://github.com/DrA1ex/ff5m/blob/main/docs/TYPER.md) for new features.
+
+### Can I use third-party tools like Obico with Forge-X?
+Obico, a Python-based tool, may work as a standalone application (not a Moonraker plugin) but consumes 5–10MB of memory. Test it with the `MEM` macro to ensure it doesn’t cause resource issues. Consider using Feather or Headless mode to free up resources.
+
+---
+
+## Additional Configuration and Troubleshooting
+
+### How do I adjust the camera settings?
+Edit the `camera.conf` file or use the web control panel at `http://printer_IP:8080/control.htm`. Manually transfer web panel adjustments to `E_<parameter>` properties in `camera.conf`, as changes are not saved automatically. Apply settings manually with the `CAMERA_RELOAD` macro.
+
+### I adjusted the camera settings, but they are not applied after a reboot
+Some camera settings are applied only when a print starts. Use the `CAMERA_RELOAD` macro to apply changes manually at any time.
+
+### What should I do about the warning after an SSH connection: `wtmp_write: problem writing /dev/null/wtmp: Not a directory`?
+This warning is harmless and indicates an incomplete core system configuration in the firmware. It does not affect functionality and can be ignored.
+
 ### How do I upload files to the printer?
-
-You can upload files using `scp` with the `-O` flag (legacy mode).  
-
-**Example commands:**  
+Use `scp` with the `-O` flag for legacy mode:
 ```bash
 # Upload files
 scp -O path/to/files/file root@<printer-ip>:/path/to/directory
@@ -157,156 +358,4 @@ scp -O path/to/files/file root@<printer-ip>:/path/to/directory
 # Download files
 scp -O root@<printer-ip>:/path/to/file /path/to/directory
 ```
-
-If your version of `scp` does not support the `-O` flag, you can upload files directly via the Fluidd web interface. Files uploaded to Fluidd are stored in `/data`.  
-
-To download files, move them to `/data` and then download them via Fluidd.
-
----
-
-### Stock Screen Freezes: I Can't Print Anything
-
-This happens because the stock screen does not support Moonraker external control over the printer.
-
-You cannot run `SAVE_CONFIG`, `RESTART`, or `FIRMWARE_RESTART` without causing the stock screen to freeze.
-
-If this happens, you won't be able to print, as printing requires the stock screen to function. Simply reboot the printer if this occurs.
-
-Consider switching to Feather Screen. Refer to [this guide](/docs/SCREEN.md) for details.
-
-For `SAVE_CONFIG`, there is an alternative macro that attempts to reload the screen gracefully.   
-
-```
-NEW_SAVE_CONFIG
-```
-
-Note: It uses a debugger to interface with the firmware and save configurations programmatically, so compatibility varies across firmware versions.
-
----
-
-### Feather Screen stuck on the "Finishing boot..."
-
-This happens if Klipper is not becoming ready.  
-Usually, the reason is a broken configuration or the MCU not becoming ready.
-
-If you reboot the printer using the `reboot` command and do not power it off and on, the MCU won't reset, which may also cause this issue.
-
-In that case, you need to perform a `FIRMWARE_RESET`.
-
-At this point, you should have network, Fluidd, and SSH access, so you can connect to the printer and figure out what happened.
-
----
-
-### My printer is stuck on the Stock initialization screen. How can I fix it?
-
-This issue is likely caused by a bug in the newer Flashforge firmware (version `3.1.*`), where the firmware freezes if it fails to connect to a network during initialization.  
-
-For now, reboot the printer by powering it off and back on. This problem is flickering — most of the time the firmware works fine, but occasionally it gets stuck.  
-
-To avoid this issue, you can downgrade the stock firmware to version `2.7.*`, as this bug seems to occur only in version `3.1.*`. Alternatively, switching to the Feather screen eliminates this issue entirely because the Feather screen operates independently and does not rely on the problematic firmware.
-
----
-
-### My printer is stuck on the screen with a black-and-white Flashforge logo. How can I fix it?
-
-If you encounter this issue, something may be preventing your printer from booting properly.  
-This is not a mod-related issue, as the mod only loads after the printer begins booting and displays its own splash screen.
-
-The problem could be hardware- or software-related.
-
-You can try flashing the [Factory image](https://github.com/DrA1ex/ff5m/blob/main/docs/UNINSTALL.md#flashing-factory-firmware) to resolve this.  
-If it doesn't work, try flashing the [Recovery image](/docs/RECOVERY.md#recovery-using-flashing-image), [Uninstall image](/docs/UNINSTALL.md#using-uninstall-image), and then the [Factory image](/docs/UNINSTALL.md#flashing-factory-firmware).  
-Also, refer to the [Recovery Guide](/docs/RECOVERY.md) — there are plenty of ways to restore your printer's functionality.
-
-If nothing works or if this happens periodically, it is more likely a hardware issue. Contact FlashForge support if the steps fail, but do not mention any mods or recovery images you may have flashed (as they are not relevant to them anyway), since doing so will likely void your warranty.
-
----
-
-### My printer is stuck on the screen with the Forge-X logo. How can I fix it?
-
-In this case, the printer will display loading information. If it's a Wi-Fi issue, refer to the next section.  
-If it’s not a network issue, the resolution will depend on what actually caused the problem. Create an issue report if the problem persists.
-
-You can skip the mod during boot by following [this instruction](/docs/DUAL_BOOT.md).  
-Alternatively, you can uninstall the mod by following [this instruction](/docs/UNINSTALL.md).
-
-**Note:** It’s not recommended to flash over a different firmware version without first removing the mod, as this could brick your printer. If that happens, you may still be able to restore it. Refer to the [recovery guide](/docs/RECOVERY.md) for more information.
-
----
-
-### The mod isn’t loading and is stuck at the network connection step.
-
-This can happen when you are using the Feather screen, and the mod cannot connect to the network.  
-Since the mod requires a network connection to function, it will keep attempting to connect until successful.
-
-Printers are often metal-shielded, meaning Wi-Fi signals may struggle to reach the antenna.  
-Consider switching to a 2.4GHz Wi-Fi network. You can do this from the stock screen or by manually editing the `/etc/wpa_supplicant.conf` configuration file by adding `freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462` to the network section, example below.
-```bash
-network={
-        ssid="example"
-        psk="password"
-        freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462
-        key_mgmt=WPA-PSK WPA-EAP NONE
-        disabled=1
-}
-```
-
-If the mod still cannot connect within 5 minutes, the stock screen will load instead.
-
-If the mod doesn’t load at all, refer to [this instruction](https://github.com/DrA1ex/ff5m/blob/main/docs/SCREEN.md#switching-to-feather-screen) to switch back to the original stock screen.
-
----
-
-### My printer won’t boot. I can’t skip the mod, flash firmware, or do anything.
-
-If this happens, something has gone seriously wrong. Don’t worry—there’s still a way to unbrick your printer.  
-Refer to the [recovery guide](/docs/RECOVERY.md) for detailed instructions on how to restore your printer.
-
-
-### Print/Shaper Calibration Stops with "MCU 'mcu' Shutdown: Timer Too Close"
-
-This error may occur due to memory limitations, MCU issues, or overheating. Below are troubleshooting steps to resolve it:
-
-#### Memory Issues
-- Check memory usage by running the `MEM` macro in your printer firmware.  
-- High memory consumption is often caused by the camera.  
-  - Switch to the mod’s [Camera Implementation](/docs/CAMERA.md) for lower resource usage.  
-- Follow the [Resource Usage Reduction Guide](/docs/PRINTING.md#reducing-resource-usage).   
-
-#### Internal MCU Issues
-- These are not tied to specific causes and may result from sensor read/write processes.  
-  - **No Specific Fixes**: As these are internal MCU errors, the mod cannot address them directly.  
-  - Try disabling `weight_check`, `filament_switch_sensor`, or similar parameters to reduce MCU interactions during printing.  
-  - Avoid changing fan, LED, or similar settings during printing.
-
-#### Overheating Issues
-- Inspect the driver fan on the motherboard to ensure it’s functioning:  
-  - Remove the printer’s back plate by unscrewing it.  
-  - Verify that the fan is operational and not obstructed.
-
----
-
-
-### Can I calibrate the printer using the stock screen (Fluidd)? Will it work?
-
-Yes, it will work. The stock screen interacts with Klipper directly, so anything you do with Klipper will also be reflected in both the stock firmware and the mod.
-
-The key difference is that the mod allows you to set the temperature for calibration, a feature not available on the stock screen.
-
----
-
-### Unable to Access Stock Debug Console for Load Cell Calibration
-
-If you're having trouble, try pressing the console button using a stylus or a thin object. This may resolve the issue.
-
----
-
-### Why Does the Printer Boot in Failsafe Mode but Still Show Feather?
-
-Failsafe mode is designed to completely skip all mod code execution during boot.  
-Its sole purpose is to prevent you from being left with a bricked printer in case of a mod failure.
-
-If you only want to skip the mod, use [Dual Boot](/docs/DUAL_BOOT.md) instead.  
-It will gracefully skip the mod, leaving you with a fully functional stock system.
-
----
+If the `-O` flag is unsupported, upload files via Fluidd’s web interface to `/data`. To download, move files to `/data` and use Fluidd.
