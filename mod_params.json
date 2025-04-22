@@ -217,14 +217,14 @@
     {
       "key": "park_dz",
       "type": "int",
-      "default": "50",
+      "default": 50,
       "label": "Parking offset after print completion, mm",
       "order": 20000
     },
     {
       "key": "clear_cooldown_temp",
       "type": "int",
-      "default": "120",
+      "default": 120,
       "label": "Cooldown temperature for CLEAR_NOZZLE, Cº",
       "order": 20000
     },
