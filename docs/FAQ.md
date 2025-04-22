@@ -74,13 +74,25 @@ A bricked printer (unable to boot or stuck on a frozen spinner) can be restored 
 - Use the recovery image for severe issues like corrupted system files or persistent boot failures.
 
 ### How do I update the stock firmware?
-Stock firmware updates must be performed through the Stock screen interface. Follow these steps:
-1. Download the latest Flashforge firmware from their official support channels.
-2. Copy the firmware file to a USB drive formatted to FAT32.
-3. Insert the USB drive into the printer and use the Stock screen’s update option to flash the firmware.
-4. Reboot the printer to apply the update.
 
-For detailed instructions, refer to the Forge-X support group or Flashforge documentation.
+Stock firmware updates for the Flashforge Adventurer 5M (AD5M) can be performed via the Stock screen interface using Over-The-Air (OTA) updates or by flashing a firmware image via USB.
+
+**Updating via OTA**:
+
+1. Temporarily switch to the Stock screen if using Feather or Headless mode (refer to Screen Switching Guide).
+2. Navigate to **Settings** &gt; **Check for Updates** on the Stock screen and follow the prompts to download and install the update.
+3. After the update, boot into the stock firmware at least once to ensure the update is applied correctly.
+4. Switch back to Feather or Headless mode if desired.
+
+**Updating via USB**:
+
+1. Temporarily switch to the Stock screen if using Feather or Headless mode.
+2. Download the latest Flashforge firmware from their official support channels (e.g., Flashforge website or support portal).
+3. Copy the firmware file (e.g., `.tgz`) to a USB drive formatted to FAT32.
+4. Insert the USB drive into the printer and power on the printer.
+5. Follow the on-screen prompts on the Stock screen to flash the firmware.
+6. After the update, boot into the stock firmware at least once to confirm the update.
+7. Switch back to Feather or Headless mode if desired.
 
 ### My printer is stuck on the Stock initialization screen. How can I fix it?
 This issue is likely caused by a bug in the newer Flashforge firmware (version `3.1.*`), where the firmware freezes if it fails to connect to a network during initialization. Reboot the printer by powering it off and back on. To avoid this issue, downgrade to firmware version `2.7.*` or switch to the Feather screen, which operates independently of the problematic firmware.
