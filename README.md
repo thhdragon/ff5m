@@ -116,17 +116,18 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 
 
 ## Documentation
-- [Installation](docs/INSTALL.md)
-- [Configuration](docs/CONFIGURATION.md)
-- [Slicing](docs/SLICING.md)
-- [Printing](docs/PRINTING.md)
+- [Installation](/docs/INSTALL.md)
+- [Configuration](/docs/CONFIGURATION.md)
+- [Slicing](/docs/SLICING.md)
+- [Printing](/docs/PRINTING.md)
+- [Macros](/docs/MACROS.md)
 - [F.A.Q](/docs/FAQ.md)
-- [Alternative Screen](docs/SCREEN.md)
-- [Camera](docs/CAMERA.md)
-- [Telegram Bot and Timelapse](docs/TELEGRAM.md)
-- [Dual boot](docs/DUAL_BOOT.md)
-- [Uninstall](docs/UNINSTALL.md)
-- [Recovery guide](docs/RECOVERY.md)
+- [Alternative Screen](/docs/SCREEN.md)
+- [Camera](/docs/CAMERA.md)
+- [Telegram Bot and Timelapse](/docs/TELEGRAM.md)
+- [Dual boot](/docs/DUAL_BOOT.md)
+- [Uninstall](/docs/UNINSTALL.md)
+- [Recovery guide](/docs/RECOVERY.md)
 
 If you encounter any issues, feel free to join Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
 You can also join FlashForge community in [Discord](https://discord.gg/K7MH4hAfeX) (Navigate to: Forums → mods-and-projects → Forge-X)
