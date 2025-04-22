@@ -32,14 +32,14 @@ Renders text with customizable font, color, alignment, and scale.
 | `--text`, `-t` | Text to display | string | None | Yes |
 | `--color`, `-c` | Text color (hex RGB) | uint32_t | `0xffffffff` (white) | No |
 | `--bg-color`, `-b` | Background color (hex RGB) | uint32_t | `0x00000000` (transparent) | No |
-| `--font`, `-f` | Font name | string | `Roboto12pt` | No |
+| `--font`, `-f` | Font name | string | `Roboto 12pt` | No |
 | `--scale`, `-s` | Font scale | integer | `1` | No |
 | `--h-align`, `-ha` | Horizontal alignment (`left`, `center`, `right`) | string | `left` | No |
 | `--v-align`, `-va` | Vertical alignment (`bottom`, `baseline`, `middle`, `top`) | string | `baseline` | No |
 
 **Example:**
 ```bash
-typer text --pos 400 240 --color ff0000 --font RobotoBold16pt --text "Hello, World!" --h-align center --v-align middle
+typer text --pos 400 240 --color ff0000 --font "Roboto Bold 16pt" --text "Hello, World!" --h-align center --v-align middle
 ```
 Draws "Hello, World!" in red, centered at (400, 240) using RobotoBold16pt font.
 
@@ -142,7 +142,7 @@ Executes multiple commands in a batch, either via command-line arguments or a na
 ```bash
 typer batch \
     --batch clear --color ff0000 \
-    --batch text --pos 400 240 --text "Batch Test" --font JetBrainsMono20pt --h-align center \
+    --batch text --pos 400 240 --text "Batch Test" --font "JetBrainsMono 20pt" --h-align center \
     --batch flush
 ```
 Clears the screen red, draws "Batch Test" centered, and flushes changes.
