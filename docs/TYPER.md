@@ -6,6 +6,12 @@
 
 The program interacts with the framebuffer device (`/dev/fb0`) to render text and graphics. It supports multiple fonts (Roboto, JetBrainsMono, Typicons) and provides commands for drawing text, filling rectangles, stroking rectangles, drawing lines, clearing the screen, and flushing changes in double-buffered mode.
 
+The utility is located at `/root/printer_data/bin/typer`.   
+To add it to your `PATH`, use the following command:   
+```
+source /opt/config/mod/.shell/common.sh
+```
+
 ## Global Options
 
 | Option | Description | Type | Default |
@@ -23,19 +29,26 @@ Renders text with customizable font, color, alignment, and scale.
 | Parameter | Description | Type | Default | Required |
 |-----------|-------------|------|---------|----------|
 | `--pos`, `-p` | Position (x, y) | 2 integers | None | Yes |
+| `--text`, `-t` | Text to display | string | None | Yes |
 | `--color`, `-c` | Text color (hex RGB) | uint32_t | `0xffffffff` (white) | No |
 | `--bg-color`, `-b` | Background color (hex RGB) | uint32_t | `0x00000000` (transparent) | No |
 | `--font`, `-f` | Font name | string | `Roboto12pt` | No |
 | `--scale`, `-s` | Font scale | integer | `1` | No |
-| `--text`, `-t` | Text to display | string | `""` | No |
 | `--h-align`, `-ha` | Horizontal alignment (`left`, `center`, `right`) | string | `left` | No |
 | `--v-align`, `-va` | Vertical alignment (`bottom`, `baseline`, `middle`, `top`) | string | `baseline` | No |
 
 **Example:**
 ```bash
-./typer text --pos 400 240 --color ff0000 --font RobotoBold16pt --text "Hello, World!" --h-align center --v-align middle
+typer text --pos 400 240 --color ff0000 --font RobotoBold16pt --text "Hello, World!" --h-align center --v-align middle
 ```
 Draws "Hello, World!" in red, centered at (400, 240) using RobotoBold16pt font.
+
+In batch/pipe mode, you can continue text from the last position by omitting the `--pos` parameter in subsequent `text` commands.
+```bash
+typer batch \
+    --batch text --pos 400 240 --text "Hello, " \
+    --batch text --text "World!"
+```
 
 ### `fill` - Fill a region with color
 
@@ -49,7 +62,7 @@ Fills a rectangular area with a specified color.
 
 **Example:**
 ```bash
-./typer fill --pos 100 100 --size 200 150 --color 00ff00
+typer fill --pos 100 100 --size 200 150 --color 00ff00
 ```
 Fills a 200x150 rectangle at (100, 100) with green.
 
@@ -67,7 +80,7 @@ Draws a rectangular outline with customizable line width and stroke direction.
 
 **Example:**
 ```bash
-./typer stroke --pos 50 50 --size 300 200 --color 0000ff --line-width 3 --stroke-direction outer
+typer stroke --pos 50 50 --size 300 200 --color 0000ff --line-width 3 --stroke-direction outer
 ```
 Draws a blue 3-pixel-wide outline around a 300x200 rectangle at (50, 50).
 
@@ -84,7 +97,7 @@ Draws a line between two points.
 
 **Example:**
 ```bash
-./typer line --start 100 100 --end 300 300 --color ffff00 --line-width 2
+typer line --start 100 100 --end 300 300 --color ffff00 --line-width 2
 ```
 Draws a yellow 2-pixel-wide line from (100, 100) to (300, 300).
 
@@ -98,7 +111,7 @@ Clears the entire screen with a specified color.
 
 **Example:**
 ```bash
-./typer clear --color 333333
+typer clear --color 333333
 ```
 Clears the screen with a dark gray color.
 
@@ -112,7 +125,7 @@ Flushes changes to the screen in double-buffered mode.
 
 **Example:**
 ```bash
-./typer --double-buffered flush
+typer --double-buffered flush
 ```
 Flushes pending changes to the screen.
 
@@ -127,7 +140,7 @@ Executes multiple commands in a batch, either via command-line arguments or a na
 
 **Example (Command-line Batch):**
 ```bash
-./typer batch \
+typer batch \
     --batch clear --color ff0000 \
     --batch text --pos 400 240 --text "Batch Test" --font JetBrainsMono20pt --h-align center \
     --batch flush
@@ -136,7 +149,7 @@ Clears the screen red, draws "Batch Test" centered, and flushes changes.
 
 **Example (Pipe Mode):**
 ```bash
-./typer batch --pipe /tmp/typer_pipe
+typer batch --pipe /tmp/typer_pipe
 ```
 In another terminal:
 ```bash
@@ -153,9 +166,9 @@ Supported fonts include variants of Roboto, JetBrainsMono, and Typicons at diffe
 
 **Example:**
 ```bash
-./typer --list-fonts
+typer --list-fonts
 ```
-Lists all loaded fonts, e.g., `Roboto12pt`, `JetBrainsMonoBold16pt`, `Typicons28ptb2`.
+Lists all loaded fonts, e.g., `Roboto 12pt`, `JetBrainsMono Bold 16pt`, `Typicons 28pt`.
 
 ## Notes
 
