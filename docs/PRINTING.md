@@ -12,6 +12,12 @@ For detailed instructions on configuring your slicer, refer to the [Slicing](../
 > [!WARNING]
 > After installing the mod, some printer parameters may revert to stock or change. This can affect settings like Z-Offset and Mesh Bed Leveling. It is **strongly recommended** to review and recalibrate these settings to avoid potential damage.
 
+## Using stock Firmware with mod
+
+To use this mod with a stock screen, enable "LAN-mode". Some features require this setting, and WebUI/slicer interactions may be unstable without it.
+
+Enable it on the stock screen: _Settings → Network → Network Mode → **LAN-mode**_
+
 ## Calibration
 
 To calibrate the printer, use only these macros (or the Stock screen).  
@@ -209,10 +215,6 @@ To fix this, enable the mod [parameter](/docs/CONFIGURATION.md):
 ```bash
 SET_MOD PARAM="tune_klipper" VALUE=1
 ```
-
-## Using stock Firmware with mod
-
-Some mod features, like fast dialog closing, may not work unless the stock firmware parameter "Use only local networks" is enabled. It is recommended to set this parameter for all users.
 
 ## Reducing Resource Usage
 
