@@ -167,10 +167,11 @@ If the mod doesn’t load at all, refer to [this instruction](https://github.com
 - **Resource Exhaustion**: High memory or CPU usage, often from running resource-intensive features like KlipperScreen, Spoolman, or KAMP with “exclude objects” in the slicer.
 - **MCU Issues**: Internal sensor read/write issues or loose wiring.
 - **Overheating**: Malfunctioning driver fan on the motherboard.
-- **Complex G-Code**: Certain infill patterns (e.g., Gyroid) may increase resource demands, indirectly causing errors.
+- **Complex G-Code**: Features like Fuzzy Skin or advanced infill patterns (e.g., Gyroid) can significantly increase resource usage, potentially causing indirect errors.
 
 **Solutions**:
 - **Check Memory Usage**: Run the `MEM` macro after boot to monitor memory consumption. Aim for usage below 75–80%.
+- **Enable `tune_config`**: This [mod parameter](/docs/CONFIGURATION.md) optimizes Klipper's internal configuration, which may reduce MCU usage and thereby decrease error rates..
 - **Reduce Resource Usage**: Disable features like `weight_check`, `filament_switch_sensor`, or camera streaming. Switch to the Feather screen or Headless mode for lower resource usage (10–15x less than Stock screen).
 - **Update Firmware**: Ensure the stock firmware (e.g., 3.1.4 or later) and Forge-X mod are updated to benefit from optimizations like the `tune_klipper` parameter.
 - **Check Hardware**: Inspect and reattach wiring, especially for the weight sensor. Verify the driver fan is operational by removing the printer’s back plate.
