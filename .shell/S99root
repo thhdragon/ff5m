@@ -78,9 +78,9 @@ stop() {
 }
 
 wait_stopped() {
-    while kill -0 $(cat "$MOD/run/moonraker.pid") > /dev/null  2>&1; do sleep 1; done
-    while kill -0 $(cat "$MOD/run/httpd.pid") > /dev/null  2>&1; do sleep 1; done
-    while kill -0 $(cat "$MOD/run/ntpd.pid") > /dev/null  2>&1; do sleep 1; done
+    [ -f "$MOD/run/moonraker.pid" ] && while kill -0 "$(cat "$MOD/run/moonraker.pid")" > /dev/null  2>&1; do sleep 1; done
+    [ -f "$MOD/run/httpd.pid" ] && while kill -0 "$(cat "$MOD/run/httpd.pid")" > /dev/null  2>&1; do sleep 1; done
+    [ -f "$MOD/run/ntpd.pid" ] && while kill -0 "$(cat "$MOD/run/ntpd.pid")" > /dev/null  2>&1; do sleep 1; done
 }
 
 switch() {

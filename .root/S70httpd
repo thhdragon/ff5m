@@ -14,8 +14,17 @@ start() {
 
 stop() {
     echo "Stopping httpd..."
-    start-stop-daemon -K -q -p $PID_FILE
-    [ $? = 0 ] && echo "OK" || echo "FAIL"
+    
+    if [ -f $PID_FILE ]; then
+		start-stop-daemon -K -q -p $PID_FILE
+		[ $? = 0 ] && echo "OK" || echo "FAIL"
+
+		rm -f $PID_FILE
+	else
+		echo "Not running"
+	fi	
+
+    rm -f $PID_FILE
 }
 
 
