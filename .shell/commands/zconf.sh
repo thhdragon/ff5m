@@ -50,13 +50,14 @@ update_config() {
     cp -f "$CONFIG_FILE" "$CONFIG_FILE.bak"
     
     for arg in "$@"; do
-        if [[ $arg =~ ^([A-Za-z_][A-Za-z_0-9_]*)=(.*)$ ]]; then
-            key="${BASH_REMATCH[1]}"
-            value="${BASH_REMATCH[2]}"
-        else
+        # Check if argument matches 'KEY=VALUE' pattern using grep
+        if ! echo "$arg" | grep -qE '^[A-Za-z_][A-Za-z0-9_]*='; then
             echo "Warning: Invalid parameter assignment \"$arg\""
             continue
         fi
+
+        key="${arg%%=*}"
+        value="${arg#*=}"
         
         update_param "$key" "$value"
     done

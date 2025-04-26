@@ -311,6 +311,20 @@
       "default": 1,
       "label": "Use filament switch sensor",
       "order": 100
+    },
+    {
+      "key": "disable_web",
+      "type": "bool",
+      "default": 0,
+      "label": "Disable Web UI",
+      "order": 30000
+    },
+    {
+      "key": "disable_moonraker",
+      "type": "bool",
+      "default": 0,
+      "label": "Disable Moonraker",
+      "order": 30000
     }
   ]
 }
