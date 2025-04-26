@@ -56,7 +56,7 @@ start() {
         sync
     fi
     
-    echo "// Starting services..."
+    echo "// Starting Buildroot env..."
     chroot "$MOD" /opt/config/mod/.root/start.sh
 
     if [ ! -f "$NOT_FIRST_LAUNCH_F" ]; then
@@ -72,7 +72,7 @@ start() {
 }
 
 stop() {
-    echo "// Stop Buildroot env..."
+    echo "// Stopping Buildroot env..."
     chroot "$MOD" /opt/config/mod/.root/stop.sh
     echo "// Done"
 }
