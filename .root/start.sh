@@ -10,29 +10,47 @@
 # Set HOME to /root to ensure git uses the correct .gitconfig
 export HOME=/root
 
+CFG_SCRIPT="/opt/config/mod/.shell/commands/zconf.sh"
+VAR_PATH="/opt/config/mod_data/variables.cfg"
+
 # TODO: remove in the next major release
 [ -L /usr/bin/ip ] && rm -f /usr/bin/ip
 [ -L /usr/bin/tc ] && rm -f /usr/bin/tc
 
-/opt/config/mod/.root/S65moonraker start
-/opt/config/mod/.root/S70httpd start
 /opt/config/mod/.root/S45ntpd start
 
-started=0
-echo "Waiting moonraker to start..."
-for _ in $(seq 0 30); do
-    curl http://localhost:7125 > /dev/null 2>&1 && started=1 && break
-    sleep 1
-done
+DISABLE_MOONRAKER=$("$CFG_SCRIPT" "$VAR_PATH" --get "disable_moonraker" "0")
+if [ "$DISABLE_MOONRAKER" != "1" ]; then
+    /opt/config/mod/.root/S65moonraker start
 
-[ $started = 1 ] && echo "OK" || echo "FAIL"
+    started=0
+    echo "Waiting for moonraker to start..."
+    for _ in $(seq 0 30); do
+        if curl -s http://localhost:7125 > /dev/null 2>&1; then
+            started=1
+            break
+        fi
+        sleep 1
+    done
+
+    [ "$started" = "1" ] && echo "OK" || echo "FAIL"
+else
+    echo "Moonraker service disabled as per configuration."
+fi
+
+DISABLE_WEB=$("$CFG_SCRIPT" "$VAR_PATH" --get "disable_web" "0")
+if [ "$DISABLE_WEB" != "1" ]; then
+    /opt/config/mod/.root/S70httpd start
+else
+    echo "Web services disabled as per configuration."
+fi
 
 if [ -d /etc/init.d ]; then
     echo "Starting user services..."
     
     while read -r file; do
         "$file" start
-    done < <(find ./etc/init.d/ -type f -name "S*")
+    done < <(find /etc/init.d/ -type f -name "S*")
 
     echo "Done"
 fi
