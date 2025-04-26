@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please fill out this template as completely as possible to help us diagnose and resolve your issue efficiently. Missing information may delay the troubleshooting process.
+        Issues reported without complete information will be closed without explanation. Follow this template as closely as possible — incomplete reports waste everyone’s time.
 
   - type: dropdown
     id: printer_model
@@ -35,8 +35,8 @@ body:
     id: mod_version
     attributes:
       label: Mod Version
-      description: Enter the version of the mod you are using (e.g., 1.2.2).
-      placeholder: "e.g., 1.2.2"
+      description: Enter the version of the mod you are using (e.g., 1.3.3).
+      placeholder: "e.g., 1.3.3"
     validations:
       required: true
 
@@ -97,6 +97,8 @@ body:
       label: Debugging Information
       description: Follow the instructions based on your situation and upload the required files.
       placeholder: "e.g., Drag and drop the debug.tar file here."
+    validations:
+      required: true
 
   - type: textarea
     id: installation_logs
@@ -111,9 +113,9 @@ body:
       label: Checklist
       description: Confirm you’ve completed these steps before submitting.
       options:
-        - label: I have read the documentation and did not find an answer.
+        - label: I have read the [documentation](https://github.com/DrA1ex/ff5m/tree/main?tab=readme-ov-file#documentation) and did not find an answer.
           required: true
-        - label: I have read the F.A.Q.
+        - label: I have read the [F.A.Q](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md).
           required: true
         - label: I have tried rebooting the printer, and the problem persists.
           required: true
