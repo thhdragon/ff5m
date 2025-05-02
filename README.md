@@ -88,7 +88,8 @@ For additional help, check out the [F.A.Q.](/docs/FAQ.md).
 You can reach services using these addresses:  
 - **Moonraker**: `http://<printer_ip>:7125/`  
 - **Fluidd**: `http://<printer_ip>/fluidd/`  
-- **Mainsail**: `http://<printer_ip>/mainsail/`  
+- **Mainsail**: `http://<printer_ip>/mainsail/`
+- **SSH credentials**: `root` / `root`  
 
 If you encounter issues:  
 1. First, consult the documentation.
