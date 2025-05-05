@@ -28,6 +28,11 @@ To calibrate the printer, use only these macros (or the Stock screen).
 
 All of these macros are available in the Fluidd/Mainsail main screen in the section **Calibration**:
 
+- `BED_LEVEL_SCREWS_TUNE`: Adjusts bed leveling screws (calculates adjustments for **nuts under the bed**).   
+  ⚠️ **Recalibrate** the bed mesh after making changes.
+  - `EXTRUDER_TEMP` temperature of the nozzle (default `130`)   
+  - `BED_TEMP` temperature of the bed (default `80`)
+
 - `AUTO_FULL_BED_LEVEL`: Bed meshing.  
   - `EXTRUDER_TEMP` temperature of the nozzle (default `240`)  
   - `BED_TEMP` temperature of the bed (default `80`)  
