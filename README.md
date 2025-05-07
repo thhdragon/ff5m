@@ -135,6 +135,13 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 If you encounter any issues, feel free to join Telegram group for support: [Join here](https://t.me/+ihE2Ry8kBNkwYzhi).
 You can also join FlashForge community in [Discord](https://discord.gg/K7MH4hAfeX) (Navigate to: Forums → mods-and-projects → Forge-X)
 
+## Support Forge-X
+
+Forge-X is free, open-source software with free support and updates. If you enjoy the mod or want to support ongoing development, please consider a donation. Every contribution helps keep the project thriving!
+
+[Donate on Donationalerts](https://www.donationalerts.com/r/dra1ex)
+
+
 ## Credits
 
 Thanks [Klipper Mod](https://github.com/xblax/flashforge_ad5m_klipper_mod) developers for their great work.
