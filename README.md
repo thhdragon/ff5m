@@ -142,7 +142,7 @@ Forge-X is free, open-source software with free support and updates. If you enjo
 - **Cryptocurrency Donations**:
   - **BTC**: `17igL1Y1gHSK2FFsn8TQgVKkaVXXJ33Mu6`
   - **TON**: `UQAa8-8q3GrZVVlZWbQgM80l9hol8OacOGfaQ68jVRU_uRbK`
-  - **USDT (TRC20)**: `TH4WMFaACbHaKE1JYtT7x8xUS3GmAb6Pw5`
+  - **USDT (TRC20)**: `TUmBppbp5vhhpwozzYzYmd9T3GefJsbX5K`
 
 - **[Donate on Donationalerts](https://www.donationalerts.com/r/dra1ex)**
 
