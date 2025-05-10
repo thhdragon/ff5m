@@ -169,11 +169,25 @@ SET_MOD PARAM="z_offset" VALUE=0.25
 
 ## Sound
 You can customize sound indications or completely disable them. Additionally, you can configure MIDI playback for specific events. Available MIDI files are located in **Configuration -> mod_data -> midi**. You can also add your own MIDI files by uploading them to the **midi** folder.
+
 It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 - `sound`: Disable all sound indication by setting this parameter to 0.
 - `midi_on`: Play MIDI when the printer boots.
 - `midi_start`: Play MIDI when a print starts.
 - `midi_end`: Play MIDI when a print finishes.
+
+### Playing MIDI Files
+You can play specific MIDI files using the **PLAY_MIDI** macro. This macro allows you to specify a MIDI file from the **midi** folder.
+
+#### Usage
+- Macro: `PLAY_MIDI`
+- Parameter: `FILE` (string, default: `For_Elise.mid`)
+- Example:
+  ```plaintext
+  PLAY_MIDI FILE=For_Elise.mid
+  ```
+> [!NOTE]
+> The `PLAY_MIDI` macro will only function if the `sound` parameter is enabled.
 
 ## LED light Control
 
