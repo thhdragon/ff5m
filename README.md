@@ -1,6 +1,5 @@
 <p align="center">
-<img width="400" src="https://github.com/user-attachments/assets/c7ff5d09-3786-4b69-b8d5-1f254c809de7" />
-<img width="400" src="https://github.com/user-attachments/assets/6f3b9343-d3d1-4f0e-b4cf-9ac1041502b2" />
+   <img width="600" src="https://github.com/user-attachments/assets/1e1e0b03-a424-4da3-8285-d62dd74470de" />
 </p>
 
 # Flashforge Adventurer 5M (Pro) Firmware Mod
@@ -33,6 +32,11 @@ There’s also a tiny chance **you’d have to buy a new motherboard** — proba
 So don’t do anything if you not clearly understand what you are doing.
 
 ## Features
+<p align="center">
+<img width="400" src="https://github.com/user-attachments/assets/c7ff5d09-3786-4b69-b8d5-1f254c809de7" />
+<img width="400" src="https://github.com/user-attachments/assets/6f3b9343-d3d1-4f0e-b4cf-9ac1041502b2" />
+</p>
+
 - **Stock** Screen with option to disable it completely and switch to feather screen version to reduce resource consumption
 - **Klipper** with many patches/fixes/plugins specially adapted for AD5M
 - **Moonraker**
