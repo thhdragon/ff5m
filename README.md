@@ -159,6 +159,8 @@ Thanks to the Klipper and Moonraker communities for their ongoing development.
 
 Special thanks to the Russian FlashForge Adventurer 5M Telegram Community: [@FF_5M_5M_Pro](https://t.me/FF_5M_5M_Pro)
 
+Big thanks [@Zero](https://www.youtube.com/@zerodotcmd) for the awesome logo! 
+
 This mod is based on ZMod by [ghzserg](https://github.com/ghzserg).
 
 Thanks for the great open-source fonts:
