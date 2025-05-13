@@ -17,8 +17,16 @@ VAR_PATH="/opt/config/mod_data/variables.cfg"
 [ -L /usr/bin/ip ] && rm -f /usr/bin/ip
 [ -L /usr/bin/tc ] && rm -f /usr/bin/tc
 
-sed -i 's/\("project_owner":"\)mainsail_crew\("\)/\1DrA1ex\2/' /root/www/mainsail/release_info.json
+sed -i '
+  /"project_owner":"mainsail-crew","version":"v2\.14\.0"/ {
+    s/"project_owner":"mainsail-crew"/"project_owner":"DrA1ex"/
+    s/"version":"v2\.14\.0"/"version":"v2.13.2"/
+  }
+' /root/www/mainsail/release_info.json
 
+sed -i 's/\("project_owner":"\)mainsail-crew\("\)/\1DrA1ex\2/' /root/www/mainsail/release_info.json
+
+######
 
 /opt/config/mod/.root/S45ntpd start
 
