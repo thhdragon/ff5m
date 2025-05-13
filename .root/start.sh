@@ -17,6 +17,9 @@ VAR_PATH="/opt/config/mod_data/variables.cfg"
 [ -L /usr/bin/ip ] && rm -f /usr/bin/ip
 [ -L /usr/bin/tc ] && rm -f /usr/bin/tc
 
+sed -i 's/\("project_owner":"\)mainsail_crew\("\)/\1DrA1ex\2/' /root/www/mainsail/release_info.json
+
+
 /opt/config/mod/.root/S45ntpd start
 
 DISABLE_MOONRAKER=$("$CFG_SCRIPT" "$VAR_PATH" --get "disable_moonraker" "0")
