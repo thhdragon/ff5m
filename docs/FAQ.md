@@ -19,8 +19,6 @@ To install the Forge-X mod:
 4. **Verify Installation**: After rebooting, check if the printer boots into the expected interface (e.g., GuppyScreen or Feather). If issues occur, refer to recovery steps.
 5. **Update Configurations**: Configure settings via Mainsail, Fluidd, or the printer’s interface. Check the [Forge-X documentation](https://github.com/DrA1ex/ff5m) for macro and configuration details.
 
-**Note**: For Forge-X 1.2.0 and later, you don’t need to preinstall ZMod. Always verify file integrity using checksums provided in the documentation.
-
 ### What should I do if I encounter issues with the mod?
 If you encounter issues:
 1. **Check Logs**: Review logs like `clean.log` or `recovery.log` generated during flashing.
