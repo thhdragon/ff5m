@@ -106,6 +106,14 @@ If the printer displays loading information and is stuck, it may be a Wi-Fi issu
 ### My printer won’t boot. I can’t skip the mod, flash firmware, or do anything.
 This indicates a severe issue. Follow the [Recovery Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md) to unbrick the printer using recovery or uninstaller images. If unsuccessful, contact Flashforge support, avoiding mention of mods.
 
+#### Why do my custom settings persist in printer.cfg after uninstalling Forge-X and flashing stock firmware?
+
+Custom settings in `printer.cfg` or `printer.base.cfg` may persist after uninstalling Forge-X or flashing stock firmware because Forge-X does not reset user-modified configurations unless you flash the specific Flashforge Factory firmware.
+
+**Solutions**:
+- **Flash Factory Firmware**: To fully reset all configurations, including user-edited settings in `printer.cfg`, flash the Factory firmware from Flashforge, not just any stock firmware. Find the Factory firmware link in the [Uninstall Guide](/docs/UNINSTALL.md#flashing-factory-firmware).
+- **Use user.cfg for Changes**: Avoid modifying `printer.cfg` directly. Instead, make all Klipper-related changes in `mod_data/user.cfg` to keep custom settings separate and easier to reset.
+
 ---
 
 ## Network and Connectivity Issues
@@ -281,6 +289,22 @@ This error may result from memory limitations, MCU issues, or overheating.
 - **Overheating**:
   - Verify the driver fan on the motherboard is operational by removing the back plate and checking for obstructions.
 
+#### How do I fix the “VIDIOC_G_FMT: failed: Invalid argument” error when reloading the camera?
+
+This error occurs when the camera streamer encounters an invalid configuration or format issue, often related to memory settings or stock firmware handling.
+
+**Solutions**:
+- **Run CAMERA_RESTART**: Execute the `CAMERA_RESTART` macro to reset the camera service, which typically resolves the error.
+- **Disable REDUCE_MEMORY**: Verify that the `REDUCE_MEMORY` option is disabled in `camera.conf` (see Camera Configuration Guide). This option can cause format errors.
+
+#### How do I fix camera issues without rebooting the printer?
+
+If the camera stream is unstable or stops working, you can restart the camera service without rebooting the printer.
+
+**Solutions**:
+- **Run CAMERA_RESTART Macro**: Execute the `CAMERA_RESTART` macro in Fluidd/Mainsail or add it to your slicer’s start G-code to reset the camera before printing. This resolves most camera issues without a reboot.
+- **Check Camera Configuration**: Ensure the `REDUCE_MEMORY` option is disabled in `camera.conf` to avoid compatibility issues (see Camera Configuration Guide).
+
 ---
 
 ## Print and Configuration Issues
@@ -333,6 +357,43 @@ This occurs if Klipper or the MCU fails to become ready, often due to a broken c
 
 ### Why does the printer boot in Failsafe mode but still show Feather?
 Failsafe mode skips all mod code execution to prevent bricking but may still display Feather if the mod partially loads. Use [Dual Boot](https://github.com/DrA1ex/ff5m/blob/main/docs/DUAL_BOOT.md) to skip the mod gracefully and boot into the stock system.
+
+#### Why is my nozzle gouging the build plate during the first layer?
+
+Nozzle gouging, where the nozzle scrapes or digs into the build plate during the first layer, often occurs due to an incorrect Z-offset or bed mesh after installing Forge-X.
+
+**Solutions**:
+- **Recalibrate Z-Offset**: After installing Forge-X, recalibrate the Z-offset to ensure the nozzle is at the correct height above the bed. Follow the [Z-Offset Calibration Guide](#how-do-i-calibrate-and-adjust-the-z-offset-with-forge-x). Use `SET_GCODE_OFFSET Z_ADJUST=+0.05 MOVE=1` to raise the nozzle if it’s too close.
+- **Run Bed Mesh Calibration**: Perform a full bed mesh calibration with `AUTO_FULL_BED_LEVEL` to ensure the bed mesh reflects the current plate and printer state. Save the mesh with `NEW_SAVE_CONFIG` (Stock screen) or `SAVE_CONFIG` (Feather screen).
+- **Check Weight Sensor**: Recalibrate the load cell following Flashforge’s guide.
+- **Verify Settings**: Ensure no old settings (e.g., Stock bed mesh) are being used. Flash the Factory firmware to reset all configurations if needed (see Uninstall Guide).
+- Refer to the [Printing Page](/docs/PRINTING.md) for calibration details.
+
+#### How do I disable nozzle wiping to prevent scratching the build plate?
+
+Nozzle wiping, part of the cleaning procedure before printing, can sometimes scratch build plates.
+
+**Solution**   
+**Lower Nozzle Temperature**: Set the nozzle temperature below 120°C during bed leveling to skip the cleaning procedure. For example:
+```gcode
+AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=100 BED_TEMP=70
+```
+
+#### How do I customize the KAMP purge line length?
+
+The KAMP purge line length can be adjusted to suit your preferences, such as increasing it for better filament priming.
+
+**Solutions**:
+- **Modify user.cfg**: Override the purge amount in `mod_data/user.cfg` by adding:
+  ```ini
+  [gcode_macro _KAMP_Settings]
+  variable_purge_amount: 60  # Increase to desired length (e.g., 60mm)
+  ```
+- **Set in Slicer G-Code**: Add the following to your slicer’s starting G-code before `START_PRINT`:
+  ```gcode
+  SET_GCODE_VARIABLE MACRO='_KAMP_Settings' VARIABLE='purge_amount' VALUE=60
+  ```
+- Refer to the [KAMP Configuration](https://github.com/DrA1ex/ff5m/blob/main/KAMP/KAMP_Settings.cfg#L27) for additional parameters.
 
 ---
 
