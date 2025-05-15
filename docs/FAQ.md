@@ -106,7 +106,7 @@ If the printer displays loading information and is stuck, it may be a Wi-Fi issu
 ### My printer won’t boot. I can’t skip the mod, flash firmware, or do anything.
 This indicates a severe issue. Follow the [Recovery Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/RECOVERY.md) to unbrick the printer using recovery or uninstaller images. If unsuccessful, contact Flashforge support, avoiding mention of mods.
 
-#### Why do my custom settings persist in printer.cfg after uninstalling Forge-X and flashing stock firmware?
+### Why do my custom settings persist in printer.cfg after uninstalling Forge-X and flashing stock firmware?
 
 Custom settings in `printer.cfg` or `printer.base.cfg` may persist after uninstalling Forge-X or flashing stock firmware because Forge-X does not reset user-modified configurations unless you flash the specific Flashforge Factory firmware.
 
@@ -289,7 +289,7 @@ This error may result from memory limitations, MCU issues, or overheating.
 - **Overheating**:
   - Verify the driver fan on the motherboard is operational by removing the back plate and checking for obstructions.
 
-#### How do I fix the “VIDIOC_G_FMT: failed: Invalid argument” error when reloading the camera?
+### How do I fix the “VIDIOC_G_FMT: failed: Invalid argument” error when reloading the camera?
 
 This error occurs when the camera streamer encounters an invalid configuration or format issue, often related to memory settings or stock firmware handling.
 
@@ -297,7 +297,7 @@ This error occurs when the camera streamer encounters an invalid configuration o
 - **Run CAMERA_RESTART**: Execute the `CAMERA_RESTART` macro to reset the camera service, which typically resolves the error.
 - **Disable REDUCE_MEMORY**: Verify that the `REDUCE_MEMORY` option is disabled in `camera.conf` (see Camera Configuration Guide). This option can cause format errors.
 
-#### How do I fix camera issues without rebooting the printer?
+### How do I fix camera issues without rebooting the printer?
 
 If the camera stream is unstable or stops working, you can restart the camera service without rebooting the printer.
 
@@ -369,7 +369,7 @@ Nozzle gouging, where the nozzle scrapes or digs into the build plate during the
 - **Verify Settings**: Ensure no old settings (e.g., Stock bed mesh) are being used. Flash the Factory firmware to reset all configurations if needed (see Uninstall Guide).
 - Refer to the [Printing Page](/docs/PRINTING.md) for calibration details.
 
-#### How do I disable nozzle wiping to prevent scratching the build plate?
+### How do I disable nozzle wiping to prevent scratching the build plate?
 
 Nozzle wiping, part of the cleaning procedure before printing, can sometimes scratch build plates.
 
@@ -379,7 +379,7 @@ Nozzle wiping, part of the cleaning procedure before printing, can sometimes scr
 AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=100 BED_TEMP=70
 ```
 
-#### How do I customize the KAMP purge line length?
+### How do I customize the KAMP purge line length?
 
 The KAMP purge line length can be adjusted to suit your preferences, such as increasing it for better filament priming.
 
