@@ -134,6 +134,13 @@
       "order": 10000
     },
     {
+      "key": "load_zoffset_cleaning",
+      "type": "bool",
+      "default": 0,
+      "label": "Load Z-OFFSET during cleaning",
+      "order": 10001
+    },
+    {
       "key": "z_offset",
       "type": "float",
       "default": 0,

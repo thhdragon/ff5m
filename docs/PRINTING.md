@@ -147,6 +147,9 @@ Enable the `load_zoffset` mod [parameter](/docs/CONFIGURATION.md) to make the mo
 
 Once `load_zoffset` is enabled, adjust Z-Offset through Fluidd or Mainsail’s standard controls (which use `SET_GCODE_OFFSET`). The mod will then save the Z-Offset to the configuration and load it automatically after a reboot, right before the print starts.
 
+To use Z-offset during nozzle cleaning, set the `load_zoffset_cleaning` parameter.   
+This can help prevent bed scratches if the default (0.0) offset is too low for your setup.
+
 ### Macros
 - **[SET_GCODE_OFFSET](https://www.klipper3d.org/G-Codes.html#set_gcode_offset)**: Standard Klipper macro to apply Z-Offset; also saves the value to the mod’s parameter.  
 - **`LOAD_GCODE_OFFSET`**: Loads and applies the last-saved Z-Offset from the mod’s parameter.
@@ -225,7 +228,8 @@ It is controlled by the following mod's [parameters](/docs/CONFIGURATION.md):
 The mod provides several options for priming line and nozzle cleaning before a print.   
 These are controlled by the following [parameters](/docs/CONFIGURATION.md):
 - `zclear`: Configure the purge line algorithm (e.g., `ORCA` - like Orca Slicer do).
-- `disable_priming`: Disable nozzle priming by setting this parameter to 1.
+- `disable_priming`: Set to 1 to disable nozzle priming before print.
+- `disable_cleaning`: Set to 1 to disable nozzle cleaning before bed mesh calibration.
 
 ## Fixing Communication Timeout (E0011) / Move Queue Overflow (EO017) Error
 In stock firmware, some internal Klipper parameters controlling **MCU Communication** and the **Move Queue**  are not optimally configured, which can cause the **E0011** and the **E0017** error.   
