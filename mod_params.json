@@ -71,7 +71,15 @@
       "key": "disable_priming",
       "type": "bool",
       "default": 0,
-      "label": "Nozzle cleaning",
+      "label": "Nozzle priming before print",
+      "options": ["YES", "NO"],
+      "order": 20000
+    },
+    {
+      "key": "disable_cleaning",
+      "type": "bool",
+      "default": 0,
+      "label": "Nozzle cleaning before calibration",
       "options": ["YES", "NO"],
       "order": 20000
     },
