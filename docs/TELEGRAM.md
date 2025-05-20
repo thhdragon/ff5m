@@ -12,12 +12,12 @@ To register your Telegram bot:
 4. Set a username ending with _bot (e.g., ff5m_super_bot).
 5. Receive a bot token (a long string) and save it for later use.
 
-## SSH acccess setup
+## SSH-tunnel setup
 
 ### Local Network Setup
 
 If the printer and server are on the same network, SSH is not required. Instead, configure the bot using the telegram.conf file.
-You can download this file from the printer or from the repository: [telegram.conf](telegram/telegram.conf).
+You can download this file from the printer or from the repository: [telegram.conf](/telegram/telegram.conf).
 
 ### Remote Host Setup
 
