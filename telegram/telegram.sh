@@ -13,7 +13,7 @@ chsh ff5m -s /bin/bash
 systemctl enable docker
 systemctl restart docker
 
-cd ~/ff5m
+cd ~ff5m
 
 cat > install.sh <<EOF
 #!/bin/bash
@@ -22,6 +22,7 @@ read -p "Enter the name of the directory where the bot will be stored [bot1]: " 
 if [ "\${bot_name}" == "" ]; then bot_name="bot1"; fi
 mkdir -p \${bot_name}
 cd \${bot_name}
+
 echo "The bot is installed in the directory $(pwd)"
 mkdir -p config log timelapse_finished timelapse 
 wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/dra1ex/ff5m/refs/heads/main/telegram/ff5m.sh
