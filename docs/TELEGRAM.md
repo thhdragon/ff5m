@@ -62,10 +62,7 @@ bash <(wget --cache=off -q -O - https://raw.githubusercontent.com/DrA1ex/ff5m/re
 #### Manual setup
 
 ##### 1. Install Requirements
-```bash
-apt update && apt upgrade -y
-apt install docker.io docker-compose -y
-```
+Install Docker by following the [oficial documentation](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
 
 ##### 2. Create Directory for Bot
 ```bash
@@ -93,7 +90,7 @@ wget --cache=off -q -O config/telegram.conf https://github.com/dra1ex/ff5m/raw/r
 
 ##### 6. Set Up Container and Run
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ##### 7. Create a New User
