@@ -52,7 +52,10 @@ REMOTE_RUN=""
 
 #### Automatic Setup
 
+Note that the installation script is written for Ubuntu/Debian and won't work with non-Debian distributions.
+
 ```bash
+sudo su
 apt update && apt install wget -y  # Ensure wget is installed
 bash <(wget --cache=off -q -O - https://raw.githubusercontent.com/DrA1ex/ff5m/refs/heads/main/telegram/telegram.sh)
 ```
