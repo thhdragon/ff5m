@@ -3,9 +3,27 @@
 # Run
 # bash <(wget --cache=off -q -O - https://github.com/dra1ex/ff5m/raw/refs/heads/main/telegram/telegram.sh)
 
+# Remove unofficial docker containers
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do apt remove $pkg; done
+
+# Add Docker's official GPG key:
+apt update
+apt install ca-certificates curl -y
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+
 apt update 
 apt upgrade -y
-apt install docker.io docker-compose docker sudo -y
+
+# Install Docker from official source
+apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
 useradd -m -G docker ff5m
 chsh ff5m -s /bin/bash
@@ -17,10 +35,11 @@ cd ~ff5m
 
 cat > install.sh <<EOF
 #!/bin/bash
+cd $(pwd) || { echo "Failed to open home directory."; exit 1; }
 read -p "Enter the name of the directory where the bot will be stored [tg-bot-1]: " bot_name
 if [ "\${bot_name}" == "" ]; then bot_name="tg-bot-1"; fi
 mkdir -p \${bot_name}
-cd \${bot_name}
+cd \${bot_name} || { echo "Failed to open directory."; exit 1; }
 
 echo "The bot is installed in the directory $(pwd)/\${bot_name}"
 mkdir -p config log timelapse_finished timelapse 
