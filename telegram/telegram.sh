@@ -17,13 +17,12 @@ cd ~ff5m
 
 cat > install.sh <<EOF
 #!/bin/bash
-cd
-read -p "Enter the name of the directory where the bot will be stored [bot1]: " bot_name
-if [ "\${bot_name}" == "" ]; then bot_name="bot1"; fi
+read -p "Enter the name of the directory where the bot will be stored [tg-bot-1]: " bot_name
+if [ "\${bot_name}" == "" ]; then bot_name="tg-bot-1"; fi
 mkdir -p \${bot_name}
 cd \${bot_name}
 
-echo "The bot is installed in the directory $(pwd)"
+echo "The bot is installed in the directory $(pwd)/\${bot_name}"
 mkdir -p config log timelapse_finished timelapse 
 wget --cache=off -q -O ../ff5m.sh https://raw.githubusercontent.com/dra1ex/ff5m/refs/heads/main/telegram/ff5m.sh
 chmod +x ../ff5m.sh
@@ -40,16 +39,16 @@ echo "1. Go to https://t.me/BotFather
 read -p "Enter bot_token: " bot_token
 
 sed -i "s|bot_token: 1111111111:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA|bot_token: \${bot_token}|" config/telegram.conf
-docker-compose up -d
+docker compose up -d
 
 echo "Go to your bot via Telegram.
 It will write: Unauthorized access detected with chat_id:
 Enter the received number into chat_id."
 
 read -p "Enter chat_id: " chat_id 
-docker-compose down
+docker compose down
 sed -i "s|chat_id: 111111111|chat_id: \${chat_id}|" config/telegram.conf 
-docker-compose up -d
+docker compose up -d
 read -p "Do you need to create another bot? [y/N]: " vopros
 if [ "\${vopros}" == "y" ] || [ "\${vopros}" == "Y" ]; then cd; ./install.sh; fi
 EOF
