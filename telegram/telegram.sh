@@ -130,6 +130,14 @@ check_error "Failed to switch to ff5m home directory"
 echo "Creating install.sh script..."
 cat > install.sh <<EOF
 #!/bin/bash
+
+check_error() {
+    if [ $? -ne 0 ]; then
+        echo "Error: $1"
+        exit 1
+    fi
+}
+
 cd \$(pwd) || { echo "Failed to open home directory."; exit 1; }
 read -p "Enter the name of the directory where the bot will be stored [tg-bot-1]: " bot_name
 if [ "\${bot_name}" == "" ]; then bot_name="tg-bot-1"; fi
@@ -141,7 +149,7 @@ else
 fi
 cd \${bot_name} || { echo "Failed to open directory."; exit 1; }
 
-echo "The bot is installed in the directory \$(pwd)/\${bot_name}"
+echo "The bot is installed in the directory \$(pwd)"
 for dir in config log timelapse_finished timelapse; do
     if [ -d "\${dir}" ]; then
         echo "Directory \${dir} already exists, skipping."
