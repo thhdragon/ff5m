@@ -28,17 +28,6 @@ echo "Starting Docker and Telegram bot installation..."
 # Check distribution
 check_distro
 
-# Check if user ff5m already exists
-if id "ff5m" >/dev/null 2>&1; then
-    echo "User ff5m already exists, skipping user creation."
-else
-    useradd -m -G docker ff5m
-    check_error "Failed to create user ff5m"
-    chsh ff5m -s /bin/bash
-    check_error "Failed to set shell for ff5m"
-    echo "Created user ff5m."
-fi
-
 # Prompt for removing unofficial Docker packages
 echo "WARNING: This script will remove unofficial Docker packages (docker.io, docker-doc, docker-compose, docker-compose-v2, podman-docker, containerd, runc)."
 read -p "Do you want to continue with removal? [y/N]: " confirm_remove
@@ -120,6 +109,17 @@ if ! systemctl is-active --quiet docker; then
     check_error "Failed to restart Docker service"
 else
     echo "Docker service already enabled and running."
+fi
+
+# Check if user ff5m already exists
+if id "ff5m" >/dev/null 2>&1; then
+    echo "User ff5m already exists, skipping user creation."
+else
+    useradd -m -G docker ff5m
+    check_error "Failed to create user ff5m"
+    chsh ff5m -s /bin/bash
+    check_error "Failed to set shell for ff5m"
+    echo "Created user ff5m."
 fi
 
 # Switch to ff5m user home directory
