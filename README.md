@@ -157,7 +157,7 @@ Forge-X is an open-source, free project built for the community, and everyone is
   - **TON**: `UQAa8-8q3GrZVVlZWbQgM80l9hol8OacOGfaQ68jVRU_uRbK`
   - **USDT (TRC20)**: `TUmBppbp5vhhpwozzYzYmd9T3GefJsbX5K`
 
-- **[Donate on Donationalerts](https://www.donationalerts.com/r/dra1ex)**
+- **[Donate on Donationalerts](https://www.donationalerts.com/r/dra1ex)** (Temporarily unavailable until July 11, 2025)
 
 ## Credits
 
