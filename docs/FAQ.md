@@ -116,17 +116,29 @@ Custom settings in `printer.cfg` or `printer.base.cfg` may persist after uninsta
 
 ## Network and Connectivity Issues
 
-### Why can’t I access Mainsail or Fluidd remotely after installing the Klipper Mod?
-This issue may occur due to:
-- **IP Address Change**: The printer’s IP address may have changed after installing the mod. Check the current IP address via the printer’s touchscreen or router settings.
-- **Network Configuration**: The mod may not have connected to Wi-Fi properly. Reconnect to Wi-Fi using the touchscreen or manually configure `/etc/wpa_supplicant.conf` to use a 2.4GHz network.
-- **Resource Issues**: High resource usage may prevent Mainsail or Fluidd from loading. Run the `MEM` macro to check memory usage.
+### Why can’t I access Mainsail or Fluidd?
+
+Issues accessing Mainsail or Fluidd on the Flashforge Adventurer 5M (AD5M) with Forge-X are often caused by Wi-Fi connectivity problems, hardware limitations, IP address changes, or resource constraints. The printer’s design, with its Wi-Fi antenna located inside the motor section behind a metal plate, can weaken the signal and lead to unstable connections.
+
+**Causes**:
+- **Weak Wi-Fi Signal**: The metal plate covering the motor section blocks Wi-Fi signals, causing silent disconnections or failure to connect without warnings.
+- **IP Address Change**: The printer’s IP address may change after installing Forge-X or rebooting, breaking access to Mainsail/Fluidd.
+- **Network Configuration**: The mod may fail to connect to Wi-Fi, especially if not configured for a 2.4GHz network.
+- **Resource Issues**: High memory or CPU usage can prevent Mainsail/Fluidd from loading properly.
+- **Wi-Fi Module Hardware**: Faulty or underperforming Wi-Fi hardware may contribute to connectivity issues.
 
 **Solutions**:
-- Verify the printer’s IP address and update your router’s static IP settings if needed.
-- Reconnect to Wi-Fi or edit `/etc/wpa_supplicant.conf` to include `freq_list=2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462` in the network section.
-- Restart the printer and check resource usage with the `MEM` macro.
-- Ensure the mod is fully installed and running.
+- **Check Wi-Fi Connection**: Verify Wi-Fi status via the printer’s touchscreen settings. Reconnect if disconnected, ensuring a 2.4GHz network is selected.
+- **Improve Signal Strength**:
+  - Move the printer closer to your router to reduce signal interference.
+  - Alternatively, use an Ethernet cable for a stable connection, bypassing Wi-Fi issues.
+- **Verify IP Address**: Check the printer’s current IP address on the touchscreen or in your router’s device list. Update your browser’s URL or router’s static IP settings if the address has changed.
+- **Configure Wi-Fi Manually**:  If your router uses the same SSID for 5GHz and 2.4GHz bands, manually edit `/etc/wpa_supplicant.conf` to [force 2.4 GHz network](#the-mod-isnt-loading-and-is-stuck-at-the-network-connection-step). Restart the printer after editing.   
+- **Monitor Resources**: Run the `MEM` macro in Fluidd/Mainsail to check memory usage. If usage is high (e.g., >75%), reduce resource-intensive features like camera streaming or Spoolman (see [Resource Usage Reduction Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#reducing-resource-usage)).
+- **Ensure Mod Installation**: Confirm Forge-X is fully installed and running (e.g., GuppyScreen or Feather screen is active). Re-flash the mod if necessary (see [Installation Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md)).
+- **Restart Printer**: Reboot the printer to reset network services and clear potential resource bottlenecks.
+
+**Note**: If issues persist, consider testing with a different router or Wi-Fi channel to rule out interference. For hardware-related Wi-Fi module problems, contact Flashforge support, avoiding mention of mods to preserve warranty eligibility.
 
 ### Why can’t I connect via SSH?
 SSH connection issues may arise because:
