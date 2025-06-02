@@ -128,6 +128,7 @@ Issues accessing Mainsail or Fluidd on the Flashforge Adventurer 5M (AD5M) with 
 **Causes**:
 - **Weak Wi-Fi Signal**: The metal plate covering the motor section blocks Wi-Fi signals, causing silent disconnections or failure to connect without warnings.
 - **IP Address Change**: The printer’s IP address may change after installing Forge-X or rebooting, breaking access to Mainsail/Fluidd.
+- **Clear browser cache**: An outdated or corrupted browser cache can prevent Mainsail/Fluidd from loading correctly.   
 - **Network Configuration**: The mod may fail to connect to Wi-Fi, especially if not configured for a 2.4GHz network.
 - **Resource Issues**: High memory or CPU usage can prevent Mainsail/Fluidd from loading properly.
 - **Wi-Fi Module Hardware**: Faulty or underperforming Wi-Fi hardware may contribute to connectivity issues.
@@ -138,6 +139,7 @@ Issues accessing Mainsail or Fluidd on the Flashforge Adventurer 5M (AD5M) with 
   - Move the printer closer to your router to reduce signal interference.
   - Alternatively, use an Ethernet cable for a stable connection, bypassing Wi-Fi issues.
 - **Verify IP Address**: Check the printer’s current IP address on the touchscreen or in your router’s device list. Update your browser’s URL or router’s static IP settings if the address has changed.
+- **Clear Browser Cache***: Clear your browser’s cache to resolve issues caused by outdated or corrupted cache data (refer to your browser’s documentation for instructions). Alternatively, try accessing Mainsail/Fluidd using a different browser.   
 - **Configure Wi-Fi Manually**:  If your router uses the same SSID for 5GHz and 2.4GHz bands, manually edit `/etc/wpa_supplicant.conf` to [force 2.4 GHz network](#the-mod-isnt-loading-and-is-stuck-at-the-network-connection-step). Restart the printer after editing.   
 - **Monitor Resources**: Run the `MEM` macro in Fluidd/Mainsail to check memory usage. If usage is high (e.g., >75%), reduce resource-intensive features like camera streaming or Spoolman (see [Resource Usage Reduction Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/PRINTING.md#reducing-resource-usage)).
 - **Ensure Mod Installation**: Confirm Forge-X is fully installed and running (e.g., GuppyScreen or Feather screen is active). Re-flash the mod if necessary (see [Installation Guide](https://github.com/DrA1ex/ff5m/blob/main/docs/INSTALL.md)).
