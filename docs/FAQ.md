@@ -116,6 +116,11 @@ Custom settings in `printer.cfg` or `printer.base.cfg` may persist after uninsta
 
 ## Network and Connectivity Issues
 
+## Network and Connectivity Issues
+
+### Why do I get a timeout error when trying to upload G-Code via Slicer?   
+Read the [next article](#why-cant-i-access-mainsail-or-fluidd).   
+
 ### Why can’t I access Mainsail or Fluidd?
 
 Issues accessing Mainsail or Fluidd on the Flashforge Adventurer 5M (AD5M) with Forge-X are often caused by Wi-Fi connectivity problems, hardware limitations, IP address changes, or resource constraints. The printer’s design, with its Wi-Fi antenna located inside the motor section behind a metal plate, can weaken the signal and lead to unstable connections.
