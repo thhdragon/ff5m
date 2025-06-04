@@ -37,10 +37,11 @@ So don’t do anything if you not clearly understand what you are doing.
 <img width="400" src="https://github.com/user-attachments/assets/6f3b9343-d3d1-4f0e-b4cf-9ac1041502b2" />
 </p>
 
-- **Stock** Screen with option to disable it completely and switch to feather screen version to reduce resource consumption
+- **Stock** Screen with option to disable it completely and switch to Feather screen version to reduce resource consumption
 - **Klipper** with many patches/fixes/plugins specially adapted for AD5M
 - **Moonraker**
 - **Fluidd** & **Mainsail**
+- **GuppyScreen** available as an [add-on](https://t.me/FF_ForgeX/2181)
 - **OTA** updates
 - **Root** access (with zsh/.oh-my-zsh)
 - **Buzzer** with ability to play monotonic melodies (midi / notes)
