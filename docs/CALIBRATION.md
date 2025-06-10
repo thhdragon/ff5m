@@ -141,6 +141,42 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
 
 ---
 
+
+## Z-Offset Calibration
+Calibrate Z-offset to ensure proper first-layer adhesion. For STOCK screen, Z-offset is managed via the firmware’s screen and auto-saved/loaded. For Feather/Headless/Guppy screen, use the following steps with Fluidd/Mainsail.
+
+1. **Verify Z-Offset**:
+   - Print a 200x200x0.2 mm single-layer square (create in slicer, export G-code, print via Fluidd/Mainsail).
+   - Compare to online reference images (e.g., Klipper documentation or 3D printing forums). If first-layer quality is good, no adjustment needed.
+2. **Adjust Z-Offset**:
+   - If lines are too squished (over-extruded), increase Z-offset (e.g., `SET_GCODE_OFFSET Z=0.05` for +0.05 mm).
+   - If lines are too loose (under-extruded), decrease Z-offset (e.g., `SET_GCODE_OFFSET Z=-0.05` for -0.05 mm).
+3. **Test Smaller Model**:
+   - Print a 50x50x0.2 mm single-layer square.
+   - Check first-layer quality and adjust Z-offset again if needed.
+4. **Repeat**:
+   - Repeat steps 2-3 until first-layer quality is satisfactory.
+5. **Save Z-Offset**:
+   - Apply and save Z-offset:
+     ```
+     SET_GCODE_OFFSET Z=<value>
+     ```
+     - E.g., `SET_GCODE_OFFSET Z=-0.2` for -0.2 mm.
+6. **Enable Auto-Load**:
+   - Enable automatic Z-offset loading:
+     ```
+     SET_MOD PARAM="load_zoffset" VALUE=1
+     ```
+   - This ensures Z-offset is loaded before prints and after reboots, similar to STOCK screen behavior.
+7. **Optional**: For nozzle cleaning, enable `load_zoffset_cleaning` it may prevent bed scratches:
+   ```
+   SET_MOD PARAM="load_zoffset_cleaning" VALUE=1
+   ```
+   - After cleaning with Z-Offset, ensure the nozzle is thoroughly clean - residual material may affect subsequent bed meshing   
+8. **Verify**: Print another 50x50x0.2 mm square to confirm.
+
+---
+
 ## Post-Calibration
 1. **Verify**: Print Calilantern/50x50x50 mm cube.
 2. **Recalibrate Mesh**: Run `AUTO_FULL_BED_LEVEL` after changes.
