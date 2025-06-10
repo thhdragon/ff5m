@@ -96,13 +96,18 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
 ---
 
 ## Bed Leveling Screws
-1. **Run**:
+1. **Prepare**:
+   - Run `CLEAR_NOZZLE` to ensure the nozzle is clean.
+2. **Run**:
    ```
    BED_LEVEL_SCREWS_TUNE EXTRUDER_TEMP=130 BED_TEMP=60
    ```
    - Adjust screws per instructions.
-2. **Recalibrate Mesh**: Run `AUTO_FULL_BED_LEVEL`.
-3. **Save**: `NEW_SAVE_CONFIG`.
+   - Repeat `BED_LEVEL_SCREWS_TUNE` until values are adequate.
+3. **Check Load Cell**:
+   - If screw adjustments result in a bed height difference >1 mm, recalibrate load cell tare (see [Forge-X FAQ](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md#resolving-the-issue-by-calibrating-the-load-cell)).
+4. **Recalibrate Mesh**: Run `AUTO_FULL_BED_LEVEL`.
+5. **Save**: `NEW_SAVE_CONFIG`.
 
 ---
 
