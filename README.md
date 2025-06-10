@@ -130,6 +130,7 @@ The existing Klipper implementation for the AD5M is outdated and plagued with bu
 - [Slicing](/docs/SLICING.md)
 - [Printing](/docs/PRINTING.md)
 - [Macros](/docs/MACROS.md)
+- [Calibration](/docs/CALIBRATION.md)
 - [F.A.Q](/docs/FAQ.md)
 - [Alternative Screen](/docs/SCREEN.md)
 - [Camera](/docs/CAMERA.md)
