@@ -66,14 +66,14 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
      ```
    - Mark 100 mm filament, measure actual extrusion (e.g., 98 mm).
 2. **Calculate**:
-   - Get current `rotation_distance` (e.g., `7.5`).
+   - Get current `rotation_distance` (e.g., `4.7`).
    - Formula: `new_distance = current_distance * (expected / actual)`
-     - E.g., `7.5 * (100 / 98) ≈ 7.65`
+     - E.g., `4.7 * (100 / 98) ≈ 4.79`
 3. **Update**:
    - Add to `user.cfg`:
      ```
      [extruder]
-     rotation_distance: 7.65
+     rotation_distance: 7.79
      ```
    - Run `NEW_SAVE_CONFIG`.
 4. **Note**: `tuning.cfg` has a near-accurate baseline.
