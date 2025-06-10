@@ -6,7 +6,6 @@ This concise guide provides instructions for calibrating the axes, extruder, bed
 This AI-generated guide is based on Forge-X documentation and general 3D printing practices. Verify settings with official Forge-X resources for your setup.
 
 ## Prerequisites
-- **Firmware**: Forge-X v2.7.5+ (FF5M/FF5MPro) or v1.0.2/v1.0.8 (AD5X).
 - **Belt Tension**: Ensure belts are tensioned (check YouTube/Flashforge guides).
 - **Klipper Tuning**: Enable with `SET_MOD PARAM=tune_klipper VALUE=1`.
 - **Config Tuning**: Enable with `SET_MOD PARAM=tune_config VALUE=1`.
