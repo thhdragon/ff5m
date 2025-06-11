@@ -73,7 +73,7 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
    - Add to `user.cfg`:
      ```
      [extruder]
-     rotation_distance: 7.79
+     rotation_distance: 4.79
      ```
    - Run `NEW_SAVE_CONFIG`.
 4. **Note**: `tuning.cfg` has a near-accurate baseline.
