@@ -8,7 +8,7 @@ import logging
 class GCodeMove:
     def __init__(self, config):
         self.printer = printer = config.get_printer()
-        # Start FLSUN ChangesAdd commentMore actions
+        # Start FLSUN Changes
         p_config = config.getsection('printer')
         self.x_size_offset = p_config.getfloat('x_size_offset', 0, above=-0.035, below=0.035) 
         self.y_size_offset = p_config.getfloat('y_size_offset', 0, above=-0.035, below=0.035) 
@@ -118,7 +118,7 @@ class GCodeMove:
     def reset_last_position(self):
         if self.is_printer_ready:
             self.last_position = self.position_with_transform()
-    # Start FLSUN ChangesAdd commentMore actions
+    # Start FLSUN Changes
     def get_xy_size_offset(self):
         return self.x_size_offset, self.y_size_offset
     # End FLSUN Changes
@@ -145,7 +145,7 @@ class GCodeMove:
                     # value relative to base coordinate position
                     self.last_position[3] = v + self.base_position[3]
             # Start FLSUN Changes
-            self.cali_position = self.last_position[:]Add commentMore actions
+            self.cali_position = self.last_position[:]
             real_x_size_offset = real_y_size_offset = 0
             if self.last_position[2] > (self.max_z - 2.5):
                 real_x_size_offset = 0
@@ -165,7 +165,7 @@ class GCodeMove:
         except ValueError as e:
             raise gcmd.error("Unable to parse move '%s'"
                              % (gcmd.get_commandline(),))
-        # Start FLSUN ChangesAdd commentMore actions
+        # Start FLSUN Changes
         #self.move_with_transform(self.last_position, self.speed)
         self.move_with_transform(self.cali_position, self.speed)
         # End FLSUN Changes
