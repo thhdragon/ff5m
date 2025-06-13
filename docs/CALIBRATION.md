@@ -30,7 +30,7 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
    - Adjust screws per instructions.
    - Repeat `BED_LEVEL_SCREWS_TUNE` until values are adequate.
 3. **Check Load Cell**:
-   - If screw adjustments result in a bed height difference >1 mm, recalibrate load cell tare (see [Forge-X FAQ](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md#resolving-the-issue-by-calibrating-the-load-cell)).
+   - If your bed height variation exceeds 1 mm, you must perform load cell tare calibration after adjusting the bed screws (see [Forge-X FAQ](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md#resolving-the-issue-by-calibrating-the-load-cell)).
 4. **Recalibrate Mesh** ⚠️: Run `AUTO_FULL_BED_LEVEL`.
 5. **Save**: `NEW_SAVE_CONFIG`.
 
