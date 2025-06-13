@@ -27,6 +27,8 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
 2. **Z Calibration**:
    - In Slicer, cylinder a 20x20x200 mm hollow rectangle (no infill, no top layers, 1 wall).
    - Export G-code and print via Fluidd/Mainsail.
+  
+**Note:** If your measurement tools (e.g., calipers or ruler) cannot accommodate this size, proportionally scale the model (X/Y and Z axes accordingly) to match your equipment's capacity
 
 ### Axis Calibration Steps
 1. **Measure**:
