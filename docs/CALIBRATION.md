@@ -9,7 +9,7 @@ This AI-generated guide is based on Forge-X documentation and general 3D printin
 - **Belt Tension**: Ensure belts are tensioned (check YouTube/Flashforge guides).
 - **Klipper Tuning**: Enable with `SET_MOD PARAM=tune_klipper VALUE=1`.
 - **Config Tuning**: Enable with `SET_MOD PARAM=tune_config VALUE=1`.
-- **Tools**: Caliper, Fluidd/Mainsail access.
+- **Tools**: Caliper/Ruler, Fluidd/Mainsail access.
 
 ## Configuration Overrides
 Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using Forge-X Backup and Restore before changes.
@@ -20,39 +20,32 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
 
 ---
 
-## Axis Calibration Models (Slicer)
-1. **X/Y Calibration**:
-   - In slicer (e.g., PrusaSlicer/OrcaSlicer), create a 200x200x0.2 mm flat square (1-2 layers).
-   - Export G-code, print via Fluidd/Mainsail.
-2. **Z Calibration**:
-   - In Slicer, cylinder a 20x20x200 mm hollow rectangle (no infill, no top layers, 1 wall).
-   - Export G-code and print via Fluidd/Mainsail.
-  
-**Note:** If your measurement tools (e.g., calipers or ruler) cannot accommodate this size, proportionally scale the model (X/Y and Z axes accordingly) to match your equipment's capacity
+## Bed Leveling Screws
+1. **Prepare**:
+   - Run `CLEAR_NOZZLE` to ensure the nozzle is clean.
+2. **Run**:
+   ```
+   BED_LEVEL_SCREWS_TUNE EXTRUDER_TEMP=130 BED_TEMP=60
+   ```
+   - Adjust screws per instructions.
+   - Repeat `BED_LEVEL_SCREWS_TUNE` until values are adequate.
+3. **Check Load Cell**:
+   - If screw adjustments result in a bed height difference >1 mm, recalibrate load cell tare (see [Forge-X FAQ](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md#resolving-the-issue-by-calibrating-the-load-cell)).
+4. **Recalibrate Mesh** ⚠️: Run `AUTO_FULL_BED_LEVEL`.
+5. **Save**: `NEW_SAVE_CONFIG`.
 
-### Axis Calibration Steps
-1. **Measure**:
-   - X/Y: Measure printed square (e.g., 201x201 mm).
-   - Z: Measure height (e.g., 199 mm).
-2. **Calculate Rotation Distance**:
-   - Get current `rotation_distance` from `printer.cfg`/`user.cfg`.
-   - Formula: `new_distance = current_distance * (expected_size / actual_size)`
-     - E.g., X/Y: `40 * (200 / 201) ≈ 39.801`, Z: `8 * (200 / 199) ≈ 8.040`
-3. **Update**:
-   - Add to `user.cfg`:
-     ```
-     [stepper_x]
-     rotation_distance: 39.801
-     [stepper_y]
-     rotation_distance: 39.801
-     [stepper_z]
-     rotation_distance: 8.040
-     ```
-   - Run `NEW_SAVE_CONFIG` (or `SAVE_CONFIG` for non-STOCK screens).
+---
 
-### Skew Distortion
-- Use Calilantern model for skew. Print via Fluidd/Mainsail, follow instructions.
-- Apply `SKEW_PROFILE` in `user.cfg`, run `NEW_SAVE_CONFIG`.
+## Bed Mesh Calibration
+1. **Run**:
+   ```
+   AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=220 BED_TEMP=60 PROFILE=auto
+   ```
+   - Adjust `EXTRUDER_TEMP` (e.g., 220°C for PLA), `BED_TEMP` (e.g., 60°C).
+2. **Save**:
+   ```
+   NEW_SAVE_CONFIG
+   ```
 
 ---
 
@@ -82,36 +75,6 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
 
 ---
 
-## Bed Mesh Calibration
-1. **Run**:
-   ```
-   AUTO_FULL_BED_LEVEL EXTRUDER_TEMP=220 BED_TEMP=60 PROFILE=auto
-   ```
-   - Adjust `EXTRUDER_TEMP` (e.g., 220°C for PLA), `BED_TEMP` (e.g., 60°C).
-2. **Save**:
-   ```
-   NEW_SAVE_CONFIG
-   ```
-3. **Verify**: Print a 100x100 mm single-layer square.
-
----
-
-## Bed Leveling Screws
-1. **Prepare**:
-   - Run `CLEAR_NOZZLE` to ensure the nozzle is clean.
-2. **Run**:
-   ```
-   BED_LEVEL_SCREWS_TUNE EXTRUDER_TEMP=130 BED_TEMP=60
-   ```
-   - Adjust screws per instructions.
-   - Repeat `BED_LEVEL_SCREWS_TUNE` until values are adequate.
-3. **Check Load Cell**:
-   - If screw adjustments result in a bed height difference >1 mm, recalibrate load cell tare (see [Forge-X FAQ](https://github.com/DrA1ex/ff5m/blob/main/docs/FAQ.md#resolving-the-issue-by-calibrating-the-load-cell)).
-4. **Recalibrate Mesh**: Run `AUTO_FULL_BED_LEVEL`.
-5. **Save**: `NEW_SAVE_CONFIG`.
-
----
-
 ## Input Shaper Calibration
 1. **Run**:
    ```
@@ -122,7 +85,55 @@ Edit `user.cfg` via Fluidd/Mainsail (port 80) or manually. Backup config using F
    ```
    NEW_SAVE_CONFIG
    ```
-3. **Verify**: Print Calilantern/ringing test model.
+3. **Verify** (Optionally): Print ringing test model.
+
+---
+
+## Axis Calibration Models
+
+You have two calibration options:   
+1. Simple method: Follow this basic guide   
+2. Advanced method: Use calibration models that measure both axis dimensions and skew in a single print   
+
+Follow these steps for manual calibration if you don't have (or prefer not to use) the Calilantern model:   
+
+1. **X/Y Calibration**:
+   - In slicer (e.g., PrusaSlicer/OrcaSlicer), create a 200x200x0.2 mm flat square (1-2 layers).
+   - Export G-code, print via Fluidd/Mainsail.
+2. **Z Calibration**:
+   - In Slicer, cylinder a 20x20x200 mm hollow rectangle (no infill, no top layers, 1 wall).
+   - Export G-code and print via Fluidd/Mainsail.
+  
+**Note:** If your measurement tools (e.g., calipers or ruler) cannot accommodate this size, scale the model (X/Y and Z axes accordingly) to match your equipment's capacity.
+
+### Axis Calibration Steps
+1. **Measure**:
+   - X/Y: Measure printed square (e.g., 201x201 mm).
+   - Z: Measure height (e.g., 199 mm).
+2. **Calculate Rotation Distance**:
+   - Get current `rotation_distance` from `printer.cfg`/`user.cfg`.
+   - Formula: `new_distance = current_distance * (expected_size / actual_size)`
+     - E.g., X/Y: `40 * (200 / 201) ≈ 39.801`, Z: `8 * (200 / 199) ≈ 8.040`
+3. **Update**:
+   - Add to `user.cfg`:
+     ```
+     [stepper_x]
+     rotation_distance: 39.801
+     [stepper_y]
+     rotation_distance: 39.801
+     [stepper_z]
+     rotation_distance: 8.040
+     ```
+   - Run `NEW_SAVE_CONFIG` (or `SAVE_CONFIG` for non-STOCK screens).
+
+### Skew Distortion
+- Use the Calilantern model (or similar) to measure and correct skew. Upload the model via Fluidd/Mainsail, print, and follow its instructions for skew compensation. The printer will load a profile named `skew_profile` automatically, so save the profile with this name:
+  ```
+  SET_SKEW XY=140.4,142.8,99.8 XZ=141.6,141.4,99.8 YZ=142.4,140.5,99.5
+  SKEW_PROFILE SAVE=skew_profile
+  NEW_SAVE_CONFIG
+  ```
+- Alternatively, add a `[skew_correction]` section in `user.cfg` with the skew values, then run `NEW_SAVE_CONFIG` to save the configuration.
 
 ---
 
