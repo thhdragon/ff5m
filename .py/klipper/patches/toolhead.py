@@ -318,7 +318,7 @@ class ToolHead:
                 configfile.set('printer', 'y_size_offset', "%.6f" % (new_y_size_offset))
                 gcode.respond_info(f"Y Offset Compensation applied: {new_y_size_offset:.6f}")
              
-             if z_real_size is not None:
+            if z_real_size is not None:
                 new_z_size_offset = ((target_size - z_real_size) / target_size + 1) * (1 + last_z_size_offset) - 1
                 new_z_size_offset = min(new_z_size_offset, 0.034)
                 new_z_size_offset = max(new_z_size_offset, -0.034)
