@@ -10,6 +10,31 @@ import mcu, chelper, kinematics.extruder
 #   mm/second), _v2 is velocity squared (mm^2/s^2), _t is time (in
 #   seconds), _r is ratio (scalar between 0.0 and 1.0)
 
+def compute_axis_offset(real, target, last_offset, clamp=0.034):
+    """
+    Compute a new axis size offset for printer calibration.
+
+    Args:
+        real (float): Measured size along the axis.
+        target (float): Target size along the axis.
+        last_offset (float): The previous offset for this axis.
+        clamp (float): Maximum allowed absolute value for the offset.
+
+    Returns:
+        float: The new offset value, clamped appropriately.
+    """
+    # Validate inputs
+    if real is None or target is None or real <= 0 or target <= 0:
+        raise ValueError("Invalid real or target size for axis scaling.")
+    # Calculate the required scale factor to match target to real
+    scale_needed = target / real
+    # Combine with previous offset for cumulative effect
+    total_scale = (1 + last_offset) * scale_needed
+    # Offset is always relative to 1.0 (no scaling)
+    new_offset = total_scale - 1
+    # Clamp to physical/practical limits
+    return max(min(new_offset, clamp), -clamp)
+
 # Class to track each move request
 class Move:
     def __init__(self, toolhead, start_pos, end_pos, speed):
@@ -287,45 +312,37 @@ class ToolHead:
 
         if reset_value == 0:
             configfile = self.printer.lookup_object('configfile')
-            new_x_size_offset = 0
-            new_y_size_offset = 0
-            new_z_size_offset = 0
-            configfile.set('printer', 'x_size_offset', "%.6f" % (new_x_size_offset))
-            configfile.set('printer', 'y_size_offset', "%.6f" % (new_y_size_offset))
-            configfile.set('printer', 'z_size_offset', "%.6f" % (new_z_size_offset))
+            configfile.set('printer', 'x_size_offset', "0.000000")
+            configfile.set('printer', 'y_size_offset', "0.000000")
+            configfile.set('printer', 'z_size_offset', "0.000000")
             gcode.respond_info("Reset of XYZ Offsets done!")
+            gcode.run_script_from_command('SAVE_CONFIG')
+            return
         
         if reset_value is not None and reset_value != 0:
-            gcode.respond_info("Invalid S value. Only S0 is accepted to reset XY Offsets.")
+            gcode.respond_info("Invalid S value. Only S0 is accepted to reset XYZ Offsets.")
             return
 
         if target_size is not None:
             gcode_move = self.printer.lookup_object('gcode_move')
-            last_x_size_offset, last_y_size_offset, last_z_size_offset = gcode_move.get_xyz_size_offset()
+            last_x, last_y, last_z = gcode_move.get_xyz_size_offset()
             configfile = self.printer.lookup_object('configfile')
 
-            if x_real_size is not None:
-                new_x_size_offset = ((target_size - x_real_size) / target_size + 1) * (1 + last_x_size_offset) - 1
-                new_x_size_offset = min(new_x_size_offset, 0.034)
-                new_x_size_offset = max(new_x_size_offset, -0.034)
-                configfile.set('printer', 'x_size_offset', "%.6f" % (new_x_size_offset))
-                gcode.respond_info(f"X Offset Compensation applied: {new_x_size_offset:.6f}")
+            # Helper to set and respond for each axis
+            def set_axis_offset(axis, real_val, last_val, key):
+                if real_val is not None:
+                    try:
+                        new_offset = compute_axis_offset(real_val, target_size, last_val)
+                        configfile.set('printer', key, f"{new_offset:.6f}")
+                        gcode.respond_info(f"{axis} Offset Compensation applied: {new_offset:.6f}")
+                    except Exception as e:
+                        gcode.respond_info(f"{axis} axis error: {str(e)}")
 
-            if y_real_size is not None:
-                new_y_size_offset = ((target_size - y_real_size) / target_size + 1) * (1 + last_y_size_offset) - 1
-                new_y_size_offset = min(new_y_size_offset, 0.034)
-                new_y_size_offset = max(new_y_size_offset, -0.034)
-                configfile.set('printer', 'y_size_offset', "%.6f" % (new_y_size_offset))
-                gcode.respond_info(f"Y Offset Compensation applied: {new_y_size_offset:.6f}")
-             
-            if z_real_size is not None:
-                new_z_size_offset = ((target_size - z_real_size) / target_size + 1) * (1 + last_z_size_offset) - 1
-                new_z_size_offset = min(new_z_size_offset, 0.034)
-                new_z_size_offset = max(new_z_size_offset, -0.034)
-                configfile.set('printer', 'z_size_offset', "%.6f" % (new_z_size_offset))
-                gcode.respond_info(f"Z Offset Compensation applied: {new_z_size_offset:.6f}")
+            set_axis_offset('X', x_real_size, last_x, 'x_size_offset')
+            set_axis_offset('Y', y_real_size, last_y, 'y_size_offset')
+            set_axis_offset('Z', z_real_size, last_z, 'z_size_offset')
 
-        gcode.run_script_from_command('SAVE_CONFIG')
+            gcode.run_script_from_command('SAVE_CONFIG')
     # End FLSUN Changes
     # Print time tracking
     def _update_move_time(self, next_print_time):
