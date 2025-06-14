@@ -147,19 +147,16 @@ class GCodeMove:
                     self.last_position[3] = v + self.base_position[3]
             # Start FLSUN Changes
             self.cali_position = self.last_position[:]
-            real_x_size_offset = real_y_size_offset = real_z_size_offset = 0
             if self.last_position[2] > (self.max_z - 2.5):
                 real_x_size_offset = 0
                 real_y_size_offset = 0
-                real_z_size_offset = self.z_size_offset
             else:
                 real_x_size_offset = self.x_size_offset
                 real_y_size_offset = self.y_size_offset
-                real_z_size_offset = self.z_size_offset
+            real_z_size_offset = self.z_size_offset
             self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset) 
             self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset) 
             self.cali_position[2] = self.last_position[2] * (1 + real_z_size_offset)
-            
             # End FLSUN Changes
             if 'F' in params:
                 gcode_speed = float(params['F'])
