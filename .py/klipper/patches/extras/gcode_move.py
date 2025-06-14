@@ -13,7 +13,6 @@ class GCodeMove:
         self.x_size_offset = p_config.getfloat('x_size_offset', 0, above=-0.035, below=0.035) 
         self.y_size_offset = p_config.getfloat('y_size_offset', 0, above=-0.035, below=0.035) 
         self.z_size_offset = p_config.getfloat('z_size_offset', 0, above=-0.035, below=0.035) 
-
         # End FLSUN Changes
         printer.register_event_handler("klippy:ready", self._handle_ready)
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
@@ -153,16 +152,14 @@ class GCodeMove:
                 real_x_size_offset = 0
                 real_y_size_offset = 0
                 real_z_size_offset = self.z_size_offset
-
             else:
                 real_x_size_offset = self.x_size_offset
                 real_y_size_offset = self.y_size_offset
                 real_z_size_offset = self.z_size_offset
-
             self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset) 
             self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset) 
             self.cali_position[2] = self.last_position[2] * (1 + real_z_size_offset)
-
+            
             # End FLSUN Changes
             if 'F' in params:
                 gcode_speed = float(params['F'])
