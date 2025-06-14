@@ -12,6 +12,8 @@ class GCodeMove:
         p_config = config.getsection('printer')
         self.x_size_offset = p_config.getfloat('x_size_offset', 0, above=-0.035, below=0.035) 
         self.y_size_offset = p_config.getfloat('y_size_offset', 0, above=-0.035, below=0.035) 
+        self.z_size_offset = p_config.getfloat('z_size_offset', 0, above=-0.035, below=0.035) 
+
         # End FLSUN Changes
         printer.register_event_handler("klippy:ready", self._handle_ready)
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
@@ -119,8 +121,8 @@ class GCodeMove:
         if self.is_printer_ready:
             self.last_position = self.position_with_transform()
     # Start FLSUN Changes
-    def get_xy_size_offset(self):
-        return self.x_size_offset, self.y_size_offset
+    def get_xyz_size_offset(self):
+        return self.x_size_offset, self.y_size_offset, self.z_size_offset
     # End FLSUN Changes
     # G-Code movement commands
     def cmd_G1(self, gcmd):
@@ -146,15 +148,21 @@ class GCodeMove:
                     self.last_position[3] = v + self.base_position[3]
             # Start FLSUN Changes
             self.cali_position = self.last_position[:]
-            real_x_size_offset = real_y_size_offset = 0
+            real_x_size_offset = real_y_size_offset = real_z_size_offset = 0
             if self.last_position[2] > (self.max_z - 2.5):
                 real_x_size_offset = 0
                 real_y_size_offset = 0
+                real_z_size_offset = self.z_size_offset
+
             else:
                 real_x_size_offset = self.x_size_offset
                 real_y_size_offset = self.y_size_offset
+                real_z_size_offset = self.z_size_offset
+
             self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset) 
             self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset) 
+            self.cali_position[2] = self.last_position[2] * (1 + real_z_size_offset)
+
             # End FLSUN Changes
             if 'F' in params:
                 gcode_speed = float(params['F'])
