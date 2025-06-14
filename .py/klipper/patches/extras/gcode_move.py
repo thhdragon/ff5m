@@ -52,7 +52,7 @@ class GCodeMove:
         self.speed_factor = 1. / 60.
         self.extrude_factor = 1.
         self.max_z = 220 # FLSUN Changes
-        
+
         # G-Code state
         self.saved_states = {}
         self.move_transform = self.move_with_transform = None
@@ -123,6 +123,7 @@ class GCodeMove:
     def get_xyz_size_offset(self):
         return self.x_size_offset, self.y_size_offset, self.z_size_offset
     # End FLSUN Changes
+
     # G-Code movement commands
     def cmd_G1(self, gcmd):
         # Move
@@ -147,6 +148,7 @@ class GCodeMove:
                     self.last_position[3] = v + self.base_position[3]
             # Start FLSUN Changes
             self.cali_position = self.last_position[:]
+            # Only apply X/Y scaling except for moves near max_z
             if self.last_position[2] > (self.max_z - 2.5):
                 real_x_size_offset = 0
                 real_y_size_offset = 0
@@ -154,8 +156,8 @@ class GCodeMove:
                 real_x_size_offset = self.x_size_offset
                 real_y_size_offset = self.y_size_offset
             real_z_size_offset = self.z_size_offset
-            self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset) 
-            self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset) 
+            self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset)
+            self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset)
             self.cali_position[2] = self.last_position[2] * (1 + real_z_size_offset)
             # End FLSUN Changes
             if 'F' in params:
@@ -168,7 +170,6 @@ class GCodeMove:
             raise gcmd.error("Unable to parse move '%s'"
                              % (gcmd.get_commandline(),))
         # Start FLSUN Changes
-        #self.move_with_transform(self.last_position, self.speed)
         self.move_with_transform(self.cali_position, self.speed)
         # End FLSUN Changes
     # G-Code coordinate manipulation
