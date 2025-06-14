@@ -280,6 +280,7 @@ class ToolHead:
     def cmd_M101(self, gcmd): 
         x_real_size = gcmd.get_float('X', None, above=0.)
         y_real_size = gcmd.get_float('Y', None, above=0.)
+        z_real_size = gcmd.get_float('Z', None, above=0.)
         target_size = gcmd.get_float('T', None, above=0.)
         reset_value = gcmd.get_float('S', None)
         gcode = self.printer.lookup_object('gcode')
@@ -288,9 +289,11 @@ class ToolHead:
             configfile = self.printer.lookup_object('configfile')
             new_x_size_offset = 0
             new_y_size_offset = 0
+            new_z_size_offset = 0
             configfile.set('printer', 'x_size_offset', "%.6f" % (new_x_size_offset))
             configfile.set('printer', 'y_size_offset', "%.6f" % (new_y_size_offset))
-            gcode.respond_info("Reset of XY Offsets done!")
+            configfile.set('printer', 'z_size_offset', "%.6f" % (new_z_size_offset))
+            gcode.respond_info("Reset of XYZ Offsets done!")
         
         if reset_value is not None and reset_value != 0:
             gcode.respond_info("Invalid S value. Only S0 is accepted to reset XY Offsets.")
@@ -298,7 +301,7 @@ class ToolHead:
 
         if target_size is not None:
             gcode_move = self.printer.lookup_object('gcode_move')
-            last_x_size_offset, last_y_size_offset = gcode_move.get_xy_size_offset()
+            last_x_size_offset, last_y_size_offset, last_z_size_offset = gcode_move.get_xyz_size_offset()
             configfile = self.printer.lookup_object('configfile')
 
             if x_real_size is not None:
@@ -314,6 +317,13 @@ class ToolHead:
                 new_y_size_offset = max(new_y_size_offset, -0.034)
                 configfile.set('printer', 'y_size_offset', "%.6f" % (new_y_size_offset))
                 gcode.respond_info(f"Y Offset Compensation applied: {new_y_size_offset:.6f}")
+             
+             if z_real_size is not None:
+                new_z_size_offset = ((target_size - z_real_size) / target_size + 1) * (1 + last_z_size_offset) - 1
+                new_z_size_offset = min(new_z_size_offset, 0.034)
+                new_z_size_offset = max(new_z_size_offset, -0.034)
+                configfile.set('printer', 'z_size_offset', "%.6f" % (new_z_size_offset))
+                gcode.respond_info(f"Z Offset Compensation applied: {new_z_size_offset:.6f}")
 
         gcode.run_script_from_command('SAVE_CONFIG')
     # End FLSUN Changes
