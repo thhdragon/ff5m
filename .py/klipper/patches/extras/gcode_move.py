@@ -53,6 +53,10 @@ class GCodeMove:
         self.extrude_factor = 1.
         self.max_z = 220 # FLSUN Changes
 
+        # For delta Z scaling
+        self.prev_gcode_position = [0.0, 0.0, 0.0, 0.0]
+        self.cali_position = [0.0, 0.0, 0.0, 0.0]
+
         # G-Code state
         self.saved_states = {}
         self.move_transform = self.move_with_transform = None
@@ -64,6 +68,9 @@ class GCodeMove:
             self.move_with_transform = toolhead.move
             self.position_with_transform = toolhead.get_position
         self.reset_last_position()
+        # On printer ready, sync cali/prev_gcode to current position
+        self.prev_gcode_position = list(self.last_position)
+        self.cali_position = list(self.last_position)
     def _handle_shutdown(self):
         if not self.is_printer_ready:
             return
@@ -84,6 +91,9 @@ class GCodeMove:
         self.max_z = self.last_position[2] # FLSUN Changes
         for axis in homing_state.get_axes():
             self.base_position[axis] = self.homing_position[axis]
+        # Also sync delta scaling origins
+        self.prev_gcode_position = list(self.last_position)
+        self.cali_position = list(self.last_position)
     def set_move_transform(self, transform, force=False):
         if self.move_transform is not None and not force:
             raise self.printer.config_error(
@@ -119,6 +129,9 @@ class GCodeMove:
     def reset_last_position(self):
         if self.is_printer_ready:
             self.last_position = self.position_with_transform()
+            # Also keep delta scaling origins in sync
+            self.prev_gcode_position = list(self.last_position)
+            self.cali_position = list(self.last_position)
     # Start FLSUN Changes
     def get_xyz_size_offset(self):
         return self.x_size_offset, self.y_size_offset, self.z_size_offset
@@ -146,8 +159,7 @@ class GCodeMove:
                 else:
                     # value relative to base coordinate position
                     self.last_position[3] = v + self.base_position[3]
-            # Start FLSUN Changes
-            self.cali_position = self.last_position[:]
+            # Start FLSUN Changes - Scaling Section
             # Only apply X/Y scaling except for moves near max_z
             if self.last_position[2] > (self.max_z - 2.5):
                 real_x_size_offset = 0
@@ -156,9 +168,17 @@ class GCodeMove:
                 real_x_size_offset = self.x_size_offset
                 real_y_size_offset = self.y_size_offset
             real_z_size_offset = self.z_size_offset
+            # --- Delta-based Z scaling ---
+            # Scale the XY position as usual (centered scaling)
             self.cali_position[0] = self.last_position[0] * (1 + real_x_size_offset)
             self.cali_position[1] = self.last_position[1] * (1 + real_y_size_offset)
-            self.cali_position[2] = self.last_position[2] * (1 + real_z_size_offset)
+            # For Z, apply scaling to the move delta, not absolute position
+            z_delta = self.last_position[2] - self.prev_gcode_position[2]
+            z_scaled_delta = z_delta * (1 + real_z_size_offset)
+            self.cali_position[2] += z_scaled_delta
+            self.prev_gcode_position[2] = self.last_position[2]
+            # Extruder stays unscaled
+            self.cali_position[3] = self.last_position[3]
             # End FLSUN Changes
             if 'F' in params:
                 gcode_speed = float(params['F'])
@@ -201,6 +221,9 @@ class GCodeMove:
                 self.base_position[i] = self.last_position[i] - offset
         if offsets == [None, None, None, None]:
             self.base_position = list(self.last_position)
+        # Also sync delta scaling origins
+        self.prev_gcode_position = list(self.last_position)
+        self.cali_position = list(self.last_position)
     def cmd_M114(self, gcmd):
         # Get Current Position
         p = self._get_gcode_position()
@@ -237,6 +260,9 @@ class GCodeMove:
             for pos, delta in enumerate(move_delta):
                 self.last_position[pos] += delta
             self.move_with_transform(self.last_position, speed)
+        # Sync delta scaling origins
+        self.prev_gcode_position = list(self.last_position)
+        self.cali_position = list(self.last_position)
     cmd_SAVE_GCODE_STATE_help = "Save G-Code coordinate state"
     def cmd_SAVE_GCODE_STATE(self, gcmd):
         state_name = gcmd.get('NAME', 'default')
@@ -248,6 +274,8 @@ class GCodeMove:
             'homing_position': list(self.homing_position),
             'speed': self.speed, 'speed_factor': self.speed_factor,
             'extrude_factor': self.extrude_factor,
+            'prev_gcode_position': list(self.prev_gcode_position),
+            'cali_position': list(self.cali_position),
         }
     cmd_RESTORE_GCODE_STATE_help = "Restore a previously saved G-Code state"
     def cmd_RESTORE_GCODE_STATE(self, gcmd):
@@ -263,6 +291,9 @@ class GCodeMove:
         self.speed = state['speed']
         self.speed_factor = state['speed_factor']
         self.extrude_factor = state['extrude_factor']
+        self.last_position = list(state['last_position'])
+        self.prev_gcode_position = list(state.get('prev_gcode_position', self.last_position))
+        self.cali_position = list(state.get('cali_position', self.last_position))
         # Restore the relative E position
         e_diff = self.last_position[3] - state['last_position'][3]
         self.base_position[3] += e_diff
@@ -271,6 +302,9 @@ class GCodeMove:
             speed = gcmd.get_float('MOVE_SPEED', self.speed, above=0.)
             self.last_position[:3] = state['last_position'][:3]
             self.move_with_transform(self.last_position, speed)
+        # Sync delta scaling origins
+        self.prev_gcode_position = list(self.last_position)
+        self.cali_position = list(self.last_position)
     cmd_GET_POSITION_help = (
         "Return information on the current location of the toolhead")
     def cmd_GET_POSITION(self, gcmd):
