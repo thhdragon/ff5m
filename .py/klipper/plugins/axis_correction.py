@@ -1,11 +1,4 @@
 # Axis Correction Module for Klipper
-#
-# Provides per-axis linear scaling at the toolhead layer, using
-# user-friendly percent-based configuration.
-#
-# Copyright (C) 2025  Your Name <your@email.com>
-#
-# This file may be distributed under the terms of the GNU GPLv3 license.
 
 class AxisCorrection:
     def __init__(self, config):
@@ -17,8 +10,19 @@ class AxisCorrection:
         self.x_scale = 1.0 + self.x_correction / 100.0
         self.y_scale = 1.0 + self.y_correction / 100.0
         self.z_scale = 1.0 + self.z_correction / 100.0
+        self.enabled = True
         self.printer.register_event_handler("klippy:ready", self._hook_toolhead)
+        self.printer.lookup_object("gcode").register_command(
+            "SET_AXIS_CORRECTION", self.cmd_set_axis_correction,
+            desc="Enable or disable axis scaling correction"
+        )
         self.toolhead_hooked = False
+
+    def cmd_set_axis_correction(self, gcmd):
+        enable = gcmd.get_int('ENABLE', None)
+        if enable is not None:
+            self.enabled = bool(enable)
+            gcmd.respond_info(f"Axis correction {'ENABLED' if self.enabled else 'DISABLED'}.")
 
     def _hook_toolhead(self):
         if self.toolhead_hooked:
@@ -28,6 +32,8 @@ class AxisCorrection:
         orig_set_position = toolhead.set_position
 
         def scaled_move(newpos, speed, *args, **kwargs):
+            if not self.enabled:
+                return orig_move(newpos, speed, *args, **kwargs)
             scaled = list(newpos)
             if len(scaled) > 0:
                 scaled[0] = scaled[0] * self.x_scale
@@ -38,8 +44,7 @@ class AxisCorrection:
             return orig_move(scaled, speed, *args, **kwargs)
 
         def scaled_set_position(newpos, *args, **kwargs):
-            # Do NOT scale during homing
-            if 'homing_axes' in kwargs and kwargs['homing_axes']:
+            if not self.enabled or ('homing_axes' in kwargs and kwargs['homing_axes']):
                 return orig_set_position(newpos, *args, **kwargs)
             scaled = list(newpos)
             if len(scaled) > 0:
@@ -62,6 +67,7 @@ class AxisCorrection:
             "x_scale": self.x_scale,
             "y_scale": self.y_scale,
             "z_scale": self.z_scale,
+            "enabled": self.enabled,
         }
 
 def load_config(config):
